@@ -1,0 +1,5 @@
+<base>
+	<radio name="104.1" stream="http://stream.to.energy" ></radio>
+	<radio name="94.1" stream="https://stream.long.gone" ></radio>
+	<radio name="106.9" stream="https://stream.long.gone2" ></radio>			
+</base>
