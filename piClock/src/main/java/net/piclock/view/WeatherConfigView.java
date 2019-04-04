@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -70,165 +69,138 @@ public class WeatherConfigView extends JPanel {
 	private JLabel lblCityLoading;
 	private JLabel lblError;
 	
+	private boolean isNotStarting = false;
 	/**
 	 * Create the panel.
 	 */
 	public WeatherConfigView() {
 		prefs = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
-		
+
 		ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-		
-		setSize(480, 320);
+
+		setSize(800, 480);
 		setOpaque(false);
 		setLayout(new MigLayout("hidemode 3", "[][85.00][][][grow 80][grow 80]", "[][30px][][][][][][][][][grow][]"));
-		
+
 		JLabel lblWeatherConfiguration = new JLabel("Weather Configuration");
-		lblWeatherConfiguration.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		add(lblWeatherConfiguration, "cell 1 0 4 1,alignx center");
+		lblWeatherConfiguration.setFont(new Font("Tahoma", Font.PLAIN, 35));
+		add(lblWeatherConfiguration, "cell 1 0 5 1,alignx center");
 		theme.registerLabelTextColor(lblWeatherConfiguration, LabelEnums.WC_TITILE);
-		
-		JLabel lblActivate = new JLabel("Activate");
-		lblActivate.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		add(lblActivate, "cell 0 2");
-		theme.registerLabelTextColor(lblActivate, LabelEnums.WC_ACTIVATE);
-		
-		chckbxActivate = new JCheckBox("");
-		chckbxActivate.setOpaque(false);
-		chckbxActivate.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				
-				enableDisable();
-			}
-		});	
-		
-		add(chckbxActivate, "cell 1 2");
-		
-		JLabel lblProvider = new JLabel("Provider:");
-		lblProvider.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		add(lblProvider, "cell 0 3,alignx trailing");
-		theme.registerLabelTextColor(lblProvider, LabelEnums.WC_PROVIDER);
-		
-		cmbProvider = new JComboBox<Host>(Host.values());
+
+				cmbProvider = new JComboBox<Host>(Host.values());
+//		cmbProvider = new JComboBox<Host>();
+		cmbProvider.setPreferredSize(new Dimension(28, 35));
 		cmbProvider.setSelectedIndex(-1); 		
-	
+
 		cmbProvider.setRenderer(new DefaultListCellRenderer() {
 			private static final long serialVersionUID = 1L;
 			public Component getListCellRendererComponent(JList<?> list,
-		            Object value,
-		            int index,
-		            boolean isSelected,
-		            boolean cellHasFocus) {
-				
-				
+					Object value,
+					int index,
+					boolean isSelected,
+					boolean cellHasFocus) {
+
+
 				if (index == -1 && cmbProvider.getSelectedIndex() == -1){
 					value = "Select";
 				}else{
 					value = ((Host) value).getName();
 				}
-		        return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-		    }
+				return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			}
 		});
-	
+
 		cmbProvider.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				
-				lblError.setVisible(false);
-			
-				lblCityLoading.setVisible(true);
-					
-				
-				SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
-					@Override
-					protected Boolean doInBackground() throws Exception {
 
-						try{
-							loadProviderCity();
+				if (isNotStarting && e.getStateChange() == ItemEvent.SELECTED) {
+					System.out.println(e.getStateChange());
 
-						} catch (IOException e1) {
-							lblError.setVisible(true);
-							lblError.setText("An Error occured, Rety");
-							logger.log(Level.SEVERE, "Error",e1 );
+					lblError.setVisible(false);
+
+					lblCityLoading.setVisible(true);
+
+
+					SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+						@Override
+						protected Boolean doInBackground() throws Exception {
+
+							try{
+								loadProviderCity();
+
+							} catch (IOException e1) {
+								lblError.setVisible(true);
+								lblError.setText("An Error occured, Rety");
+								logger.log(Level.SEVERE, "Error",e1 );
+								lblCityLoading.setVisible(false);
+							}
+							return true;
+						}   
+						protected void done() {
 							lblCityLoading.setVisible(false);
 						}
-						return true;
-					}   
-					protected void done() {
-						lblCityLoading.setVisible(false);
-					}
-				};
-				worker.execute();
+					};
+					worker.execute();
+				}else {
+					isNotStarting = true; //just to bypass select on stating
+				}
 			}			
 		});
-		add(cmbProvider, "cell 1 3 3 1,growx");
-		
-		 lblCountry = new JLabel("Country");
-		lblCountry.setVisible(false);
-		lblCountry.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		add(lblCountry, "hidemode 3,cell 0 4,alignx trailing");
-//		theme.registerLabelTextColor(lblProvider, LabelEnums.WC_PROVIDER);
-		
-		cmbCountry = new JComboBox();
-		cmbCountry.setVisible(false);
-		add(cmbCountry, "hidemode 3,cell 1 4 3 1,growx");
-		
+
+		chckbxActivate = new JCheckBox("");
+		chckbxActivate.setOpaque(false);
+		chckbxActivate.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+
+				enableDisable();
+			}
+		});	
+
+		JLabel lblActivate = new JLabel("Activate");
+		lblActivate.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		add(lblActivate, "cell 2 2");
+		theme.registerLabelTextColor(lblActivate, LabelEnums.WC_ACTIVATE);
+
+		add(chckbxActivate, "cell 3 2");
+
+		JLabel lblProvider = new JLabel("Provider:");
+		lblProvider.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		add(lblProvider, "cell 2 3,alignx trailing");
+		theme.registerLabelTextColor(lblProvider, LabelEnums.WC_PROVIDER);
+		add(cmbProvider, "cell 3 3 2 1,growx");
+
 		lblCountryLoading = new JLabel("");
 		lblCountryLoading.setVisible(false);
-		add(lblCountryLoading, "cell 4 4,alignx left");
-		
-		JLabel lblCity = new JLabel("City:");
-		lblCity.setFont(new Font("Tahoma", Font.PLAIN, 16));	
-		theme.registerLabelTextColor(lblCity, LabelEnums.WC_CITY);
-		
-		add(lblCity, "cell 0 5,alignx trailing");
-		
-		cmbCity = new JComboBox<City>();
-		
-		//resize scrollbar
-		Object comp = cmbCity.getUI().getAccessibleChild(cmbCity, 0);
-		
-		if (comp instanceof JPopupMenu) {
-	        JPopupMenu popup = (JPopupMenu) comp;
-	        JScrollPane scrollPane = (JScrollPane) popup.getComponent(0);
-	        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(30, 30));
-	    }
-		
-		add(cmbCity, "cell 1 5 3 1,growx");
-		
+
+		lblCountry = new JLabel("Country");
+		lblCountry.setVisible(false);
+		lblCountry.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		add(lblCountry, "hidemode 3,cell 2 4,alignx trailing");
+		add(lblCountryLoading, "flowx,cell 4 4,alignx left");
+
+
 		lblCityLoading = new JLabel(""); 
 		lblCityLoading.setIcon(ImageUtils.getInstance().getButtonLoader());
 		lblCityLoading.setOpaque(false);
 		lblCityLoading.setVisible(false);
-		add(lblCityLoading, "cell 4 5,alignx left");
+
+		JLabel lblCity = new JLabel("City:");
+		lblCity.setFont(new Font("Tahoma", Font.PLAIN, 20));	
+		theme.registerLabelTextColor(lblCity, LabelEnums.WC_CITY);
+
+		add(lblCity, "cell 2 5,alignx trailing");
+		add(lblCityLoading, "flowx,cell 4 5,alignx left");
 		
-		
-		JLabel lblRefreshIntervals = new JLabel("Refresh:");
-		lblRefreshIntervals.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		add(lblRefreshIntervals, "cell 0 6,alignx trailing");
-		theme.registerLabelTextColor(lblRefreshIntervals, LabelEnums.WC_REFRESH);
-		
-		 refreshInMinutes = new JSpinner();
-		 refreshInMinutes.setValue(60);
-		 refreshInMinutes.setModel(new SpinnerNumberModel(60,1,1440,1));
-		add(refreshInMinutes, "cell 1 6,growx");
-		
-		
-		JFormattedTextField txt = ((JSpinner.NumberEditor) refreshInMinutes.getEditor()).getTextField();
-		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
-		
-		
-		JLabel lblMinutes = new JLabel("Minutes");
-		lblMinutes.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		add(lblMinutes, "cell 2 6");
-		theme.registerLabelTextColor(lblMinutes, LabelEnums.WC_MIN);
-		
-//		chckbxNoUpdate = new JCheckBox("No update when screen is off");
-//		chckbxNoUpdate.setFont(new Font("Tahoma", Font.PLAIN, 16));
-//		chckbxNoUpdate.setOpaque(false);
-//		add(chckbxNoUpdate, "cell 1 7 4 1,alignx left");
-		
+
+		//		chckbxNoUpdate = new JCheckBox("No update when screen is off");
+		//		chckbxNoUpdate.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		//		chckbxNoUpdate.setOpaque(false);
+		//		add(chckbxNoUpdate, "cell 1 7 4 1,alignx left");
+
 		JButton btnBack = new JButton("<");
+		btnBack.setPreferredSize(new Dimension(41, 35));
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -285,16 +257,59 @@ public class WeatherConfigView extends JPanel {
 				}
 			}
 		});
-		
+
 		lblError = new JLabel("");
 		lblError.setForeground(Color.RED);
 		lblError.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblError.setVisible(false);
+
+
+		JLabel lblRefreshIntervals = new JLabel("Refresh:");
+		lblRefreshIntervals.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		add(lblRefreshIntervals, "cell 2 6,alignx trailing");
+		theme.registerLabelTextColor(lblRefreshIntervals, LabelEnums.WC_REFRESH);
+
+		refreshInMinutes = new JSpinner();
+		refreshInMinutes.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		refreshInMinutes.setPreferredSize(new Dimension(29, 35));
+		refreshInMinutes.setValue(60);
+		refreshInMinutes.setModel(new SpinnerNumberModel(60,1,1440,1));
+		add(refreshInMinutes, "cell 3 6,growx");
+
+
+		JFormattedTextField txt = ((JSpinner.NumberEditor) refreshInMinutes.getEditor()).getTextField();
+
+		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
+		
+		JLabel lblMinutes = new JLabel("Minutes");
+		lblMinutes.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		add(lblMinutes, "cell 4 6");
+		theme.registerLabelTextColor(lblMinutes, LabelEnums.WC_MIN);
 		add(lblError, "cell 1 8 4 1");
 		add(btnBack, "cell 0 11");
-		
+		//		theme.registerLabelTextColor(lblProvider, LabelEnums.WC_PROVIDER);
+
+		cmbCountry = new JComboBox();
+		cmbCountry.setPreferredSize(new Dimension(28, 35));
+		cmbCountry.setVisible(false);
+		add(cmbCountry, "hidemode 3,cell 3 4 2 1,growx");
+
+		cmbCity = new JComboBox<City>();
+		cmbCity.setPreferredSize(new Dimension(28, 35));
+
+		//resize scrollbar
+		Object comp = cmbCity.getUI().getAccessibleChild(cmbCity, 0);
+
+		if (comp instanceof JPopupMenu) {
+			JPopupMenu popup = (JPopupMenu) comp;
+			JScrollPane scrollPane = (JScrollPane) popup.getComponent(0);
+			scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(30, 30));
+		}
+
+		add(cmbCity, "cell 3 5 2 1,growx");
+
 		enableDisable();
-		
+
 		//check preferences
 		if (prefs.isWeatherActivated()){
 			chckbxActivate.setSelected(true);
@@ -304,7 +319,7 @@ public class WeatherConfigView extends JPanel {
 		} catch (Exception e1) {
 			logger.log(Level.SEVERE, "error", e1);
 		}		
-		
+
 	}
 	private void loadPreferences() throws Exception{
 		//TODO load country checkbox if needed
@@ -358,6 +373,7 @@ public class WeatherConfigView extends JPanel {
 	}	
 	private void loadProviderCity() throws Exception{
 
+		System.out.println("loadProviderCity()");
 		cmbCity.removeAllItems();
 		if ((Host)cmbProvider.getSelectedItem() == Host.envCanada){
 
@@ -369,6 +385,8 @@ public class WeatherConfigView extends JPanel {
 				cities.add(localCity);
 
 			}
+			System.out.println("Cities size2: " +cities.size() );
+			
 			Collections.sort(cities, new CityNameSort());
 			//add cities to box
 			for(City c : cities){

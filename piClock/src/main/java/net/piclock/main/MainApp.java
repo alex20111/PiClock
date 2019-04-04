@@ -119,6 +119,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	
 	private final SimpleDateFormat sdfTime = new SimpleDateFormat(Constants.HOUR_MIN);
 	private SimpleDateFormat parseToDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
+	
+	private PiHandler handler;
 	/**
 	 * Launch the application.
 	 */
@@ -147,6 +149,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	 */
 	public MainApp() throws Exception {
 		logger.info("Start Program");	
+		
+		//ONLY TRUE WHEN TESTING LOCAL //FIXME
+		PiHandler.localTest = true;
 		
 //		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //		int screenHeight = screenSize.height;
@@ -224,13 +229,13 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		timePanel.setOpaque(false);
 		
 		clockLabel = new JLabel("00:00");
-		clockLabel.setFont(new Font("Courier New", Font.BOLD, 80));
+		clockLabel.setFont(new Font("Courier New", Font.BOLD, 120));
 		themes.registerLabelTextColor(clockLabel, LabelEnums.CLOCK);
 		timePanel.add(clockLabel, "cell 2 2,alignx center,aligny center");
 		
 		weekDateLable = new JLabel("Fri, dec 21");
 		themes.registerLabelTextColor(weekDateLable, LabelEnums.DAY_OF_WEEK);
-		weekDateLable.setFont(new Font("Tahoma", Font.BOLD, 20));
+		weekDateLable.setFont(new Font("Tahoma", Font.BOLD, 40));
 		timePanel.add(weekDateLable, "cell 2 3,alignx center,aligny top");
 		lblWebserverIcon = new JLabel();
 		lblWebserverIcon.setVisible(false);
@@ -257,16 +262,17 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		JPanel weatherPanel = new JPanel();
 		mainPanel.add(weatherPanel, BorderLayout.NORTH);
-		weatherPanel.setLayout(new MigLayout("", "[grow 15][100px,left][][80px][80px][grow 20]", "[]"));
+		weatherPanel.setLayout(new MigLayout("", "[grow 14][220px,left][][50px][80px][80px][grow 14]", "[]"));
 		weatherPanel.setOpaque(false);
 		
-		lblCurrentweather = new JLabel("<html><div style='width: 80px;word-wrap: break-word;text-align: center'>Not available</html>");
-		lblCurrentweather.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblCurrentweather = new JLabel("<html><div style='width: 100px;word-wrap: break-word;text-align: center'>Not available</html>");
+		lblCurrentweather.setFont(new Font("Tahoma", Font.BOLD, 30));
 		lblCurrentweather.setForeground(Color.WHITE);
 		themes.registerLabelTextColor(lblCurrentweather, LabelEnums.CURRENT_WEATHER);
-		weatherPanel.add(lblCurrentweather, "cell 1 0,alignx right");
+		weatherPanel.add(lblCurrentweather, "cell 1 0,alignx center");
 		
 		lblWeatherIcon = new JLabel("--:--",weatherNaIcon,  SwingConstants.CENTER);
+		lblWeatherIcon.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblWeatherIcon.setVerticalTextPosition(JLabel.BOTTOM);
 		lblWeatherIcon.setHorizontalTextPosition(JLabel.CENTER);
 		themes.registerLabelTextColor(lblWeatherIcon, LabelEnums.WTH_LST_UPD_TIME);
@@ -296,8 +302,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		weatherPanel.add(lblWeatherIcon, "cell 2 0,growx,aligny center");		
 		
 		JPanel alertIconsPanel = new JPanel();
-		alertIconsPanel.setPreferredSize(new Dimension(40, 10));
-		alertIconsPanel.setMinimumSize(new Dimension(30, 10));
+		alertIconsPanel.setPreferredSize(new Dimension(48, 10));
+		alertIconsPanel.setMinimumSize(new Dimension(35, 10));
 		mainPanel.add(alertIconsPanel, BorderLayout.WEST);
 		alertIconsPanel.setOpaque(false);
 		alertIconsPanel.setLayout(new BoxLayout(alertIconsPanel, BoxLayout.Y_AXIS));
@@ -350,13 +356,13 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		lblTempSun.setFont(new Font("Tahoma", Font.BOLD, 20));
 		themes.registerIconColor(lblTempSun, IconEnum.TEMP_SUN);
 		themes.registerLabelTextColor(lblTempSun, LabelEnums.TEMP_SUN);
-		weatherPanel.add(lblTempSun, "cell 3 0,alignx right,aligny center");
+		weatherPanel.add(lblTempSun, "cell 4 0,alignx right,aligny center");
 		
 		lblTempShade = new JLabel("--c");
 		lblTempShade.setFont(new Font("Tahoma", Font.BOLD, 20));
 		themes.registerIconColor(lblTempShade, IconEnum.TEMP_SHADE);
 		themes.registerLabelTextColor(lblTempShade, LabelEnums.TEMP_SHADE);
-		weatherPanel.add(lblTempShade, "cell 4 0,alignx center");
+		weatherPanel.add(lblTempShade, "cell 5 0,alignx right");
 		
 		AlarmView av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
 		
@@ -382,7 +388,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		themes.loadSunnyBackdrop(); //start the theme	
 		
-		PiHandler.init();
+		handler = PiHandler.getInstance();
 		
 		//start the LDR
 		ldrWorker = new LDRStatusWorker();
@@ -390,7 +396,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		//check if we have wifi credentials.
 		if (prefs.isWifiCredentialProvided()){
-			PiHandler.checkInternetConnection();		
+			handler.checkInternetConnection();		
 		}
 			
 	}
@@ -398,7 +404,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	public void changeBackImage(File backImage){
 		try {
 			BufferedImage img = ImageIO.read(backImage);
-			dimg = img.getScaledInstance(480, 320, Image.SCALE_SMOOTH);
+			dimg = img.getScaledInstance(800, 480, Image.SCALE_SMOOTH);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -542,8 +548,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				WeatherGenericModel wgm = (WeatherGenericModel)evt.getNewValue();
 				
 				WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
-				ImageIcon icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + wcm.getIconName());
+				ImageIcon icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + wcm.getIconName(), 48, 48);
 				
+								
 				if (sensorActive){
 					WeatherBean wb = (WeatherBean) ct.getSharedObject(Constants.SENSOR_INFO);
 					
@@ -552,11 +559,11 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 					}
 					Date dt = parseToDate.parse(wcm.getObservationTime()); 
 					
-					addCurrentWeather(wcm.getWeather(),icon,dt );
+					addCurrentWeather(wcm.getWeather().trim(),icon,dt );
 				}else{
 					
 					Date dt = parseToDate.parse(wcm.getObservationTime());					
-					addCurrentWeather(wcm.getWeather(),icon , dt);
+					addCurrentWeather(wcm.getWeather().trim(),icon , dt);
 					addCurrentTemp(String.valueOf(wcm.getCurrectTempC()), "--");
 				}				
 
@@ -665,7 +672,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	}		
  
 	private void addCurrentWeather(String status, Object icon,  Date refreshDate){
-		lblCurrentweather.setText("<html><div style='width: 80px;word-wrap: break-word;text-align: center'>" + status + "</html>");
+		lblCurrentweather.setText("<html><div style='width: 100px;word-wrap: break-word;text-align: center'>" + status + "</html>");
 		if (refreshDate != null){
 			lblWeatherIcon.setText(sdfTime.format(refreshDate));
 		}else{
@@ -734,20 +741,21 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 	
 		if (pref.isWeatherActivated() ){
-			//call 
-			if (sensorActive){
-				fetchSensorInfo();
-			}
+			//call
 			fetchForecast(0);
+		}
+		
+		if (sensorActive){
+			fetchSensorInfo();
 		}
 	}
 	/** method to use to keep the screen ON if the screen is off and the user is doing something 
 	 * @throws InterruptedException **/ 
 	private void keepAliveIfScreenShutdown() throws InterruptedException{
 		//if screen is in auto shutdown mode , them restart the countdown when user do something.
-		logger.log(Level.CONFIG, "keepAliveIfScreenShutdown. PiHandler.isScreenAutoShutdown: " + PiHandler.isScreenAutoShutdown);
-		if (PiHandler.isScreenAutoShutdown){			
-			PiHandler.autoShutDownScreen();
+		logger.log(Level.CONFIG, "keepAliveIfScreenShutdown. PiHandler.isScreenAutoShutdown: " + handler.isScreenAutoShutdown());
+		if (handler.isScreenAutoShutdown()){			
+			handler.autoShutDownScreen();
 		}
 	}
 	@SuppressWarnings("unchecked")

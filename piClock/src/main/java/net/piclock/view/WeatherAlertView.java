@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,6 +28,7 @@ import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ScreenAutoClose;
 import net.weather.bean.WeatherAlert;
 import net.weather.bean.WeatherGenericModel;
+import java.awt.Dimension;
 
 public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
@@ -54,9 +56,12 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		JPanel waHeader = new JPanel();
 		waHeader.setOpaque(false);
 		add(waHeader, BorderLayout.NORTH);
-		waHeader.setLayout(new MigLayout("", "[100px][grow][grow]", "[]"));
+		waHeader.setLayout(new MigLayout("", "[grow][grow][grow]", "[center]"));
 		
-		BasicArrowButton back = new BasicArrowButton(BasicArrowButton.WEST); 
+		JButton back = new JButton("<"); 
+		back.setSize(new Dimension(20, 25));
+		back.setFont(new Font("Tahoma", Font.BOLD, 18));
+		back.setPreferredSize(new Dimension(20, 25));
 		back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -80,7 +85,7 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		waHeader.add(back, "cell 0 0,alignx left");
 		
 		JLabel lblTitle = new JLabel("Weather Alert");
-		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 35));
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		waHeader.add(lblTitle, "cell 1 0,alignx center");
 		
@@ -103,6 +108,7 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		
 		
 		lblWeatherAlert = new JLabel("");
+		lblWeatherAlert.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblWeatherAlert.setVerticalAlignment(SwingConstants.TOP);
 		lblWeatherAlert.setHorizontalAlignment(SwingConstants.LEFT);
 		contentPanel.add(lblWeatherAlert, "cell 0 0,aligny top");

@@ -11,7 +11,7 @@ public class Preferences {
 	private boolean alarmOn = false;
 	private int alarmHour = 0;
 	private int alarmMinutes = 0;
-	private String alarmType = "";
+	private String alarmType = "BUZZER";
 	
 	//weather preferences
 	private boolean weatherActivated = false;

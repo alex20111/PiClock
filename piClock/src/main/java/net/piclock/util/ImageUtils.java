@@ -1,5 +1,6 @@
 package net.piclock.util;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -43,14 +44,25 @@ public class ImageUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public ImageIcon getImage(String imgName) throws IOException{
-		BufferedImage img = null;;
+	public ImageIcon getImage(String imgName, int height, int width) throws IOException{
+		BufferedImage img = null;
 		try {
 			img = ImageIO.read(new File ("img" + File.separatorChar + imgName));
+			
+			if (height > 0 && width > 0) {
+				Image dimg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+				return new ImageIcon(dimg);
+			}
+			
+			
 		} catch (IOException e) {
 			img = ImageIO.read(new File ("img" + File.separatorChar + Constants.NA_ICON));
 		}
 		return new ImageIcon(img);
+	}
+	
+	public ImageIcon getImage(String imgName ) throws IOException{
+		return getImage(imgName, 0, 0);
 	}
 
 	public ImageIcon getWeatherNA() {

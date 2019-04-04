@@ -1,39 +1,35 @@
 package net.piclock.main;
 
-import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.exec.ExecuteException;
-
-import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
-
-import home.fileutils.FileUtils;
 import home.misc.Exec;
-import net.piclock.arduino.ArduinoCmd;
 import net.piclock.button.Buttonhandler;
 import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
 import net.piclock.enums.DayNightCycle;
 import net.piclock.swing.component.SwingContext;
 
+//TODO fetch Wifi list
+//TODO add connect to WIFI
+//TODO add disconnect to WIFI
+//TODO add call to Ard
+//TODO add wifi turn off and on (Not disconnect)
+//TODO add buzzer handler ARD
+//TODo add check internet connection
 //https://computers.tutsplus.com/articles/using-a-usb-audio-device-with-a-raspberry-pi--mac-55876
 //https://die-antwort.eu/techblog/2017-12-raspberry-pi-usb-audio-interface-command-line/
-public class PiHandler {
-	
-	public static boolean localTest = false;
-	
-	private static final Logger logger = Logger.getLogger( PiHandler.class.getName() );
+public class PiHandlerLocal {
+	private static final Logger logger = Logger.getLogger( PiHandlerLocal.class.getName() );
 
-	private static PiHandler piHandler;
+	private static PiHandlerLocal piHandler;
 	
 	private  boolean screenOn = true;
 	private  boolean wifiConnected = false; //if connected to the WIFI.
@@ -49,80 +45,57 @@ public class PiHandler {
 	private  Buttonhandler  buttonHandler;	
 	
 	//commands to ard
+	private  String command = "";
 	private  String BUZZER = "buzzer";
 	private  String LDR 	 = "ldr";
 	private  String TIME 	 = "time";
-	private  String TIME_OFF = "timeOff";
 	
-	private PiHandler(){
+	private PiHandlerLocal(){
 		buttonHandler = new Buttonhandler();
 //		buttonHandler.listerToButton();
 		System.out.println("Init");
 	}
 	
-	public static PiHandler getInstance() {
+	public static PiHandlerLocal getInstance() {
 		if (piHandler == null) {
-			synchronized (PiHandler.class) {
+			synchronized (PiHandlerLocal.class) {
 				if(piHandler == null) {
-					piHandler = new PiHandler();
+					piHandler = new PiHandlerLocal();
 				}
 			}
 		}
 		return piHandler;
 	}	
 
-	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException{
+	public void turnOffScreen() throws InterruptedException{
 		logger.log(Level.CONFIG,"turnOffScreen()");
-
-		Exec e = new Exec();
-		e.addCommand("sudo").addCommand("DISPLAY=:0.0").addCommand("xset").addCommand("dpms").addCommand("force").addCommand("off");
-
-		e.timeout(10000);
-
-		int ext = e.run();
-
-		if (ext == 0) {
-			if (wifiShutDown != null && wifiShutDown.isAlive()){
-				wifiShutDown.interrupt();
-				while(wifiShutDown.isAlive()){
-					wifiShutDown.join(100);
-				}
-				logger.log(Level.CONFIG, "turnOffScreen: Interrupted wifiShutDown");
+		
+		if (wifiShutDown != null && wifiShutDown.isAlive()){
+			wifiShutDown.interrupt();
+			while(wifiShutDown.isAlive()){
+				wifiShutDown.join(100);
 			}
-
-			//wait 3 minute before shutting down WIFI
-			wifiShutDown = new Thread(new Runnable() {				
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(180000);
-						wifiOff();
-					} catch (InterruptedException e) {}
-
-				}
-			});
-			wifiShutDown.start();
-
-			setScreenOn(false);
-		}else {
-			logger.log(Level.SEVERE, "Cannot turn monitor off. " +  e.getOutput());
+			logger.log(Level.CONFIG, "turnOffScreen: Interrupted wifiShutDown");
 		}
-
+		
+		//wait 3 minute before shutting down WIFI
+		wifiShutDown = new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(180000);
+					wifiOff();
+				} catch (InterruptedException e) {}
+				
+			}
+		});
+		wifiShutDown.start();
+		
+		setScreenOn(false);
 	}
 	/*withWifiOn: then turn on the wifi on request*/
-	public void turnOnScreen(boolean withWifiOn) throws InterruptedException, ExecuteException, IOException{
+	public void turnOnScreen(boolean withWifiOn) throws InterruptedException{
 		logger.log(Level.CONFIG,"Turning on screen. Wifi on option: " + withWifiOn);
-		
-		Exec e = new Exec();
-		e.addCommand("sudo").addCommand("DISPLAY=:0.0").addCommand("xset").addCommand("dpms").addCommand("force").addCommand("on");
-
-		e.timeout(10000);
-
-		int ext = e.run();
-		
-		if (ext > 0) {
-			logger.log(Level.SEVERE, "Error turning on monitor. " + e.getOutput());
-		}
 		
 		//interrupt wifi shutdown if in process because screen turned back on.
 		if (wifiShutDown != null && wifiShutDown.isAlive()){
@@ -143,60 +116,38 @@ public class PiHandler {
 		setScreenOn(true);
 
 	}
-	public List<String> fetchWifiList() throws Exception{
+	public List<String> fetchWifiList(){
 		logger.log(Level.CONFIG,"fetchWifiList() ");
 		List<String> wifiList = new ArrayList<String>();
-		Exec e = new Exec();
-		e.addCommand("sudo").addCommand("./scripts/scanssid.sh").addCommand("/home/pi/piClock/scripts/essid.txt");
-
-		e.timeout(10000);
-
-		int ext = e.run();
-
-		System.out.println("scanSSId: output: " + e.getOutput() + "exit value: " + ext);
-
-		if (ext == 0) {
-			wifiList = FileUtils.readFileToArray("/home/pi/piClock/scripts/essid.txt");
-		}
+		wifiList.add("bob");
+		wifiList.add("Long do");
+		wifiList.add("Long do da");
+		//TODO call process builder
 		return wifiList;
 		
 	}
-	/**When 1st connecting to a new WIFI
-	 * @throws IOException */
-	public void connectToWifi(String wifiName, String pass) throws InterruptedException, IOException{
+	/**When 1st connecting to a new WIFI*/
+	public void connectToWifi(String wifiName, String pass) throws InterruptedException{
 		logger.log(Level.CONFIG,"connectToWifi()");
-
+		//TODO write exec
 		System.out.println("trying to connect to WIFI: " + wifiName + "  With pass: " + pass);
 		
-		if (wifiName != null && wifiName.length() > 0 && pass != null && pass.length() > 0){
-			//1st remove any network if exist
-			disconnectWifi();
-			
-			Path wpaFile = Paths.get("/etc/wpa_supplicant/wpa_supplicant.conf");
-			
-			String newNetwork = "\n\nnetwork={\n\tssid=\"" + wifiName.trim() +"\"\n\tpsk=\""+pass.trim()+"\"\n\tkey_mgmt=WPA-PSK\n} ";
-
-			String newContents = new String(Files.readAllBytes(wpaFile));
-
-			String newString = newContents.concat(newNetwork);
-
-			byte[] strToBytes = newString.getBytes();
-			Files.write(wpaFile, strToBytes);
-			
-			refreshWifi();
-			
+		if (wifiName != null && wifiName.length() > 0 && pass != null && pass.length() > 0){			
 			checkInternetConnection();
 		}		
 		
 	}
 	public DayNightCycle getLDRstatus(){
-
-		DayNightCycle cycle = null;		
+		//TODO add call to ard
+		DayNightCycle cycle = null;
 		
-		int ldrVal = sendI2cCommand(LDR,null);	
-		System.out.println("LDR STATUS !!!!!!!!!!!!!! : " + ldrVal);
+		Random r = new Random();
 		
-		if (ldrVal < 190){
+		sendI2cCommand();
+		
+		int rand = r.nextInt(100);
+		
+		if (rand > 20){
 			cycle = DayNightCycle.DAY;
 		}else{
 			cycle = DayNightCycle.NIGHT;
@@ -207,7 +158,7 @@ public class PiHandler {
 	/**Turn on the alarm based on the selected buzzer**/
 	public void turnOnAlarm(Buzzer buzzerType){
 		logger.log(Level.CONFIG,"Turning on: " + buzzerType.getName());
-
+		System.out.println("BUZZZZZZZZZZZZZZZZZZZWE");
 		if (buzzerType == Buzzer.BUZZER){
 			buzzer(true);
 		}else if (buzzerType == Buzzer.RADIO){
@@ -228,10 +179,9 @@ public class PiHandler {
 	}
 	public void displayTM1637Time(String time){
 		
-		sendI2cCommand(TIME,time);
 	}
 	public void turnOffTM1637Time(){
-		sendI2cCommand(TIME_OFF, null);
+		
 	}
 	
 	//turn off the screen automatically
@@ -246,11 +196,7 @@ public class PiHandler {
 				isScreenAutoShutdown = true;
 				try {
 					Thread.sleep(60000);
-					try {
-						turnOffScreen();
-					} catch (Exception e) {
-						logger.log(Level.SEVERE ,  "Cannot automatically shutdown monitor", e);
-					}
+					turnOffScreen();
 				} catch (InterruptedException e) {}
 				
 			}
@@ -325,73 +271,37 @@ public class PiHandler {
 		});
 		checkConnection.start();
 	}
-	public void disconnectWifi() throws InterruptedException, IOException{
+	public void disconnectWifi(){
 		logger.log(Level.CONFIG, "disconnectWifi()");
-		
-		Path wpaFile = Paths.get("/etc/wpa_supplicant/wpa_supplicant.conf");
-		String contents = new String(Files.readAllBytes(wpaFile));
-		
-		if (contents.contains("network")) {
-			String noWifi = contents.substring(0,contents.indexOf("network"));
-
-			byte[] strToBytes = noWifi.getBytes();
-
-			Files.write(wpaFile, strToBytes);			
-		}
-		
-		refreshWifi();
-		Thread.sleep(1000);
-		
-		
 		SwingContext context = SwingContext.getInstance();
 		context.putSharedObject(Constants.CHECK_INTERNET, "end_disconnect");
 		setWifiConnected(false);
 		wifiInternetConnected = false;
-	
+		//TODO add disconnect
 	}
-	/** turn wifi card ON. This does not mean that we are connected to it, it just turn it ON
-	 * @throws IOException 
-	 * @throws ExecuteException **/
-	public void turnWifiOn() throws InterruptedException, ExecuteException, IOException{
+	/** turn wifi card ON. This does not mean that we are connected to it, it just turn it ON**/
+	public void turnWifiOn() throws InterruptedException{
 		logger.log(Level.CONFIG, "wifiOn(). wifiOn : " + wifiOn);
 		if (!wifiOn){
 			wifiOn = true;	
-			Exec e = new Exec();
-			e.addCommand("sudo").addCommand("ifconfig").addCommand("wlan0").addCommand("up");
-
-			e.timeout(10000);
-
-			int ext = e.run();
-			if (ext == 0) {
-				SwingContext context = SwingContext.getInstance();
-				Preferences p = (Preferences)context.getSharedObject(Constants.PREFERENCES);
-
-				if (p.getWifi() != null && p.getWifi().length() > 0 
-						&& p.getWifiPass() != null && p.getWifiPass().length() > 0){				
-					checkInternetConnection(); //chekc if internet connection is still working
-				}
-			}else {
-				logger.log(Level.SEVERE, "Error turning wifi up. Exit: " + ext + ".  output: " + e.getOutput() );
+//			Exec exec = new Exec();
+//			exec.addCommand("ifconfig").addCommand("wlan0").addCommand("up").timeout(10, TimeUnit.SECONDS);
+////			exec.run(); //TODO enable.
+			SwingContext context = SwingContext.getInstance();
+			Preferences p = (Preferences)context.getSharedObject(Constants.PREFERENCES);
+			
+			if (p.getWifi() != null && p.getWifi().length() > 0 
+					&& p.getWifiPass() != null && p.getWifiPass().length() > 0){				
+				checkInternetConnection(); //chekc if internet connection is still working
 			}
-
+			
+			
 		}
 	}
 	//verify if the monitor is actually ON of OFF	
-	public boolean isMonitorOn() throws ExecuteException, IOException {
-		Exec exec = new Exec();
-		exec.addCommand("sudo").addCommand("xset").addCommand("q");
-
-		exec.run();
-
-		String output = exec.getOutput().toLowerCase();
-
-		if (output.contains("monitor is on")){
-			return true;
-		}else if (output.contains("monitor is off")){
-			return false;
-		}else {
-			return false;
-		}
+	public boolean isMonitorOn() {
+		//TODO
+		return true;
 	}
 	private void cancelScreenAutoShutdown() throws InterruptedException{
 		if (screenAutoShutDown != null && screenAutoShutDown.isAlive()){
@@ -404,38 +314,21 @@ public class PiHandler {
 			logger.log(Level.CONFIG, "Interrupted screenAutoShutDown");
 		}
 	}
-	private synchronized int sendI2cCommand(String command , String value){
-		int retCd = -1;
-
-		try {
-
-			if (command.equals(TIME)){
-				ArduinoCmd.getInstance().writeTime(value);
-			}else if(command.equals(LDR)) {
-				retCd = ArduinoCmd.getInstance().readLDR();
-			}else if(command.equals(TIME_OFF)) {
-				ArduinoCmd.getInstance().timeOff();
-			}else if(command.equals(BUZZER)) {
-				if ( value.equals("true")) {
-					ArduinoCmd.getInstance().buzzer(true);
-				}else {
-					ArduinoCmd.getInstance().buzzer(true);
-				}
-			}
-		} catch (IOException | InterruptedException | UnsupportedBusNumberException e) {
-			logger.log(Level.SEVERE, "Error contacting arduino", e);
-		} 
-		return retCd;
-
+	private synchronized void sendI2cCommand(){
+		
+		if (command.equals(TIME)){
+			//TODO create class ard controller
+		}		
+		
 	}
 	/**Turn the buzzer on / off **/
 	private void buzzer(boolean on){
 		logger.log(Level.CONFIG, "buzzer() : " + on);
 		
 		if (on){
-			sendI2cCommand(BUZZER, "true");
+			//turn buzzer On
 		}else{
-			sendI2cCommand(BUZZER, "false");
+			//turn off
 		}
 	}
 	/**play random mp3 on / off **/
@@ -460,28 +353,17 @@ public class PiHandler {
 	private void wifiOff(){
 		logger.log(Level.CONFIG, "wifiOff() : wifiOn : " + wifiOn);
 		if (wifiOn){
-
-			Exec e = new Exec();
-			e.addCommand("sudo").addCommand("ifconfig").addCommand("wlan0").addCommand("down");
-
-			e.timeout(10000);
-
-			try {
-				int ext = e.run();
-
-				if (ext == 0) {
-					wifiOn = false;	
-					setWifiConnected(false);
-					wifiInternetConnected = false;
-					SwingContext context = SwingContext.getInstance();
-					context.putSharedObject(Constants.CHECK_INTERNET, "end_wifiOff");
-				}else {
-					logger.log(Level.SEVERE, "Exit code greater than 0: " + ext);
-				}
-
-			} catch (IOException e1) {
-				logger.log(Level.CONFIG, "wifiOff() : Error shutting wifi : " , e1);
-			}
+			System.out.println("Turn off wifi - 2");
+			//TODO call process builder
+			wifiOn = false;	
+			setWifiConnected(false);
+			wifiInternetConnected = false;
+			SwingContext context = SwingContext.getInstance();
+			context.putSharedObject(Constants.CHECK_INTERNET, "end_wifiOff");
+			
+			Exec exec = new Exec();
+			exec.addCommand("ifconfig").addCommand("wlan0").addCommand("down").timeout(10); //TODO add time unit
+//			exec.run(); //TODO enable
 		}
 	}
 	/**
@@ -491,59 +373,41 @@ public class PiHandler {
 	 */
 	private boolean checkIfIpPresent() throws SocketException{
 		logger.log(Level.CONFIG, "checkIfIpPresent() ");
-		try {
-			Exec exec = new Exec();
-
-			exec.addCommand("hostname").addCommand("--all-ip-addresses").timeout(5000);
-
-			exec.run();
-
-			if (exec.getOutput().contains("192.168")){
-				return true;
-			}
-		}catch (Exception ex) {
-			return false;
-
-		}
-		return false;
+		Enumeration<NetworkInterface> eni = NetworkInterface.getNetworkInterfaces();
+      while(eni.hasMoreElements()) {        	
+          Enumeration<InetAddress> eia = eni.nextElement().getInetAddresses();
+          
+          while(eia.hasMoreElements()) {
+              InetAddress ia = eia.nextElement();
+              if (!ia.isAnyLocalAddress() && !ia.isLoopbackAddress() && !ia.isSiteLocalAddress()) {
+                  if (!ia.getHostName().equals(ia.getHostAddress()))
+                  	logger.log(Level.CONFIG, "IP present? HostName: " + ia.getHostName() + ". HostAddress: " + ia.getHostAddress() );
+                  	return true;
+              }
+          }
+      }
+      return false;
 	}
 	/**
 	 * check if can access the internet.. only do it when an Ip address is present
 	 */
 	private boolean checkIfCanAccessInternet(){
 		logger.log(Level.CONFIG, "checkIfCanAccessInternet() ");
-		//		https://unix.stackexchange.com/questions/190513/shell-scripting-proper-way-to-check-for-internet-connectivity
-		//			if ping -q -c 1 -W 1 google.com >/dev/null; then
-		//			  echo "The network is up"
-		//			else
-		//			  echo "The network is down"
-		//			fi
-
-		try { 
-			URL url = new URL("https://www.google.ca/"); 
-			URLConnection connection = url.openConnection(); 
-			connection.connect(); 
-
-			return true;
-		} 
-		catch (Exception e) { 
-			return false;
-		} 
+//		https://unix.stackexchange.com/questions/190513/shell-scripting-proper-way-to-check-for-internet-connectivity
+		//TODO add it to a script
+//			if ping -q -c 1 -W 1 google.com >/dev/null; then
+//			  echo "The network is up"
+//			else
+//			  echo "The network is down"
+//			fi
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
-	private void refreshWifi() throws ExecuteException, IOException {
-		//wpa_cli -i wlan0 reconfigure
-		Exec e = new Exec();
-		e.addCommand("sudo").addCommand("wpa_cli").addCommand("-i").addCommand("wlan0").addCommand("reconfigure");
-
-		e.timeout(10000);
-
-		int ext = e.run();
-		System.out.println("Refresh exit code: " + ext);
-
-
-	}
-	
-	
 	public  boolean isScreenOn() {
 		return screenOn;
 	}

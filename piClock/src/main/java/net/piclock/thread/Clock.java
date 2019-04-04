@@ -14,6 +14,7 @@ public class Clock implements Runnable {
 	private JLabel weekDateLable;
 	private SimpleDateFormat sdfDate = new SimpleDateFormat("EEE, MMM d");
 	private SimpleDateFormat sdfTime = new SimpleDateFormat(Constants.HOUR_MIN);
+	private PiHandler handler = PiHandler.getInstance();
 	
 	public Clock(JLabel clockLabel, JLabel weekDateLable){
 		this.clockLabel = clockLabel;
@@ -26,8 +27,8 @@ public class Clock implements Runnable {
 		clockLabel.setText(time);
 		weekDateLable.setText(sdfDate.format(dt));
 		
-		if (!PiHandler.screenOn){
-			PiHandler.displayTM1637Time(time);
+		if (!handler.isScreenOn()){
+			handler.displayTM1637Time(time);
 		}
 		
 	}

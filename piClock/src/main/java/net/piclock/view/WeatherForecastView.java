@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,6 +37,7 @@ import net.weather.bean.Message;
 import net.weather.bean.WeatherForecastModel;
 import net.weather.bean.WeatherGenericModel;
 import net.weather.utils.MessageHandl;
+import java.awt.Dimension;
 
 public class WeatherForecastView extends JPanel implements PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
@@ -49,9 +51,10 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 	private JLabel forecastLbl[] = new JLabel[totalOcc];
 	private JSeparator separator[] = new JSeparator[totalOcc];
 	
-	private BasicArrowButton back = new BasicArrowButton(BasicArrowButton.WEST);	
+	private JButton back;
 	//rows
-	private String rowSpaces = "100px";
+//	private String rowSpaces = "200px";
+	private String lableForecastSize = "420px";
 	
 	private SwingContext ct = SwingContext.getInstance(); 	
 	
@@ -77,18 +80,22 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 		scrollPane.getViewport().setOpaque(false);
 		panel.setOpaque(false);
 		
-		StringBuilder layoutSize = new StringBuilder();
-		for(int s = 0 ; s < totalOcc ; s++){
-			layoutSize.append("["+rowSpaces+"][]");
-		}
+//		StringBuilder layoutSize = new StringBuilder();
+//		for(int s = 0 ; s < totalOcc ; s++){
+//			layoutSize.append("["+rowSpaces+"][]");
+//		}
 		
-		MigLayout layout = new MigLayout("hidemode 3", "[40px][70px][grow]", "[15px,top]");
+		MigLayout layout = new MigLayout("hidemode 3", "[40px,center][70px][grow]", "[15px,center]");
 		
 		panel.setLayout(layout);
 		
 		DragScrollListener dl = new DragScrollListener(panel);
+		back =  new JButton("<");	
+		back.setAlignmentX(Component.CENTER_ALIGNMENT);
+		back.setFont(new Font("Tahoma", Font.BOLD, 18));
+		back.setPreferredSize(new Dimension(20, 25));
 		
-		back.setSize(40, 25);
+//		back.setSize(40, 25);
 		back.addActionListener(new ActionListener() {
 			
 			@Override
@@ -110,7 +117,7 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 		lblWeatheralert = new JLabel("   !! Weather Alert !!");
 		lblWeatheralert.setHorizontalAlignment(SwingConstants.LEFT);
 		lblWeatheralert.setForeground(Color.RED);
-		lblWeatheralert.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblWeatheralert.setFont(new Font("Tahoma", Font.BOLD, 18));
 		panel.add(lblWeatheralert, "cell 2 0");
 		
 		lblWeatheralert.setVisible(false);
@@ -141,12 +148,12 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 				index ++;
 				
 				daysLbl[index]= new JLabel();
-				daysLbl[index].setFont(new Font("Tahoma", Font.BOLD, 12));
+				daysLbl[index].setFont(new Font("Tahoma", Font.BOLD, 20));
 				
 				iconsLbl[index] = new JLabel();						
 				forecastLbl[index] = new JLabel();
 				forecastLbl[index].setAlignmentX(Component.CENTER_ALIGNMENT);
-				forecastLbl[index].setFont(new Font("Tahoma", Font.BOLD, 12));
+				forecastLbl[index].setFont(new Font("Tahoma", Font.BOLD, 20));
 				
 				panel.add(daysLbl[index], "hidemode 3,cell 0 "+i+",alignx left,aligny center");
 				panel.add(iconsLbl[index], "hidemode 3,cell 1  "+i+",alignx center");
@@ -177,7 +184,7 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 	public void updateForecast(int pos, String forecast, ImageIcon icon, String dayOfWeek){
 		daysLbl[pos].setText("<html><div style='width: 35px;word-wrap: break-word;'>"+dayOfWeek+"</html>");
 		daysLbl[pos].setVisible(true);
-		forecastLbl[pos].setText("<html><div style='width: 220px;word-wrap: break-word;'>"+forecast+"</html>");
+		forecastLbl[pos].setText("<html><div style='width: "+ lableForecastSize + ";word-wrap: break-word;'>"+forecast+"</html>");
 		forecastLbl[pos].setVisible(true);
 		iconsLbl[pos].setIcon(icon);
 		iconsLbl[pos].setVisible(true);

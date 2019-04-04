@@ -1,5 +1,9 @@
 package net.piclock.button;
 
+import java.io.IOException;
+
+import org.apache.commons.exec.ExecuteException;
+
 import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
@@ -11,7 +15,9 @@ public class Buttonhandler {
 
 	private SwingContext ct = SwingContext.getInstance();
 	//TODO test with pi4j
-	public void listerToButton() throws InterruptedException{
+	public void listerToButton() throws InterruptedException, ExecuteException, IOException{
+		
+		PiHandler handler = PiHandler.getInstance();
 		
 		//check status of all
 		if (AlarmView.alarmOn){
@@ -19,12 +25,12 @@ public class Buttonhandler {
 			//get the buzzer type
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 			Buzzer buzzer = Buzzer.valueOf(pref.getAlarmType());
-			PiHandler.turnOffAlarm(buzzer);
+			handler.turnOffAlarm(buzzer);
 			
-		}else if (!PiHandler.screenOn){
+		}else if (!handler.isScreenOn()){
 			//turn screen on
-			PiHandler.turnOnScreen(true);
-			PiHandler.autoShutDownScreen();
+			handler.turnOnScreen(true);
+			handler.autoShutDownScreen();
 		}
 		
 		

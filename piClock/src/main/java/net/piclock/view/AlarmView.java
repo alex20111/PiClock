@@ -83,8 +83,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 		JLabel lblAlarmTitle = new JLabel("Alarm");
 		lblAlarmTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblAlarmTitle.setFont(new Font("Tahoma", Font.BOLD, 25));
-		lblAlarmTitle.setBounds(124, 11, 194, 46);
+		lblAlarmTitle.setFont(new Font("Tahoma", Font.BOLD, 35));
+		lblAlarmTitle.setBounds(304, 11, 194, 46);
 		add(lblAlarmTitle);
 		theme.registerLabelTextColor(lblAlarmTitle, LabelEnums.ALARM_TITLE);
 
@@ -92,6 +92,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		minutes = prefs.getAlarmMinutes();	
 		
 		JButton btnHoursPlus = new JButton("+");
+		btnHoursPlus.setFont(new Font("tahoma", Font.BOLD, 20));
 		btnHoursPlus.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -122,10 +123,11 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				timeCounter.interrupt();
 			}
 		});
-		btnHoursPlus.setBounds(140, 68, 45, 25);
+		btnHoursPlus.setBounds(240, 95, 55, 40);
 		add(btnHoursPlus);
 
 		JButton btnMinPlus = new JButton("+");
+		btnMinPlus.setFont(new Font("Tahoma", Font.BOLD, 20));
 		btnMinPlus.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -159,25 +161,26 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			}
 		});
 
-		btnMinPlus.setBounds(255, 68, 45, 25);
+		btnMinPlus.setBounds(458, 95, 55, 40);
 		add(btnMinPlus);
 
 		lblHours = new JLabel(String.valueOf(hours));
-		lblHours.setFont(new Font("Tahoma", Font.BOLD, 60));
+		lblHours.setFont(new Font("Tahoma", Font.BOLD, 80));
 		lblHours.setHorizontalAlignment(SwingConstants.CENTER);
-		lblHours.setBounds(115, 95, 90, 105);
+		lblHours.setBounds(193, 131, 130, 145);
 		add(lblHours);
 		theme.registerLabelTextColor(lblHours, LabelEnums.ALARM_HOUR);
 
 
 		lblMinutes = new JLabel(String.valueOf(minutes));
 		lblMinutes.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMinutes.setFont(new Font("Tahoma", Font.BOLD, 60));
-		lblMinutes.setBounds(233, 95, 90, 105);
+		lblMinutes.setFont(new Font("Tahoma", Font.BOLD, 80));
+		lblMinutes.setBounds(429, 131, 130, 145);
 		add(lblMinutes);
 		theme.registerLabelTextColor(lblMinutes, LabelEnums.ALARM_MIN);
 
 		JButton btnHourMinus = new JButton("-");
+		btnHourMinus.setFont(new Font("Tahoma", Font.BOLD, 20));
 		btnHourMinus.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -210,11 +213,12 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		});
 		
 
-		btnHourMinus.setBounds(145, 230, 40, 25);
+		btnHourMinus.setBounds(240, 336, 55, 40);
 		add(btnHourMinus);
 
 		//Minutes button minus 
 		JButton btnMinMinus = new JButton("-");
+		btnMinMinus.setFont(new Font("tahoma", Font.BOLD, 20));
 		btnMinMinus.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -248,10 +252,11 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			}
 		});
 			
-		btnMinMinus.setBounds(260, 230, 40, 25);
+		btnMinMinus.setBounds(458, 335, 55, 40);
 		add(btnMinMinus);
 
 		tglbtnOnOff = new JToggleButton("Alarm OFF");
+		tglbtnOnOff.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		tglbtnOnOff.setUI(new MetalToggleButtonUI() {
 			@Override
 			protected Color getSelectColor() {
@@ -260,7 +265,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			}
 		});
 		tglbtnOnOff.setBackground(Color.RED);
-		tglbtnOnOff.setBounds(345, 130, 100, 30);
+		tglbtnOnOff.setBounds(615, 160, 140, 40);
 		tglbtnOnOff.addActionListener(new ActionListener() {
 
 			@Override
@@ -289,9 +294,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			prefChanged = false;
 		}
 
-		BasicArrowButton back = new BasicArrowButton(BasicArrowButton.WEST); 
-		back.setSize(40, 25);
-		back.setLocation(10, 264);
+		BasicArrowButton back = new BasicArrowButton(BasicArrowButton.WEST);
+		back.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		back.setSize(45, 37);
+		back.setLocation(10, 415);
 
 		back.addActionListener(new ActionListener() {
 
@@ -338,22 +344,22 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(back);
 
 		JLabel lblNewLabel = new JLabel("Hours");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(115, 202, 90, 25);
+		lblNewLabel.setBounds(200, 280, 120, 35);
 		add(lblNewLabel);
 		theme.registerLabelTextColor(lblNewLabel, LabelEnums.ALARM_HOUR_TXT);
 
 		JLabel lblMinutes_1 = new JLabel("Minutes");
-		lblMinutes_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblMinutes_1.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		lblMinutes_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMinutes_1.setBounds(233, 202, 90, 25);
+		lblMinutes_1.setBounds(420, 280, 160, 35);
 		add(lblMinutes_1);
 		theme.registerLabelTextColor(lblMinutes_1, LabelEnums.ALARM_HOUR_TXT);
 		
 		wakeUpAlarmOptions = new BuzzerOptionDialog();
 		btnBuzzer = new JButton("N/A");
-		btnBuzzer.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnBuzzer.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		btnBuzzer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -364,7 +370,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			btnBuzzer.setText(prefs.getAlarmType());
 		}
 		
-		btnBuzzer.setBounds(345, 171, 100, 23);
+		btnBuzzer.setBounds(615, 235, 140, 40);
 		add(btnBuzzer);
 		
 	
@@ -415,23 +421,24 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 				@Override
 				public void run() {
+					PiHandler handler = PiHandler.getInstance();
 					System.out.println(new Date());
 					alarmOn = true; // alarm is active and buzzing
 					try {
 						Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 						Buzzer buzzer = Buzzer.valueOf(pref.getAlarmType());
 						
-						PiHandler.turnOnAlarm(buzzer);
+						handler.turnOnAlarm(buzzer);
 						
-						if (!PiHandler.screenOn){						
-							PiHandler.turnOnScreen(false);
-							PiHandler.autoShutDownScreen();
+						if (!handler.isScreenOn()){						
+							handler.turnOnScreen(false);
+							handler.autoShutDownScreen();
 						}
 						
 						if (pref.isWeatherActivated() ){
 							
-							if (!PiHandler.wifiConnected && pref.isWifiCredentialProvided()){
-								PiHandler.turnWifiOn();
+							if (!handler.isWifiConnected() && pref.isWifiCredentialProvided()){
+								handler.turnWifiOn();
 							}else{
 								int triggerForecast = new Random().nextInt(999999);
 								ct.putSharedObject(Constants.FETCH_FORECAST, triggerForecast);

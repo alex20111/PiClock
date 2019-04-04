@@ -34,11 +34,12 @@ public class EnvCanWorker implements Runnable {
 
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 			
+			PiHandler handler = PiHandler.getInstance();
 
-			logger.config("pref.getWeatherCity(): " + pref.getWeatherCity() + ". Code: " + pref.getStationCode() + "  - Wifi connected: "+ PiHandler.wifiConnected + 
-					". Wifi Internet connected: " + PiHandler.wifiInternetConnected);
+			logger.config("pref.getWeatherCity(): " + pref.getWeatherCity() + ". Code: " + pref.getStationCode() + "  - Wifi connected: "+ handler.isWifiConnected() + 
+					". Wifi Internet connected: " + handler.isWifiInternetConnected());
 
-			if (PiHandler.wifiConnected){
+			if (handler.isWifiConnected()){
 //
 //				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.omega.dce-eir.net", 8080));	
 //				Utilities.proxy = proxy;

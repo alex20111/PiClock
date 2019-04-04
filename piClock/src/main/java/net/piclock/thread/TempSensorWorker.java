@@ -20,11 +20,11 @@ public class TempSensorWorker implements Runnable{
 	
 	@Override
 	public void run() {
-		
-		logger.log(Level.CONFIG, "Fetching outside sensor. Wifi connected: " + PiHandler.wifiConnected);
+		PiHandler handler = PiHandler.getInstance();
+		logger.log(Level.CONFIG, "Fetching outside sensor. Wifi connected: " + handler.isWifiConnected());
 		
 		try {
-		if (PiHandler.wifiConnected){
+		if (handler.isWifiConnected()){
 			
 			WeatherBean wb = new WeatherBean();
 		
