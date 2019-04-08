@@ -19,3 +19,18 @@ Create folder PiClock.
 		/piClock/user_prf.cfg
 		/piClock/scripts/scanssid.sh   after chmod 755 scanssid.sh to make it execuatable
 		
+		
+audio radio setup.:
+https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
+https://www.raspberrypi.org/forums/viewtopic.php?t=150038
+		
+brightness
+add arduino ino here
+implement radio.
+implement fetch Weather when 
+
+Tests: 
+	1- wifi turn off when screen is off.. (3 min)
+	2- LDR status on light. Turn off monitor. LDR take precedence. So if LDR says hat monitor should be off, then the monitor will shutdown after 1 min.
+	3- Weather fetch automatically.
+	4- everthing turn off properly when wifi is down.
