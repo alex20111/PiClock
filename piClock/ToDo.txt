@@ -26,8 +26,10 @@ https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 		
 brightness
 add arduino ino here
-implement radio.
+implement radio and fix the screen view
 implement fetch Weather when 
+fix loading gif images.. do not use ImageIO
+
 
 Tests: 
 	1- wifi turn off when screen is off.. (3 min)

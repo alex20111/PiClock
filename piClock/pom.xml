@@ -67,12 +67,18 @@
       <artifactId>rome</artifactId>
       <version>1.0</version>    
     </dependency>
-    	<dependency>
-    		<groupId>com.pi4j</groupId>
-    		<artifactId>pi4j-core</artifactId>
-    		<version>1.2</version>
-    	</dependency>
+    <dependency>
+    	<groupId>com.pi4j</groupId>
+    	<artifactId>pi4j-core</artifactId>
+    	<version>1.2</version>
+    </dependency>
+    <dependency>
+    <groupId>com.h2database</groupId>
+    	<artifactId>h2</artifactId>
+    	<version>1.4.199</version>
+	</dependency>
   </dependencies>
+  
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
