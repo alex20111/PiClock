@@ -24,8 +24,8 @@ public class Buttonhandler {
 			AlarmView.alarmOn = false; // turn off alarm
 			//get the buzzer type
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
-			Buzzer buzzer = Buzzer.valueOf(pref.getAlarmType());
-			handler.turnOffAlarm(buzzer);
+//			Buzzer buzzer = Buzzer.valueOf(pref.getAlarmType());
+//			handler.turnOffAlarm(buzzer);
 			
 		}else if (!handler.isScreenOn()){
 			//turn screen on

@@ -1,6 +1,8 @@
 package net.piclock.arduino;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
@@ -15,7 +17,9 @@ public class ArduinoCmd {
 	private I2CDevice device;
 	
 	private Commands prevCmd = Commands.NONE;	
-	private Thread monitorBtnThrd;	
+	
+	private List<ButtonChangeListener> btnListener = new ArrayList<ButtonChangeListener>();
+	private ButtonMonitor btnMon;
 	
 	public static ArduinoCmd getInstance() throws UnsupportedBusNumberException, IOException {
 		if (arduinoCmd == null) {
@@ -72,39 +76,63 @@ public class ArduinoCmd {
 
 		sendCommand(Commands.BUZZER,null,commBuffer);
 	}
-	public void monitorBtn(){		
-		monitorBtnThrd = new Thread(new Runnable(){
-			private int prevBtnStatus = 0;
-			@Override
-			public void run() {
-				try {
-					while(true){
-						int btnStatus = readButtonA();
-						if (btnStatus != prevBtnStatus){
-							prevBtnStatus = btnStatus;
-							System.out.println("Status changed");
-						}
-						Thread.sleep(200);
-					}
-				} catch (InterruptedException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}				
-			}			 
-		 });
-		monitorBtnThrd.start();
+	/**
+	 * Monitor button. you must register a listener event to listen to the button events.
+	 * example: addButtonlistenet(new ButtonChangeListener(){
+	 * 		public void stateChanged( ButtonState event ){
+	 * 				System.out.println("event: " + event);
+	 * 		}
+	 * });
+	 * @throws ListenerNotFoundException
+	 * @throws UnsupportedBusNumberException
+	 * @throws IOException
+	 */
+	public void startBtnMonitoring() throws ListenerNotFoundException, UnsupportedBusNumberException, IOException{
+
+		if (btnListener.size() == 0){
+			throw new ListenerNotFoundException("Listener not found, add listener");
+		}		
+		btnMon = new ButtonMonitor(btnListener, 200);
+		btnMon.start();
+
 	}
-	public void stopBtnMon() throws InterruptedException{
-		if (monitorBtnThrd != null && monitorBtnThrd.isAlive()){
-			monitorBtnThrd.interrupt(); 
-			while(monitorBtnThrd.isAlive()){ 
-				monitorBtnThrd.join(100); 
-			} 
-		}
-	}
-//	private synchronized I2CDevice getDevice() {
-//		return device;
+//	public void monitorBtn(){		
+//		monitorBtnThrd = new Thread(new Runnable(){
+//			private int prevBtnStatus = 0;
+//			@Override
+//			public void run() {
+//				try {
+//					while(true){
+//						int btnStatus = readButtonA();
+//						if (btnStatus != prevBtnStatus){
+//							prevBtnStatus = btnStatus;
+//							System.out.println("Status changed");
+//						}
+//						Thread.sleep(200);
+//					}
+//				} catch (InterruptedException | IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}				
+//			}			 
+//		 });
+//		monitorBtnThrd.start();
 //	}
+//	public void stopBtnMon() throws InterruptedException{
+//		if (monitorBtnThrd != null && monitorBtnThrd.isAlive()){
+//			monitorBtnThrd.interrupt(); 
+//			while(monitorBtnThrd.isAlive()){ 
+//				monitorBtnThrd.join(100); 
+//			} 
+//		}
+//	}
+	public void addButtonListener(ButtonChangeListener bsl){
+		btnListener.add(bsl);
+	}
+	public void clearButtonListeners() {
+		btnListener.clear();
+	}
+
 	private synchronized int sendCommand(Commands command) throws InterruptedException, IOException{
 		return sendCommand(command, null, null);
 	}

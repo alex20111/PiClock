@@ -43,6 +43,8 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.db.entity.AlarmEntity;
+import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.IconEnum;
 import net.piclock.enums.LabelEnums;
 import net.piclock.swing.component.SwingContext;
@@ -150,8 +152,6 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	public MainApp() throws Exception {
 		logger.info("Start Program");	
 		
-		//ONLY TRUE WHEN TESTING LOCAL //FIXME
-		PiHandler.localTest = true;
 		
 //		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //		int screenHeight = screenSize.height;
@@ -382,7 +382,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		ct.putSharedObject(Constants.CARD_PANEL, cardsPanel);		
 
-		if (prefs.isAlarmOn()){
+		AlarmEntity ae = new AlarmSql().loadActiveAlarm();
+		if (ae != null && ae.isActive()){
 			lblAlarmIcon.setVisible(true);
 		}			
 		
@@ -548,6 +549,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				WeatherGenericModel wgm = (WeatherGenericModel)evt.getNewValue();
 				
 				WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
+				System.out.println(" wcm.getIconName() : " +  wcm.getIconName());
 				ImageIcon icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + wcm.getIconName(), 48, 48);
 				
 								

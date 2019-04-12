@@ -223,6 +223,7 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 				for(int i = 0 ; i < wgm.getWForecastModel().size() ; i++){
 					WeatherForecastModel wfm = wgm.getWForecastModel().get(i);
 					try {
+						System.out.println("wfm.getIconName() "+ wfm.getIconName());
 						updateForecast(i, wfm.getForecast(), img.getImage("weather" + File.separatorChar + wfm.getIconName()), wfm.getDayOfWeek());
 					} catch (IOException e) {
 						updateForecast(i, wfm.getForecast(),img.getWeatherNA(), wfm.getDayOfWeek());

@@ -41,24 +41,16 @@ public class BuzzerOptionDialog extends JDialog {
 	private JToggleButton tglbtnBuzzer;
 	private JToggleButton btnRadio;
 	private JToggleButton btnMp3;
+	
+	private Buzzer buzzer = Buzzer.BUZZER;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			BuzzerOptionDialog dialog = new BuzzerOptionDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Create the dialog.
 	 */
 	public BuzzerOptionDialog() {
+		
+		
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setUndecorated(true);
 
@@ -87,9 +79,7 @@ public class BuzzerOptionDialog extends JDialog {
 					return Color.GREEN;
 				}
 			});
-			if (Buzzer.valueOf(pref.getAlarmType()) == Buzzer.BUZZER){
-				tglbtnBuzzer.doClick();
-			}
+
 			
 			contentPanel.add(tglbtnBuzzer, "cell 1 2");
 		
@@ -101,9 +91,7 @@ public class BuzzerOptionDialog extends JDialog {
 					return Color.GREEN;
 				}
 			});
-			if (Buzzer.valueOf(pref.getAlarmType()) == Buzzer.RADIO){
-				btnRadio.doClick();
-			}
+
 			contentPanel.add(btnRadio, "cell 1 3,growx");
 			
 			btnRadio.setEnabled(false);//TODO re-enable when function is working		
@@ -115,9 +103,7 @@ public class BuzzerOptionDialog extends JDialog {
 					return Color.GREEN;
 				}
 			});
-			if (Buzzer.valueOf(pref.getAlarmType()) == Buzzer.MP3){
-				btnMp3.doClick();
-			}
+
 			
 			btnMp3.setEnabled(false); //TODO re-enable when function is working.
 			contentPanel.add(btnMp3, "cell 1 4,growx");
@@ -140,23 +126,23 @@ public class BuzzerOptionDialog extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						try{
 							boolean close = false;
-							Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+							Buzzer currBuzzer = null;
 
 
 							if (tglbtnBuzzer.isSelected()){
-								pref.setAlarmType(Buzzer.BUZZER.name());
+								currBuzzer = Buzzer.BUZZER;
 								close = true;
 							}else if(btnRadio.isSelected()){
-								pref.setAlarmType(Buzzer.RADIO.name());
+								currBuzzer = Buzzer.RADIO;
 								close = true;
 							}else if(btnMp3.isSelected()){
-								pref.setAlarmType(Buzzer.MP3.name());
+								currBuzzer = Buzzer.MP3;
 								close = true;
 							}
 							PreferencesHandler.save(pref);
 
 							if (close){
-								ct.putSharedObject(Constants.BUZZER_CHANGED, pref.getAlarmType());
+								ct.putSharedObject(Constants.BUZZER_CHANGED,currBuzzer);
 								setVisible(false);
 							}
 						}catch (Exception ex){
@@ -182,6 +168,18 @@ public class BuzzerOptionDialog extends JDialog {
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
+		}
+	}
+	public void setBuzzerType(Buzzer buzzer) {
+		this.buzzer = buzzer;
+		if (buzzer == Buzzer.BUZZER){
+			tglbtnBuzzer.doClick();
+		}
+		if (buzzer == Buzzer.RADIO){
+			btnRadio.doClick();
+		}
+		if (buzzer == Buzzer.MP3){
+			btnMp3.doClick();
 		}
 	}
 }

@@ -11,6 +11,7 @@ import home.db.DBConnection;
 import home.db.DbClass;
 import home.db.PkCriteria;
 import net.piclock.db.entity.RadioEntity;
+import net.piclock.main.Constants;
 
 public class RadioSql {
 	
@@ -27,8 +28,10 @@ public class RadioSql {
 			System.out.println("Exist:  " + exist);
 			
 			if (!exist) {
+//				PkCriteria crt = new PkCriteria();
+//				crt.autoIncrement();
 				List<ColumnType> columns = new ArrayList<ColumnType>();					
-				columns.add(new ColumnType(RadioEntity.ID, true).INT());//TODO.setPKCriteria(new PkCriteria().autoIncrement()));
+				columns.add(new ColumnType(RadioEntity.ID, true).INT().setPkCriteria(new PkCriteria().autoIncrement()));
 				columns.add(new ColumnType(RadioEntity.RADIO_NAME, false).VarChar(200));
 				columns.add(new ColumnType(RadioEntity.RADIO_LINK, false).VarChar(500));				
 				
@@ -65,7 +68,8 @@ public class RadioSql {
 
 			int upd = con.buildUpdateQuery(RadioEntity.TBL_NM)
 					.setParameter(RadioEntity.RADIO_NAME, radio.getRadioName())
-					.setParameter(RadioEntity.RADIO_LINK, radio.getRadioLink()).update();
+					.setParameter(RadioEntity.RADIO_LINK, radio.getRadioLink()).
+					addUpdWhereClause("Where "+RadioEntity.ID+" = :idValue", radio.getId()).update();
 //					.update(RadioEntity.ID, radio.getId());//TODO
 
 			if (upd < 1) {
@@ -134,6 +138,6 @@ public class RadioSql {
 
 	}	
 	private DBConnection getConnection() throws ClassNotFoundException, SQLException{
-		return  new DBConnection("jdbc:h2:./PiClockDb", "USER", "piclock90", DbClass.H2 );
+		return  new DBConnection("jdbc:h2:"+Constants.DB_URL, Constants.DB_USER, Constants.DB_PASS, DbClass.H2 );
 	}
 }

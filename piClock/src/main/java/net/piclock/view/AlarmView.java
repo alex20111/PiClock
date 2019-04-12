@@ -9,10 +9,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,6 +35,9 @@ import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
 
+import net.piclock.db.entity.AlarmEntity;
+import net.piclock.db.sql.AlarmSql;
+import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
@@ -38,6 +45,7 @@ import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.thread.ThreadManager;
 import net.piclock.util.PreferencesHandler;
 
 public class AlarmView extends JPanel implements PropertyChangeListener {
@@ -54,8 +62,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private JLabel lblHours;
 	private JLabel lblMinutes;
 	
-	private ScheduledExecutorService alarmScheduler = Executors.newScheduledThreadPool(1);
-	private ScheduledFuture<?> alarmThread ;
+//	private ScheduledExecutorService alarmScheduler = Executors.newScheduledThreadPool(1);
+//	private ScheduledFuture<?> alarmThread ;
 	private SwingContext ct = SwingContext.getInstance();
 	
 	Thread timeCounter;
@@ -65,15 +73,24 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private BuzzerOptionDialog wakeUpAlarmOptions;
 	private JButton btnBuzzer;
 	
+	private AlarmSql sql;
 
-	private boolean prefChanged = false;
+	private boolean panelStarted = false;
 	
 	
 	/**
 	 * Create the panel.
+	 * @throws IOException 
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) {		
+	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException {		
 		logger.config("Starting alarmView");
+		sql = new AlarmSql();
+		sql.CreateAlarmTable();
+		
+		AlarmEntity alarmEnt = sql.loadActiveAlarm();
+		
 		setLayout(null);
 		setOpaque(false);
 		
@@ -88,8 +105,19 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(lblAlarmTitle);
 		theme.registerLabelTextColor(lblAlarmTitle, LabelEnums.ALARM_TITLE);
 
-		hours = prefs.getAlarmHour();
-		minutes = prefs.getAlarmMinutes();	
+		if (alarmEnt != null) {
+			hours = Integer.parseInt(alarmEnt.getHour());
+			minutes = Integer.parseInt(alarmEnt.getMinutes());	
+		}else {
+			//if no alarm .. look if theere is any and loaf the 1st one
+			List<AlarmEntity> ala = sql.loadAllAlarms();
+			if (ala.size() > 0) {
+				hours = Integer.parseInt(ala.get(0).getHour());
+				minutes = Integer.parseInt(ala.get(0).getMinutes());
+			}
+		}
+		
+		
 		
 		JButton btnHoursPlus = new JButton("+");
 		btnHoursPlus.setFont(new Font("tahoma", Font.BOLD, 20));
@@ -98,7 +126,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			public void mousePressed(MouseEvent e) {
 					
 				keepRunning = true;
-				prefChanged = true;
+				
 				timeCounter = new Thread(new Runnable(){
 
 					@Override
@@ -132,7 +160,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
-				prefChanged = true;
+			
 				timeCounter = new Thread(new Runnable(){
 
 					@Override
@@ -185,7 +213,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
-				prefChanged = true;
+				
 				timeCounter = new Thread(new Runnable(){
 
 					@Override
@@ -223,7 +251,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
-				prefChanged = true;
+			
 				timeCounter = new Thread(new Runnable(){
 
 					@Override
@@ -270,28 +298,33 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AbstractButton abstractButton =  
-						(AbstractButton)e.getSource(); 
+				AbstractButton abstractButton =  	(AbstractButton)e.getSource();
+				
+				
 
+				System.out.println("tgy");
 				// return true or false according 
 				// to the selection or deselection  of the button 
 				boolean selected = abstractButton.getModel().isSelected(); 
+				
+				
 				if (!selected){
 					tglbtnOnOff.setText("Alarm OFF");
 					tglbtnOnOff.setBackground(Color.RED);
+			
 				}else{
-					tglbtnOnOff.setText("Alarm ON");
+					tglbtnOnOff.setText("Alarm ON");				
+		
 				}
 
-				prefChanged = true;
-
+			
 			}
 		});
 		add(tglbtnOnOff);
 
-		if (prefs.isAlarmOn()){
+		if (alarmEnt != null && alarmEnt.isActive()){
 			tglbtnOnOff.doClick();
-			prefChanged = false;
+
 		}
 
 		BasicArrowButton back = new BasicArrowButton(BasicArrowButton.WEST);
@@ -305,34 +338,76 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			public void actionPerformed(ActionEvent e) {
 
 				try{
-					if (tglbtnOnOff.isSelected() && ( prefs.getAlarmType() == null ||  prefs.getAlarmType().trim().length() == 0 )){
-						JOptionPane.showMessageDialog(AlarmView.this, "Please select a buzzer" , "No Buzzer" , JOptionPane.INFORMATION_MESSAGE);
-					}else{
+//					if (tglbtnOnOff.isSelected() && ( prefs.getAlarmType() == null ||  prefs.getAlarmType().trim().length() == 0 )){
+//						JOptionPane.showMessageDialog(AlarmView.this, "Please select a buzzer" , "No Buzzer" , JOptionPane.INFORMATION_MESSAGE);
+//					}else{
 
 
-						if (prefChanged){
-							//save in preferences
-							prefs.setAlarmOn(tglbtnOnOff.isSelected());
-							prefs.setAlarmHour(hours);
-							prefs.setAlarmMinutes(minutes);
-							PreferencesHandler.save(prefs);
-							prefChanged = false;
+//						if (prefChanged){
+//							//save in preferences
+//							prefs.setAlarmOn(tglbtnOnOff.isSelected());
+//							prefs.setAlarmHour(hours);
+//							prefs.setAlarmMinutes(minutes);
+//							PreferencesHandler.save(prefs);
+//							prefChanged = false;
+//
+//							//start or stop timer
+//							System.out.println("Pref changed");
+////							startStopTimer();
+//						}
+					
+					ThreadManager tm = ThreadManager.getInstance();
 
-							//start or stop timer
-							System.out.println("Pref changed");
-							startStopTimer();
-						}
-
+					List<AlarmEntity> aes = sql.loadAllAlarms();
+					
 						if (tglbtnOnOff.isSelected()){
-							lblAlarm.setVisible(true);
+							lblAlarm.setVisible(true);							
+							AlarmEntity ae = null;
+							
+							boolean add = false;
+							if (aes.size() > 0) {//update
+								ae = aes.get(0);
+								
+							}else { //add
+								ae = new AlarmEntity();
+								add = true;
+							}
+							System.out.println("Panel visible: " + panelStarted);
+							if (panelStarted) {//is panel is visible
+								ae.setHour(String.valueOf(hours));
+								ae.setMinutes(String.valueOf(minutes));
+								ae.setAlarmSound(btnBuzzer.getText());
+								ae.setActive(true);
+
+								List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
+								rp.add(AlarmRepeat.MONDAY);
+								rp.add(AlarmRepeat.TUESDAY);
+								rp.add(AlarmRepeat.WEDNESDAY);
+								rp.add(AlarmRepeat.THURSDAY);
+								rp.add(AlarmRepeat.FRIDAY);
+								rp.add(AlarmRepeat.SATURDAY);
+								rp.add(AlarmRepeat.SUNDAY);
+								ae.setAlarmRepeat(rp);
+
+								if (add) {
+									sql.add(ae);
+								}else {
+									sql.update(ae);
+								}
+							}
+							tm.startAlarm(ae);
 						}else{
 							lblAlarm.setVisible(false);
+							AlarmEntity ae = aes.get(0);
+							ae.setActive(false);
+							sql.update(ae);
+							tm.stopAlarm();
 						}			
-						System.out.println("Buzzer: " + prefs.getAlarmType());
+//						System.out.println("Buzzer: " + prefs.getAlarmType());
 
 						CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 						cardLayout.show(cardsPanel, "main");
-					}
+//					}
 				}catch(Exception ex){
 					JOptionPane.showMessageDialog(AlarmView.this, "Error in saving, see logs.", "Error Saving", JOptionPane.ERROR_MESSAGE);
 					logger.log(Level.SEVERE, "Error in Alarm", ex);
@@ -358,108 +433,117 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		theme.registerLabelTextColor(lblMinutes_1, LabelEnums.ALARM_HOUR_TXT);
 		
 		wakeUpAlarmOptions = new BuzzerOptionDialog();
-		btnBuzzer = new JButton("N/A");
+		btnBuzzer = new JButton(Buzzer.BUZZER.name());
 		btnBuzzer.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		btnBuzzer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
+				wakeUpAlarmOptions.setBuzzerType(Buzzer.valueOf(btnBuzzer.getText()));
 				wakeUpAlarmOptions.setVisible(true);
 			}
 		});
-		if (prefs.getAlarmType() != null &&  prefs.getAlarmType().trim().length() > 0){
-			btnBuzzer.setText(prefs.getAlarmType());
+		if (alarmEnt != null && alarmEnt.getAlarmSound() != null &&  alarmEnt.getAlarmSound().trim().length() > 0){
+			btnBuzzer.setText(alarmEnt.getAlarmSound());
 		}
 		
 		btnBuzzer.setBounds(615, 235, 140, 40);
 		add(btnBuzzer);
 		
-	
-		startStopTimer();
+		panelStarted = true;
+//		startStopTimer();
 		
 	}
 	/**
 	 * Toggle on off has changed, update timer
 	 */
-	private void startStopTimer(){
-		logger.config("startStopTimer()");
-		//verify if timer is running, if yes , kill it
-		if (alarmThread != null && !alarmThread.isDone()){
-
-			logger.config("startStopTimer::alarmThread Done? " + alarmThread.isDone());
-			
-			alarmThread.cancel(true);	
-			//wait for timer to stop
-			while(!alarmThread.isDone()){
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {}
-			}
-			logger.config("alarmThread end loop Done? " + alarmThread.isDone());
-		}		
-		
-		//if alarm is on, start it
-		if (tglbtnOnOff.isSelected()){
-						
-			logger.config("tglbtnOnOff selected, Starting alarm thread");
-			
-			//calculate delay
-			LocalDateTime currentDate = LocalDateTime.now();
-			LocalDateTime alarmTime = LocalDateTime.now();
-			
-			if ( hours > alarmTime.getHour()  ||
-					hours == alarmTime.getHour() && minutes > alarmTime.getMinute()){
-				//time after current time
-				alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0);
-			}else{
-				//time before current time, set date for next day.
-				alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0).plusDays(1);
-			}
-
-			long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime);
-			
-			alarmThread  = alarmScheduler.scheduleAtFixedRate(new Runnable(){
-
-				@Override
-				public void run() {
-					PiHandler handler = PiHandler.getInstance();
-					System.out.println(new Date());
-					alarmOn = true; // alarm is active and buzzing
-					try {
-						Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
-						Buzzer buzzer = Buzzer.valueOf(pref.getAlarmType());
-						
-						handler.turnOnAlarm(buzzer);
-						
-						if (!handler.isScreenOn()){						
-							handler.turnOnScreen(false);
-							handler.autoShutDownScreen();
-						}
-						
-						if (pref.isWeatherActivated() ){
-							
-							if (!handler.isWifiConnected() && pref.isWifiCredentialProvided()){
-								handler.turnWifiOn();
-							}else{
-								int triggerForecast = new Random().nextInt(999999);
-								ct.putSharedObject(Constants.FETCH_FORECAST, triggerForecast);
-							}
-						}
-						
-					} catch (Exception e) {
-						logger.log(Level.SEVERE,"Error in setting off timer" , e);
-						//TODO set someting letting the user know that there is been a log generated!!! 						
-					}					
-				}				
-			}, initDelay, 86400000, TimeUnit.MILLISECONDS);			
-			
-			logger.config("Setting alarm at: " + alarmTime );
-			
-		}		
-	}
+//	private void startStopTimer(){
+//		logger.config("startStopTimer()");
+//		
+//		ThreadManager tm = ThreadManager.getInstance();
+//		
+//		tm.stopAlarm();
+//		
+//		if (tglbtnOnOff.isSelected()){
+////			tm.startAlarm(alarm);
+//		}
+//		//verify if timer is running, if yes , kill it
+//		if (alarmThread != null && !alarmThread.isDone()){
+//
+//			logger.config("startStopTimer::alarmThread Done? " + alarmThread.isDone());
+//			
+//			alarmThread.cancel(true);	
+//			//wait for timer to stop
+//			while(!alarmThread.isDone()){
+//				try {
+//					Thread.sleep(50);
+//				} catch (InterruptedException e) {}
+//			}
+//			logger.config("alarmThread end loop Done? " + alarmThread.isDone());
+//		}		
+//		
+//		//if alarm is on, start it
+//		if (tglbtnOnOff.isSelected()){
+//						
+//			logger.config("tglbtnOnOff selected, Starting alarm thread");
+//			
+//			//calculate delay
+//			LocalDateTime currentDate = LocalDateTime.now();
+//			LocalDateTime alarmTime = LocalDateTime.now();
+//			
+//			if ( hours > alarmTime.getHour()  ||
+//					hours == alarmTime.getHour() && minutes > alarmTime.getMinute()){
+//				//time after current time
+//				alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0);
+//			}else{
+//				//time before current time, set date for next day.
+//				alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0).plusDays(1);
+//			}
+//
+//			long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime);
+//			
+//			alarmThread  = alarmScheduler.scheduleAtFixedRate(new Runnable(){
+//
+//				@Override
+//				public void run() {
+//					PiHandler handler = PiHandler.getInstance();
+//					System.out.println(new Date());
+//					alarmOn = true; // alarm is active and buzzing
+//					try {
+//						Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+//						Buzzer buzzer = Buzzer.valueOf(pref.getAlarmType());
+//						
+//						handler.turnOnAlarm(buzzer);
+//						
+//						if (!handler.isScreenOn()){						
+//							handler.turnOnScreen(false);
+//							handler.autoShutDownScreen();
+//						}
+//						
+//						if (pref.isWeatherActivated() ){
+//							
+//							if (!handler.isWifiConnected() && pref.isWifiCredentialProvided()){
+//								handler.turnWifiOn();
+//							}else{
+//								int triggerForecast = new Random().nextInt(999999);
+//								ct.putSharedObject(Constants.FETCH_FORECAST, triggerForecast);
+//							}
+//						}
+//						
+//					} catch (Exception e) {
+//						logger.log(Level.SEVERE,"Error in setting off timer" , e);
+//						//TODO set someting letting the user know that there is been a log generated!!! 						
+//					}					
+//				}				
+//			}, initDelay, 86400000, TimeUnit.MILLISECONDS);			
+//			
+//			logger.config("Setting alarm at: " + alarmTime );
+//			
+//		}		
+//	}
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		
-		btnBuzzer.setText( Buzzer.valueOf((String)evt.getNewValue()).getName());
+		btnBuzzer.setText(((Buzzer)evt.getNewValue()).name());
 		
 	}
 }

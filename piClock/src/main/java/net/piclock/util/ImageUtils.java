@@ -29,8 +29,8 @@ public class ImageUtils {
 		try{
 			weatherNA = getImage("NotAvailable.png");
 			weatherAlertIcon = getImage("weather-alert-24.png");
-			weatherLoader = getImage("loader-weather.gif");
-			buttonLoader = getImage("loader-btn.gif");
+			weatherLoader = getAnimatedImage("loader-weather.gif");
+			buttonLoader = getAnimatedImage("loader-btn.gif");
 			
 		}catch(Exception e){
 			logger.log(Level.SEVERE, "Error loading images", e);
@@ -63,6 +63,10 @@ public class ImageUtils {
 	
 	public ImageIcon getImage(String imgName ) throws IOException{
 		return getImage(imgName, 0, 0);
+	}
+	
+	public ImageIcon getAnimatedImage(String imgName) {
+		return new ImageIcon("img"+ File.separatorChar + imgName);
 	}
 
 	public ImageIcon getWeatherNA() {

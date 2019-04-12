@@ -33,12 +33,17 @@ public class Constants {
 	
 	public static final String CHECK_INTERNET = "CheckingNetConnection";
 	
-	public static final String NA_ICON = "38.gif";
+	public static final String NA_ICON = "cloudNa.png";
 	
 	//time mask
 	public static final String HOUR_MIN = "HH:mm";
 	
 	public static DecimalFormat numberFormat = new DecimalFormat("#.#");
+	
+	//DB
+	public static final String DB_URL = "./PiClock";
+	public static final String DB_USER = "PiClock";
+	public static final String DB_PASS = "12345PiClock";
 	
 	
 	

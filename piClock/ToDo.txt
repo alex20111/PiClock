@@ -25,10 +25,8 @@ https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-con
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 		
 brightness
-add arduino ino here
 implement radio and fix the screen view
 implement fetch Weather when 
-fix loading gif images.. do not use ImageIO
 
 
 Tests: 

@@ -7,12 +7,6 @@ public class Preferences {
 	private String wifiPass = "";
 	private boolean autoOffScreen = true; //turn on off screen
 	
-	//alarm preferences
-	private boolean alarmOn = false;
-	private int alarmHour = 0;
-	private int alarmMinutes = 0;
-	private String alarmType = "BUZZER";
-	
 	//weather preferences
 	private boolean weatherActivated = false;
 	private String weatherProvider = "";
@@ -28,24 +22,7 @@ public class Preferences {
 	private int sleepInMin = 0;
 	
 	
-	public int getAlarmHour() {
-		return alarmHour;
-	}
-	public void setAlarmHour(int alarmHour) {
-		this.alarmHour = alarmHour;
-	}
-	public boolean isAlarmOn() {
-		return alarmOn;
-	}
-	public void setAlarmOn(boolean alarmOn) {
-		this.alarmOn = alarmOn;
-	}
-	public int getAlarmMinutes() {
-		return alarmMinutes;
-	}
-	public void setAlarmMinutes(int alarmMinutes) {
-		this.alarmMinutes = alarmMinutes;
-	}
+
 	public String getWeatherProvider() {
 		return weatherProvider;
 	}
@@ -87,12 +64,6 @@ public class Preferences {
 	}
 	public void setStationCode(String stationCode) {
 		this.stationCode = stationCode;
-	}
-	public String getAlarmType() {
-		return alarmType;
-	}
-	public void setAlarmType(String alarmType) {
-		this.alarmType = alarmType;
 	}
 	public String getWifi() {
 		return wifi;
@@ -144,8 +115,7 @@ public class Preferences {
 	}
 	@Override
 	public String toString() {
-		return "Preferences [alarmOn=" + alarmOn + ", alarmHour=" + alarmHour + ", alarmMinutes=" + alarmMinutes
-				+ ", weatherActivated=" + weatherActivated + ", weatherProvider=" + weatherProvider + ", weatherCity="
+		return "Preferences [ weatherActivated=" + weatherActivated + ", weatherProvider=" + weatherProvider + ", weatherCity="
 				+ weatherCity + ", weatherRefresh=" + weatherRefresh + "]";
 	}
 	

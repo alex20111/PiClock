@@ -17,12 +17,6 @@ public class PreferencesHandler {
 	private final static String WIFI_PASS 		= "WIFI_PASS";
 	private final static String AUTO_SCREEN_OFF = "AUTO_SCREEN_OFF";
 	
-	//alarm
-	private final static String ALARM_ON 		= "ALARM_ON";
-	private final static String ALARM_HOUR 	= "ALARM_HOUR";
-	private final static String ALARM_MINUTE 	= "ALARM_MINUTE";
-	private final static String ALARM_BUZZER 	= "ALARM_BUZZER_TYPE";
-	
 	//weather
 	private final static String WEATHER_ACTIVATED 	= "WEATHER_ACTIVATED";
 	private final static String WEATHER_PROVIDER 	= "WEATHER_PROVIDER";
@@ -50,12 +44,6 @@ public class PreferencesHandler {
 			prop.setProperty(WIFI_SSID,prefs.getWifi());
 			prop.setProperty(WIFI_PASS,prefs.getWifiPass());
 			
-			// set the properties value
-			prop.setProperty(ALARM_ON, String.valueOf(prefs.isAlarmOn()));
-			prop.setProperty(ALARM_HOUR, String.valueOf(prefs.getAlarmHour()));
-			prop.setProperty(ALARM_MINUTE, String.valueOf(prefs.getAlarmMinutes()));
-			prop.setProperty(ALARM_BUZZER, prefs.getAlarmType());
-
 			// set the properties value
 			prop.setProperty(WEATHER_ACTIVATED, String.valueOf(prefs.isWeatherActivated()));
 			prop.setProperty(WEATHER_PROVIDER, prefs.getWeatherProvider());
@@ -105,11 +93,6 @@ public class PreferencesHandler {
 			userPrefs.setWifi(prop.getProperty(WIFI_SSID, ""));
 			userPrefs.setWifiPass(prop.getProperty(WIFI_PASS, ""));			
 			
-			// ALARM
-			userPrefs.setAlarmOn(Boolean.valueOf(prop.getProperty(ALARM_ON,"false")));
-			userPrefs.setAlarmHour(Integer.parseInt(prop.getProperty(ALARM_HOUR, "0")));
-			userPrefs.setAlarmMinutes(Integer.parseInt(prop.getProperty(ALARM_MINUTE, "0")));
-			userPrefs.setAlarmType(prop.getProperty(ALARM_BUZZER, "BUZZER"));
 			
 			//WEATHER
 			userPrefs.setWeatherActivated(Boolean.valueOf(prop.getProperty(WEATHER_ACTIVATED, "false")));
