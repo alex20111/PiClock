@@ -13,11 +13,11 @@ Create folder PiClock.
 		/PiClock
 		/piClock/img
 		/piClock/themes.xml 
-		/piClock/radio.xml
 		/piClock/dependency-jar
 		/piClock/piClock-0.0.1-SNAPSHOT.jar
 		/piClock/user_prf.cfg
 		/piClock/scripts/scanssid.sh   after chmod 755 scanssid.sh to make it execuatable
+		/piClock/PiClock.mv.db
 		
 		
 audio radio setup.:
@@ -34,3 +34,10 @@ Tests:
 	2- LDR status on light. Turn off monitor. LDR take precedence. So if LDR says hat monitor should be off, then the monitor will shutdown after 1 min.
 	3- Weather fetch automatically.
 	4- everthing turn off properly when wifi is down.
+	
+	
+	mpc play 1   --> play 1st track
+	mpc del 1    ---> del 1st track
+	mpc add http://live.leanstream.co/CKQBFM   --> add stream
+	amixer -c 1 set Speaker 49%  --> volume  other userful amixer scontrols
+	

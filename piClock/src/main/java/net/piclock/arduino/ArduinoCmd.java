@@ -3,6 +3,8 @@ package net.piclock.arduino;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
@@ -10,7 +12,9 @@ import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
 
+
 public class ArduinoCmd {
+	private static final Logger logger = Logger.getLogger( ArduinoCmd.class.getName() );
 	
 	private static ArduinoCmd arduinoCmd;
 	private I2CBus i2c;
@@ -44,6 +48,7 @@ public class ArduinoCmd {
 		return sendCommand(Commands.BTN_A);
 	}
 	public void writeTime(String time) throws IOException, InterruptedException {
+		logger.log(Level.CONFIG, "write Time: " + time);
 		byte[] commBuffer = new byte[3];
 		
 		int hours = Integer.parseInt(time.substring(0, 2));
@@ -55,6 +60,7 @@ public class ArduinoCmd {
 		sendCommand(Commands.DSP_TIME,null,commBuffer);
 	}
 	public void timeOff() throws IOException, InterruptedException {
+		logger.log(Level.CONFIG, "time Off");
 		byte[] commBuffer = new byte[1];
 
 		commBuffer[0] = (byte)Commands.TIME_OFF.getCommand(); //for time request.. 'b' will be for buzzer request
@@ -88,49 +94,32 @@ public class ArduinoCmd {
 	 * @throws IOException
 	 */
 	public void startBtnMonitoring() throws ListenerNotFoundException, UnsupportedBusNumberException, IOException{
-
+		logger.log(Level.CONFIG, "startBtnMonitoring" );
 		if (btnListener.size() == 0){
 			throw new ListenerNotFoundException("Listener not found, add listener");
 		}		
+		
+		if (btnMon != null && btnMon.isRunning()) {
+			throw new IOException("Button monitor is already running");
+		}
 		btnMon = new ButtonMonitor(btnListener, 200);
 		btnMon.start();
 
 	}
-//	public void monitorBtn(){		
-//		monitorBtnThrd = new Thread(new Runnable(){
-//			private int prevBtnStatus = 0;
-//			@Override
-//			public void run() {
-//				try {
-//					while(true){
-//						int btnStatus = readButtonA();
-//						if (btnStatus != prevBtnStatus){
-//							prevBtnStatus = btnStatus;
-//							System.out.println("Status changed");
-//						}
-//						Thread.sleep(200);
-//					}
-//				} catch (InterruptedException | IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}				
-//			}			 
-//		 });
-//		monitorBtnThrd.start();
-//	}
-//	public void stopBtnMon() throws InterruptedException{
-//		if (monitorBtnThrd != null && monitorBtnThrd.isAlive()){
-//			monitorBtnThrd.interrupt(); 
-//			while(monitorBtnThrd.isAlive()){ 
-//				monitorBtnThrd.join(100); 
-//			} 
-//		}
-//	}
+
 	public void addButtonListener(ButtonChangeListener bsl){
 		btnListener.add(bsl);
 	}
 	public void clearButtonListeners() {
+		logger.log(Level.CONFIG, "ClearButtonListener");
 		btnListener.clear();
+	}
+	
+	public void stopBtnMonitor() throws InterruptedException {
+		logger.log(Level.CONFIG, "stopBtnMonitor");
+		if (btnMon != null) {
+			btnMon.stop();
+		}
 	}
 
 	private synchronized int sendCommand(Commands command) throws InterruptedException, IOException{

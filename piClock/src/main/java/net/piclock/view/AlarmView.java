@@ -11,17 +11,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,17 +44,13 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private static final long serialVersionUID = -8991056994673610266L;
 
 	private static final Logger logger = Logger.getLogger( AlarmView.class.getName() );
-	
-	public static boolean alarmOn = false;
-	
+		
 	private JToggleButton tglbtnOnOff;
 	private int hours = 0;
 	private int minutes = 0;
 	private JLabel lblHours;
 	private JLabel lblMinutes;
 	
-//	private ScheduledExecutorService alarmScheduler = Executors.newScheduledThreadPool(1);
-//	private ScheduledFuture<?> alarmThread ;
 	private SwingContext ct = SwingContext.getInstance();
 	
 	Thread timeCounter;
@@ -74,10 +61,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private JButton btnBuzzer;
 	
 	private AlarmSql sql;
-
-	private boolean panelStarted = false;
 	
-	
+	private  boolean alarmToggled = false;	
 	/**
 	 * Create the panel.
 	 * @throws IOException 
@@ -126,6 +111,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			public void mousePressed(MouseEvent e) {
 					
 				keepRunning = true;
+				alarmToggled = true;
 				
 				timeCounter = new Thread(new Runnable(){
 
@@ -160,6 +146,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
+				alarmToggled = true;
+				
 			
 				timeCounter = new Thread(new Runnable(){
 
@@ -213,6 +201,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
+				alarmToggled = true;
 				
 				timeCounter = new Thread(new Runnable(){
 
@@ -251,12 +240,12 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
+				alarmToggled = true;
 			
 				timeCounter = new Thread(new Runnable(){
 
 					@Override
 					public void run() {
-						System.out.println("Thread running");
 						while(keepRunning){
 							minutes --;
 							if (minutes == -1){
@@ -300,14 +289,11 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			public void actionPerformed(ActionEvent e) {
 				AbstractButton abstractButton =  	(AbstractButton)e.getSource();
 				
-				
-
-				System.out.println("tgy");
 				// return true or false according 
 				// to the selection or deselection  of the button 
-				boolean selected = abstractButton.getModel().isSelected(); 
+				boolean selected = abstractButton.getModel().isSelected();				
 				
-				
+				alarmToggled = true;
 				if (!selected){
 					tglbtnOnOff.setText("Alarm OFF");
 					tglbtnOnOff.setBackground(Color.RED);
@@ -315,16 +301,13 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				}else{
 					tglbtnOnOff.setText("Alarm ON");				
 		
-				}
-
-			
+				}			
 			}
 		});
 		add(tglbtnOnOff);
 
 		if (alarmEnt != null && alarmEnt.isActive()){
 			tglbtnOnOff.doClick();
-
 		}
 
 		BasicArrowButton back = new BasicArrowButton(BasicArrowButton.WEST);
@@ -338,76 +321,62 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			public void actionPerformed(ActionEvent e) {
 
 				try{
-//					if (tglbtnOnOff.isSelected() && ( prefs.getAlarmType() == null ||  prefs.getAlarmType().trim().length() == 0 )){
-//						JOptionPane.showMessageDialog(AlarmView.this, "Please select a buzzer" , "No Buzzer" , JOptionPane.INFORMATION_MESSAGE);
-//					}else{
 
+					System.out.println("Alarm toggeled: " + alarmToggled);
 
-//						if (prefChanged){
-//							//save in preferences
-//							prefs.setAlarmOn(tglbtnOnOff.isSelected());
-//							prefs.setAlarmHour(hours);
-//							prefs.setAlarmMinutes(minutes);
-//							PreferencesHandler.save(prefs);
-//							prefChanged = false;
-//
-//							//start or stop timer
-//							System.out.println("Pref changed");
-////							startStopTimer();
-//						}
-					
-					ThreadManager tm = ThreadManager.getInstance();
+					if (alarmToggled) {
+						ThreadManager tm = ThreadManager.getInstance();
 
-					List<AlarmEntity> aes = sql.loadAllAlarms();
-					
+						tm.stopAlarm();
+
+						List<AlarmEntity> aes = sql.loadAllAlarms();
+
 						if (tglbtnOnOff.isSelected()){
 							lblAlarm.setVisible(true);							
 							AlarmEntity ae = null;
-							
+
 							boolean add = false;
 							if (aes.size() > 0) {//update
 								ae = aes.get(0);
-								
+
 							}else { //add
 								ae = new AlarmEntity();
 								add = true;
 							}
-							System.out.println("Panel visible: " + panelStarted);
-							if (panelStarted) {//is panel is visible
-								ae.setHour(String.valueOf(hours));
-								ae.setMinutes(String.valueOf(minutes));
-								ae.setAlarmSound(btnBuzzer.getText());
-								ae.setActive(true);
 
-								List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
-								rp.add(AlarmRepeat.MONDAY);
-								rp.add(AlarmRepeat.TUESDAY);
-								rp.add(AlarmRepeat.WEDNESDAY);
-								rp.add(AlarmRepeat.THURSDAY);
-								rp.add(AlarmRepeat.FRIDAY);
-								rp.add(AlarmRepeat.SATURDAY);
-								rp.add(AlarmRepeat.SUNDAY);
-								ae.setAlarmRepeat(rp);
+							ae.setHour(String.valueOf(hours));
+							ae.setMinutes(String.valueOf(minutes));
+							ae.setAlarmSound(btnBuzzer.getText());
+							ae.setActive(true);
 
-								if (add) {
-									sql.add(ae);
-								}else {
-									sql.update(ae);
-								}
+							List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
+							rp.add(AlarmRepeat.MONDAY);
+							rp.add(AlarmRepeat.TUESDAY);
+							rp.add(AlarmRepeat.WEDNESDAY);
+							rp.add(AlarmRepeat.THURSDAY);
+							rp.add(AlarmRepeat.FRIDAY);
+							rp.add(AlarmRepeat.SATURDAY);
+							rp.add(AlarmRepeat.SUNDAY);
+							ae.setAlarmRepeat(rp);
+
+							if (add) {
+								sql.add(ae);
+							}else {
+								sql.update(ae);
 							}
+
 							tm.startAlarm(ae);
 						}else{
 							lblAlarm.setVisible(false);
 							AlarmEntity ae = aes.get(0);
 							ae.setActive(false);
 							sql.update(ae);
-							tm.stopAlarm();
-						}			
-//						System.out.println("Buzzer: " + prefs.getAlarmType());
 
-						CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
-						cardLayout.show(cardsPanel, "main");
-//					}
+						}
+					}
+					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+					cardLayout.show(cardsPanel, "main");
+
 				}catch(Exception ex){
 					JOptionPane.showMessageDialog(AlarmView.this, "Error in saving, see logs.", "Error Saving", JOptionPane.ERROR_MESSAGE);
 					logger.log(Level.SEVERE, "Error in Alarm", ex);
@@ -440,6 +409,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 				wakeUpAlarmOptions.setBuzzerType(Buzzer.valueOf(btnBuzzer.getText()));
 				wakeUpAlarmOptions.setVisible(true);
+				alarmToggled = true;
 			}
 		});
 		if (alarmEnt != null && alarmEnt.getAlarmSound() != null &&  alarmEnt.getAlarmSound().trim().length() > 0){
@@ -449,7 +419,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		btnBuzzer.setBounds(615, 235, 140, 40);
 		add(btnBuzzer);
 		
-		panelStarted = true;
 //		startStopTimer();
 		
 	}
@@ -540,6 +509,9 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 //			
 //		}		
 //	}
+	public void setAlarmNotToggled() {
+		this.alarmToggled = false;
+	}
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		

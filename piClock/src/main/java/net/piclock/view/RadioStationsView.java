@@ -3,7 +3,6 @@ package net.piclock.view;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -13,13 +12,12 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import home.misc.Exec;
 import net.miginfocom.swing.MigLayout;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
@@ -36,14 +34,19 @@ public class RadioStationsView extends JPanel {
 	private JButton btnReload;
 	
 	private SwingContext ct;	
+	private JLabel lblRadioIcon;
 	
 //	private SwingContext ct = SwingContext.getInstance();
 	/**
 	 * Create the panel.
 	 * @return 
 	 * @throws IOException 
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public  RadioStationsView() throws IOException {
+	public  RadioStationsView(JLabel radioIcon) throws IOException, ClassNotFoundException, SQLException {
+		
+		this.lblRadioIcon = radioIcon;
 		setLayout(new BorderLayout(0, 0));
 		
 		ct = SwingContext.getInstance();
@@ -91,17 +94,15 @@ public class RadioStationsView extends JPanel {
 		btnReload = new JButton("Reload");
 		btnReload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RadioSql sql = new RadioSql();
-
 				btnReload.setText("Loading");
 
 				try {
-					radioStations.removeAll();
-					for(RadioEntity radio : sql.loadAllRadios()){
-						radioStations.addItem(radio);
-					}
+					
+					loadAllRadioStations();
+					
+				
 				} catch (ClassNotFoundException | SQLException e1) {		
-					e1.printStackTrace();
+					logger.log(Level.SEVERE, "Error in loading" , e1);
 				}
 				btnReload.setText("Reload");
 			}
@@ -122,31 +123,52 @@ public class RadioStationsView extends JPanel {
 		btnPlay.setIcon(ut.getImage("play.png"));
 		btnPanel.add(btnPlay);
 		
+		btnPlay.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(radioStations.getSelectedIndex() != -1) {
+					
+				
+				lblRadioIcon.setVisible(true);
+				
+				
+				RadioEntity re = (RadioEntity)radioStations.getSelectedItem();
+				System.out.println("Playing : " + re.getRadioName());
+				
+//				Exec exec = new Exec();
+//				exec.addCommand(cmd)
+				
+				}
+			}
+		});
+		
 		JButton btnStop = new JButton();
 		btnStop.setIcon(ut.getImage("stop.png"));
 		btnPanel.add(btnStop);
 		
-		setOpaque(false);
-		
-
-		
-
-	}
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					RadioStationsView f = new RadioStationsView();
-					JFrame frame = new JFrame();
-					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-					frame.setBounds(100, 100, 800, 480);
-					frame.setContentPane(f);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		btnStop.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				lblRadioIcon.setVisible(false);
+				
 			}
 		});
+		
+		setOpaque(false);
+		loadAllRadioStations();
+
+	}
+	private void loadAllRadioStations() throws ClassNotFoundException, SQLException {
+		RadioSql sql = new RadioSql();
+
+		
+		radioStations.removeAll();
+		for(RadioEntity radio : sql.loadAllRadios()){
+			radioStations.addItem(radio);
+		}
+
 	}
 
 }

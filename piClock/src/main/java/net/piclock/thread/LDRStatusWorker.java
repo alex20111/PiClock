@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.piclock.enums.DayNightCycle;
+import net.piclock.enums.Light;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
@@ -18,6 +19,7 @@ public class LDRStatusWorker implements Runnable{
 	
 	private SwingContext ct = SwingContext.getInstance();
 	private DayNightCycle lastStatus = DayNightCycle.NONE;
+	private Light lastLightStatus = Light.VERY_BRIGHT;
 	
 	@Override
 	public void run() {
@@ -27,7 +29,15 @@ public class LDRStatusWorker implements Runnable{
 			//call it every 10 seconds
 			Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 
-			DayNightCycle cycle = handler.getLDRstatus();
+			Light lightStatus = handler.getLDRstatus();
+			
+			DayNightCycle cycle = DayNightCycle.NONE;
+			if (lightStatus == Light.DARK) {
+				cycle = DayNightCycle.NIGHT;
+			}else {
+				cycle = DayNightCycle.DAY;
+			}
+				
 
 			if (cycle == DayNightCycle.NIGHT && cycle != lastStatus){
 				//turn off screeen if screen is on.
@@ -49,16 +59,26 @@ public class LDRStatusWorker implements Runnable{
 				themes.fireDayCycle();
 
 			}
-			logger.log(Level.CONFIG, "LDR Init: " + cycle + " LastStatus: " + lastStatus + " AutoOffScreen Option: " + p.isAutoOffScreen());
+			logger.log(Level.CONFIG, "LDR Init: " + cycle + " LastStatus: " + lastStatus + 
+					" Light: "+ lightStatus + " LastLight: " + lastLightStatus +" AutoOffScreen Option: " + p.isAutoOffScreen());
 			
 			lastStatus = DayNightCycle.valueOf(cycle.name());				
 			
-			//check is screen is on OR off, if it's off and it's supposed to be off , then start the auto shutdown.
-			if (!handler.isScreenOn() && handler.isMonitorOn() && !handler.isAutoShutdownInProgress()) {
-				logger.log(Level.CONFIG,"auto shutting down screen from LDR worker");
-				//auto shutdown.
-				handler.autoShutDownScreen();
+			
+			if (cycle == DayNightCycle.DAY && lastLightStatus != lightStatus) {
+				//adjust LCD based on the LDR.
+				handler.setBrightness(lightStatus);
 			}
+			
+			lastLightStatus = Light.valueOf(lightStatus.name()); 
+			
+			
+//			//check is screen is on OR off, if it's off and it's supposed to be off , then start the auto shutdown.
+//			if (!handler.isScreenOn() && handler.isMonitorOn() && !handler.isAutoShutdownInProgress()) {
+//				logger.log(Level.CONFIG,"auto shutting down screen from LDR worker");
+//				//auto shutdown.
+//				handler.autoShutDownScreen();
+//			}
 			
 		}catch(Throwable tr){
 			logger.log(Level.SEVERE,"Error in ldr",tr);

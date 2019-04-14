@@ -15,7 +15,7 @@ import net.piclock.main.Constants;
 
 public class RadioSql {
 	
-	public boolean CreateConfigTable() throws ClassNotFoundException, SQLException, IOException {
+	public boolean CreateRadioTable() throws ClassNotFoundException, SQLException, IOException {
 		DBConnection con = null;
 		boolean exist = false;
 		try {
@@ -33,7 +33,8 @@ public class RadioSql {
 				List<ColumnType> columns = new ArrayList<ColumnType>();					
 				columns.add(new ColumnType(RadioEntity.ID, true).INT().setPkCriteria(new PkCriteria().autoIncrement()));
 				columns.add(new ColumnType(RadioEntity.RADIO_NAME, false).VarChar(200));
-				columns.add(new ColumnType(RadioEntity.RADIO_LINK, false).VarChar(500));				
+				columns.add(new ColumnType(RadioEntity.RADIO_LINK, false).VarChar(500));
+				columns.add(new ColumnType(RadioEntity.TRACK_NBR, false).TinyInt());
 				
 				con.createTable(RadioEntity.TBL_NM, columns);				
 			}
@@ -54,6 +55,7 @@ public class RadioSql {
 			pk = con.buildAddQuery(RadioEntity.TBL_NM)
 			.setParameter(RadioEntity.RADIO_NAME, radio.getRadioName())
 			.setParameter(RadioEntity.RADIO_LINK, radio.getRadioLink())
+			.setParameter(RadioEntity.TRACK_NBR, radio.getTrackNbr())
 
 			.add();
 		}finally {
@@ -68,8 +70,9 @@ public class RadioSql {
 
 			int upd = con.buildUpdateQuery(RadioEntity.TBL_NM)
 					.setParameter(RadioEntity.RADIO_NAME, radio.getRadioName())
-					.setParameter(RadioEntity.RADIO_LINK, radio.getRadioLink()).
-					addUpdWhereClause("Where "+RadioEntity.ID+" = :idValue", radio.getId()).update();
+					.setParameter(RadioEntity.RADIO_LINK, radio.getRadioLink())
+					.setParameter(RadioEntity.TRACK_NBR, radio.getTrackNbr())
+					.addUpdWhereClause("Where "+RadioEntity.ID+" = :idValue", radio.getId()).update();
 //					.update(RadioEntity.ID, radio.getId());//TODO
 
 			if (upd < 1) {

@@ -1,6 +1,6 @@
 package net.piclock.arduino;
 
-class ListenerNotFoundException extends Exception{
+public class ListenerNotFoundException extends Exception{
 	
 	private static final long serialVersionUID = 1L;
 	

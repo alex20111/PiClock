@@ -42,8 +42,6 @@ public class BuzzerOptionDialog extends JDialog {
 	private JToggleButton btnRadio;
 	private JToggleButton btnMp3;
 	
-	private Buzzer buzzer = Buzzer.BUZZER;
-
 
 	/**
 	 * Create the dialog.
@@ -171,7 +169,7 @@ public class BuzzerOptionDialog extends JDialog {
 		}
 	}
 	public void setBuzzerType(Buzzer buzzer) {
-		this.buzzer = buzzer;
+
 		if (buzzer == Buzzer.BUZZER){
 			tglbtnBuzzer.doClick();
 		}

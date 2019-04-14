@@ -25,7 +25,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.plaf.basic.BasicArrowButton;
 
 import net.miginfocom.swing.MigLayout;
 import net.piclock.main.Constants;
@@ -223,7 +222,7 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 				for(int i = 0 ; i < wgm.getWForecastModel().size() ; i++){
 					WeatherForecastModel wfm = wgm.getWForecastModel().get(i);
 					try {
-						System.out.println("wfm.getIconName() "+ wfm.getIconName());
+					
 						updateForecast(i, wfm.getForecast(), img.getImage("weather" + File.separatorChar + wfm.getIconName()), wfm.getDayOfWeek());
 					} catch (IOException e) {
 						updateForecast(i, wfm.getForecast(),img.getWeatherNA(), wfm.getDayOfWeek());

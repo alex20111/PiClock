@@ -8,11 +8,13 @@ public class RadioEntity {
 	public static final String TBL_NM = "RADIO_STATION";
 	public static final String ID = "id";
 	public static final String RADIO_NAME = "radio_name";
-	public static final String RADIO_LINK = "radio_link";	
+	public static final String RADIO_LINK = "radio_link";
+	public static final String TRACK_NBR = "track_nbr";
 	
 	private int id = -1;
 	private String radioName = "";
 	private String radioLink = "";
+	private int trackNbr = -1;
 	
 	public RadioEntity(){}
 	
@@ -20,6 +22,7 @@ public class RadioEntity {
 		this.id = rs.getInt(ID);
 		this.radioName = rs.getString(RADIO_NAME);
 		this.radioLink = rs.getString(RADIO_LINK);
+		this.trackNbr = rs.getInt(TRACK_NBR);
 	}	
 	public static String checkIfTableExist() { 
 		return "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME ='"+TBL_NM+"'"; 
@@ -45,5 +48,13 @@ public class RadioEntity {
 	@Override
 	public String toString() {
 		return radioName;
+	}
+
+	public int getTrackNbr() {
+		return trackNbr;
+	}
+
+	public void setTrackNbr(int trackNbr) {
+		this.trackNbr = trackNbr;
 	}	
 }

@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.plaf.basic.BasicArrowButton;
 
 import net.miginfocom.swing.MigLayout;
 import net.piclock.enums.LabelEnums;
@@ -108,7 +107,7 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		
 		
 		lblWeatherAlert = new JLabel("");
-		lblWeatherAlert.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblWeatherAlert.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblWeatherAlert.setVerticalAlignment(SwingConstants.TOP);
 		lblWeatherAlert.setHorizontalAlignment(SwingConstants.LEFT);
 		contentPanel.add(lblWeatherAlert, "cell 0 0,aligny top");
@@ -135,7 +134,7 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 			if (wgm.getWeatherAlert() != null){
 				WeatherAlert wa = wgm.getWeatherAlert();
 	//display weather alert
-				lblWeatherAlert.setText("<html> <div style='width: 320px;word-wrap: break-word;' >" + wa.getMessage() + "</div></html>");
+				lblWeatherAlert.setText("<html> <div style='width: 450px;word-wrap: break-word;' >" + wa.getMessage() + "</div></html>");
 			}
 			
 		}else if(evt.getPropertyName().equals(Constants.FORECAST_DISPLAY_ERROR)){

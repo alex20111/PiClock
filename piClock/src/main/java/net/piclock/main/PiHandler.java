@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import com.pi4j.wiringpi.SoftPwm;
 
 import home.misc.Exec;
-import net.piclock.button.Buttonhandler;
+import net.piclock.button.AlarmBtnHandler;
 import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
 import net.piclock.enums.DayNightCycle;
@@ -45,7 +45,7 @@ public class PiHandler {
 	private  Thread screenAutoShutDown;
 	private  Thread checkConnection; 	
 	
-	private  Buttonhandler  buttonHandler;	
+	private  AlarmBtnHandler  buttonHandler;	
 	
 	//commands to ard
 	private  String command = "";
@@ -54,7 +54,7 @@ public class PiHandler {
 	private  String TIME 	 = "time";
 	
 	private PiHandler(){
-		buttonHandler = new Buttonhandler();
+		buttonHandler = new AlarmBtnHandler();
 //		buttonHandler.listerToButton();
 		System.out.println("Init");
 	}
@@ -95,6 +95,7 @@ public class PiHandler {
 		wifiShutDown.start();
 		
 		setScreenOn(false);
+		setBrightness(Light.DARK);
 	}
 	/*withWifiOn: then turn on the wifi on request*/
 	public void turnOnScreen(boolean withWifiOn) throws InterruptedException{
@@ -117,6 +118,7 @@ public class PiHandler {
 		}
 
 		setScreenOn(true);
+		setBrightness(Light.VERY_BRIGHT);
 
 	}
 	public List<String> fetchWifiList(){
@@ -140,7 +142,7 @@ public class PiHandler {
 		}		
 		
 	}
-	public DayNightCycle getLDRstatus(){
+	public Light getLDRstatus(){
 		//TODO add call to ard
 		DayNightCycle cycle = null;
 		
@@ -148,15 +150,15 @@ public class PiHandler {
 		
 		sendI2cCommand();
 		
-		int rand = r.nextInt(100);
+		int rand = r.nextInt(255);
 		
-		if (rand > 20){
-			cycle = DayNightCycle.DAY;
-		}else{
+		if (rand > 200){
 			cycle = DayNightCycle.NIGHT;
+		}else{
+			cycle = DayNightCycle.DAY;
 		}
 		
-		return cycle;
+		return Light.setLightLevel(rand);
 	}
 	/**Turn on the alarm based on the selected buzzer**/
 	public void turnOnAlarm(Buzzer buzzerType){

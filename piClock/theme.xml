@@ -60,22 +60,22 @@
 				<labelTheme name="WC_REFRESH" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WC_MIN" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WC_ALERT_TITLE" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
-				<labelTheme name="WC_ALERT_TEXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TEXT" 	colorDay="ORANGE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			</label>
 			<labelIcon name="icons">
-				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-24-black.png" 	iconNight="alarm-clock-24-black.png"></IconTheme>	
-				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-16.png" 			iconNight="cog-black-16.png"></IconTheme>
-				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-24.png" 		iconNight="radio-black-24.png"></IconTheme>	
+				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-32-black.png" 	iconNight="alarm-clock-32-black.png"></IconTheme>
+				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-24.png" 			iconNight="cog-black-24.png"></IconTheme>	
+				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-32.png" 		iconNight="radio-black-32.png"></IconTheme>	
 				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-24.png" 			iconNight="mp3-black-24.png"></IconTheme>	
-				<IconTheme name="TEMP_SHADE" 		iconDay="shades16.png" 				iconNight="shades16.png"></IconTheme>	
-				<IconTheme name="TEMP_SUN" 			iconDay="sunny16.png" 				iconNight="sunny16.png"></IconTheme>		
-				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-24-black.png" 	iconNight="wifi-off-24-black.png"></IconTheme>	
-				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-24-black.png" 		iconNight="wifi-24-black.png"></IconTheme>
-				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet.png" 		iconNight="wifi_on_no_inet.png"></IconTheme>
+				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
+				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
+				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-32-black.png" 	iconNight="wifi-off-32-black.png"></IconTheme>
+				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-32-black.png" 		iconNight="wifi-32-black.png"></IconTheme>
+				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet.png" 		iconNight="wifi_on_no_inet.png"></IconTheme>	
 				<IconTheme name="WEB_SERVER"	    iconDay="web-black-24.png" 			iconNight="web-black-24.png"></IconTheme>			
 			</labelIcon>
 		</background>

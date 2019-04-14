@@ -8,7 +8,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -50,11 +49,10 @@ import net.piclock.enums.LabelEnums;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeEnum;
 import net.piclock.theme.ThemeHandler;
-import net.piclock.thread.Clock;
 import net.piclock.thread.EnvCanWorker;
-import net.piclock.thread.LDRStatusWorker;
 import net.piclock.thread.ScreenAutoClose;
 import net.piclock.thread.TempSensorWorker;
+import net.piclock.thread.ThreadManager;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.LogConfig;
 import net.piclock.util.PreferencesHandler;
@@ -104,15 +102,13 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	private WeatherConfigView  weatherConfig;
 	private WeatherAlertView weatherAlertView;
 	private RadioStationsView radioStationsView;
+	private AlarmView av;
 	
 	//thread executor
-	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
+	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 	private ScheduledFuture<EnvCanWorker> envCanThread;
 	private ScheduledFuture<TempSensorWorker> sensorThread;		
 
-	//worker LDR
-	private LDRStatusWorker ldrWorker;
-	
 	//wifi blinking
 	private boolean blinking = true;
 	private Timer blinkingWifiTimer;
@@ -123,6 +119,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	private SimpleDateFormat parseToDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
 	
 	private PiHandler handler;
+	private ThreadManager tm ;
 	/**
 	 * Launch the application.
 	 */
@@ -152,7 +149,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	public MainApp() throws Exception {
 		logger.info("Start Program");	
 		
-		
+		tm = ThreadManager.getInstance();
 //		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //		int screenHeight = screenSize.height;
 //		int screenWidth = screenSize.width;
@@ -198,11 +195,13 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		};
 						
 		setContentPane(cardsPanel);
+		lblRadioIcon = new JLabel();
+		
 		
 		weatherConfig = new WeatherConfigView();
 		forecastView = new WeatherForecastView(cardsPanel);
 		weatherAlertView = new WeatherAlertView();	
-		radioStationsView = new RadioStationsView();
+		radioStationsView = new RadioStationsView(lblRadioIcon);
 		
 		cardsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setUndecorated(true);
@@ -313,6 +312,18 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		lblAlarmIcon.setVisible(false);
 		themes.registerIconColor(lblAlarmIcon, IconEnum.ALARM_ICON);
 		alertIconsPanel.add(lblAlarmIcon);
+		lblAlarmIcon.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				try{
+					keepAliveIfScreenShutdown();
+					av.setAlarmNotToggled();
+					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+					cardLayout.show(cardsPanel, Constants.ALARM_VIEW);
+				}catch (Exception ex){
+					logger.log(Level.SEVERE, "Error in lblAlarmIcon", ex);
+				}
+			}
+		});
 		
 		lblWeatherAlert = new JLabel(ImageUtils.getInstance().getWeatherAlertIcon());
 		lblWeatherAlert.setVisible(false);
@@ -331,7 +342,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			}
 		});
 		
-		lblRadioIcon = new JLabel();
+		
 		lblRadioIcon.setVisible(false);
 		lblRadioIcon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
 		themes.registerIconColor(lblRadioIcon, IconEnum.RADIO_ICON);
@@ -364,7 +375,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		themes.registerLabelTextColor(lblTempShade, LabelEnums.TEMP_SHADE);
 		weatherPanel.add(lblTempShade, "cell 5 0,alignx right");
 		
-		AlarmView av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
+		av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
 		
 		cardsPanel.add(av, Constants.ALARM_VIEW);
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
@@ -392,8 +403,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		handler = PiHandler.getInstance();
 		
 		//start the LDR
-		ldrWorker = new LDRStatusWorker();
-		scheduler.scheduleWithFixedDelay(ldrWorker, 1, 10, TimeUnit.SECONDS);	
+		tm.startLdr();
+			
 		
 		//check if we have wifi credentials.
 		if (prefs.isWifiCredentialProvided()){
@@ -427,27 +438,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		long delay = dtf.getTimeInMillis() - dt.getTime();
 		
-		scheduler.scheduleAtFixedRate(new Clock(clockLabel, weekDateLable), delay, 60000, TimeUnit.MILLISECONDS);
+		tm.startClock(clockLabel, weekDateLable, delay);
 		
-		
-		
-//		final SimpleDateFormat sdfDate = new SimpleDateFormat("EEE, MMM d");
-//		
-//		ActionListener updateClockAction = new ActionListener() {
-//			@Override
-//			  public void actionPerformed(ActionEvent e) {
-//				Date dt = new Date();
-//					clockLabel.setText(sdfTime.format(dt));
-//					weekDateLable.setText(sdfDate.format(dt));
-//					
-//					
-//			    }			
-//			};
-//		
-//		Timer t = new Timer(1000,updateClockAction );
-//		
-//		t.start();	
-
 	}
 	/**
 	 * option menu
@@ -462,6 +454,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			public void actionPerformed(ActionEvent e) {
 				try{
 					keepAliveIfScreenShutdown();
+					av.setAlarmNotToggled();
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.ALARM_VIEW);
 				}catch (Exception ex){
@@ -554,11 +547,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				
 								
 				if (sensorActive){
-					WeatherBean wb = (WeatherBean) ct.getSharedObject(Constants.SENSOR_INFO);
-					
-					if (wb == null){
-						wb = new WeatherBean();
-					}
+				
 					Date dt = parseToDate.parse(wcm.getObservationTime()); 
 					
 					addCurrentWeather(wcm.getWeather().trim(),icon,dt );
@@ -692,7 +681,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		}			
 	}
 	private void addCurrentTemp(String tempSun, String tempShade) {
-		//TODO handle nulls
+		
 		lblTempSun.setText(tempSun+"c");
 		lblTempShade.setText(tempShade+"c");
 	}

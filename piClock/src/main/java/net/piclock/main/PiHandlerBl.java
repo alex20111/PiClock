@@ -21,7 +21,8 @@ import com.pi4j.wiringpi.SoftPwm;
 import home.fileutils.FileUtils;
 import home.misc.Exec;
 import net.piclock.arduino.ArduinoCmd;
-import net.piclock.button.Buttonhandler;
+import net.piclock.arduino.ListenerNotFoundException;
+import net.piclock.button.AlarmBtnHandler;
 import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
 import net.piclock.enums.DayNightCycle;
@@ -49,17 +50,16 @@ public class PiHandlerBl {
 	private  Thread screenAutoShutDown;
 	private  Thread checkConnection; 	
 	
-	private  Buttonhandler  buttonHandler;	
-	
 	//commands to ard
 	private  String BUZZER = "buzzer";
 	private  String LDR 	 = "ldr";
 	private  String TIME 	 = "time";
 	private  String TIME_OFF = "timeOff";
+	private String BTN_MNTR_ON = "btnMntrOn";
+	private String BTN_MNTR_OFF = "btnMntrOff";
 	
 	private PiHandlerBl(){
-		buttonHandler = new Buttonhandler();
-//		buttonHandler.listerToButton();
+
 		System.out.println("Init");
 		Gpio.wiringPiSetup();
 	}
@@ -74,7 +74,14 @@ public class PiHandlerBl {
 		}
 		return piHandler;
 	}	
-
+//	public void startButtonMonitoring() {
+//		logger.log(Level.CONFIG,"Starting button monitoring");
+//		sendI2cCommand(BTN_MNTR_ON,null);
+//	}
+//	public void stopButtonMonitoring() {
+//		logger.log(Level.CONFIG,"Starting button monitoring");
+//		sendI2cCommand(BTN_MNTR_OFF,null);
+//	}
 	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.CONFIG,"turnOffScreen()");
 
@@ -108,6 +115,7 @@ public class PiHandlerBl {
 			wifiShutDown.start();
 
 			setScreenOn(false);
+			setBrightness(Light.DARK);
 		}else {
 			logger.log(Level.SEVERE, "Cannot turn monitor off. " +  e.getOutput());
 		}
@@ -145,6 +153,7 @@ public class PiHandlerBl {
 		}
 
 		setScreenOn(true);
+		setBrightness(Light.VERY_BRIGHT);
 
 	}
 	public List<String> fetchWifiList() throws Exception{
@@ -193,20 +202,13 @@ public class PiHandlerBl {
 		}		
 		
 	}
-	public DayNightCycle getLDRstatus(){
+	public Light getLDRstatus(){
 
-		DayNightCycle cycle = null;		
-		
+
 		int ldrVal = sendI2cCommand(LDR,null);	
 		System.out.println("LDR STATUS !!!!!!!!!!!!!! : " + ldrVal);
 		
-		if (ldrVal < 190){
-			cycle = DayNightCycle.DAY;
-		}else{
-			cycle = DayNightCycle.NIGHT;
-		}
-		
-		return cycle;
+		return Light.setLightLevel(ldrVal);
 	}
 	/**Turn on the alarm based on the selected buzzer**/
 	public void turnOnAlarm(Buzzer buzzerType){
@@ -455,6 +457,15 @@ public class PiHandlerBl {
 					ArduinoCmd.getInstance().buzzer(true);
 				}
 			}
+//			else if(command.equals(BTN_MNTR_ON)){
+//				ArduinoCmd cm = ArduinoCmd.getInstance();
+//				cm.addButtonListener(new AlarmBtnHandler());
+//				cm.startBtnMonitoring();
+//			}else if(command.equals(BTN_MNTR_OFF)){
+//				ArduinoCmd cm = ArduinoCmd.getInstance();
+//				cm.addButtonListener(new AlarmBtnHandler());
+//				cm.startBtnMonitoring();
+//			}
 		} catch (IOException | InterruptedException | UnsupportedBusNumberException e) {
 			logger.log(Level.SEVERE, "Error contacting arduino", e);
 		} 
