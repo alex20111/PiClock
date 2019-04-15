@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +17,8 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import org.apache.commons.exec.ExecuteException;
 
 import home.misc.Exec;
 import net.miginfocom.swing.MigLayout;
@@ -101,7 +104,7 @@ public class RadioStationsView extends JPanel {
 					loadAllRadioStations();
 					
 				
-				} catch (ClassNotFoundException | SQLException e1) {		
+				} catch (ClassNotFoundException | SQLException | IOException e1) {		
 					logger.log(Level.SEVERE, "Error in loading" , e1);
 				}
 				btnReload.setText("Reload");
@@ -134,11 +137,16 @@ public class RadioStationsView extends JPanel {
 				
 				
 				RadioEntity re = (RadioEntity)radioStations.getSelectedItem();
-				System.out.println("Playing : " + re.getRadioName());
+				System.out.println("Playing : " + re.getRadioName() + " TRACK: " + re.getTrackNbr());
 				
-//				Exec exec = new Exec();
-//				exec.addCommand(cmd)
+				Exec exec = new Exec();
+				exec.addCommand("mpc").addCommand("play").addCommand(String.valueOf(re.getTrackNbr())).timeout(10000);
 				
+				try {
+					exec.run();
+				} catch (IOException e1) {
+					logger.log(Level.SEVERE, "Error executing music", e1);
+				}				
 				}
 			}
 		});
@@ -153,6 +161,16 @@ public class RadioStationsView extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				lblRadioIcon.setVisible(false);
 				
+				Exec exec = new Exec();
+				exec.addCommand("mpc").addCommand("stop").timeout(10000);
+				
+				try {
+					exec.run();
+				} catch (IOException e1) {
+					logger.log(Level.SEVERE, "Error stopping music", e1);
+				}				
+				
+				
 			}
 		});
 		
@@ -160,16 +178,48 @@ public class RadioStationsView extends JPanel {
 		loadAllRadioStations();
 
 	}
-	private void loadAllRadioStations() throws ClassNotFoundException, SQLException {
+	private void loadAllRadioStations() throws ClassNotFoundException, SQLException, ExecuteException, IOException {
+		logger.log(Level.CONFIG,"loadAllRadioStations");
 		RadioSql sql = new RadioSql();
 		
 		radioStations.removeAll();
-		for(RadioEntity radio : sql.loadAllRadios()){
+		
+		List<RadioEntity> radios = sql.loadAllRadios();
+		for(RadioEntity radio : radios){
 			radioStations.addItem(radio);
 		}
 		
 		//match radio station to mpc play list
+		Exec exec = new Exec();
+		exec.addCommand("mpc").addCommand("playlist");
 		
+		int ex = exec.run();
+		
+		if(ex == 0) {
+			String out = exec.getOutput();
+			System.out.println("!!!!!!!!!!!!!!!!!!! " + out);
+			if (out.length() > 0) {
+				String outSplit[] = out.split("\n");
+				
+				for(int i = 0 ; i <  outSplit.length ; i ++) {
+					
+					String play = outSplit[i];
+					System.out.println("!!!!!!!!!!!!!!!!!!! " + play);
+					for(RadioEntity r : radios) {
+						if (play.trim().equals(r.getRadioLink())) {
+							r.setTrackNbr(i+1);
+							
+							sql.update(r);;
+							System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!updated radio : " + r);
+							break;
+						}
+					}
+				}
+			}
+			
+		}else {
+			logger.log(Level.SEVERE, "Error greater than 0");
+		}
 
 	}
 

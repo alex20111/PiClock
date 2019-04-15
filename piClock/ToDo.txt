@@ -26,7 +26,7 @@ https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 		
 brightness
 implement radio and fix the screen view
-implement fetch Weather when 
+When changing from light to dark or dark to light , wait 5 minutes before swithcing between modes. brightness stay the same .. 
 
 
 Tests: 

@@ -1,7 +1,7 @@
 package net.piclock.enums;
 
 public enum Light {
-	DARK(255,240, 0), DIM(239,200, 5), LIGHT(199,150, 15), BRIGHT(149,70, 50), VERY_BRIGHT(69,0, 100), NONE(0,0, 100);
+	DARK(255,240, 0), DIM(220,200, 5), LIGHT(199,150, 15), BRIGHT(149,70, 50), VERY_BRIGHT(69,0, 100), NONE(0,0, 100);
 	
 	private int ldrHighLevel = -1;
 	private int ldrLowLevel = -1;
