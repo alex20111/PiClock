@@ -4,6 +4,7 @@ package net.piclock.button;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.piclock.arduino.ArduinoCmd;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
 import net.piclock.thread.Alarm;
@@ -20,6 +21,8 @@ public class AlarmBtnHandler  implements ButtonChangeListener{
 			if (Alarm.isAlarmTriggered() && state == ButtonState.HIGH) {
 				System.out.println("Turning off alarm");
 				Alarm.turnOffAlarmSound();
+				ArduinoCmd cm = ArduinoCmd.getInstance();
+				cm.stopBtnMonitor();
 			}
 
 		} catch (Exception e) {

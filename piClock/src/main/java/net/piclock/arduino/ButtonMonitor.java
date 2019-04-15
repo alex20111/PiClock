@@ -61,11 +61,15 @@ public class ButtonMonitor implements Runnable{
 		monitor = new Thread(this);
 		monitor.start();
 	}
-	public void stop() throws InterruptedException{//add interrupt logic
+	public void stop(){//add interrupt logic
 		if (monitor != null && monitor.isAlive()){
 			monitor.interrupt(); 
 			while(monitor.isAlive()){ 
-				monitor.join(100); 
+				try {
+					monitor.join(100);
+				} catch (InterruptedException e) {
+					//do no return this
+				} 
 			} 
 		}
 	}

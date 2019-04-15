@@ -77,7 +77,6 @@ public class Alarm implements Runnable{
 			
 			//start button
 			ArduinoCmd cm = ArduinoCmd.getInstance();
-			cm.addButtonListener(new AlarmBtnHandler());
 			cm.startBtnMonitoring();
 			
 			
@@ -93,8 +92,8 @@ public class Alarm implements Runnable{
 				handler.autoShutDownScreen();
 			}
 			handler.turnOnAlarm(buzzer);
-			cm.stopBtnMonitor();
-			cm.clearButtonListeners();
+//			cm.stopBtnMonitor();
+//			cm.clearButtonListeners();
 			
 			
 		} catch (Exception e) {

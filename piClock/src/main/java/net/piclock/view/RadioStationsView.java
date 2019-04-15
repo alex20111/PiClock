@@ -162,12 +162,14 @@ public class RadioStationsView extends JPanel {
 	}
 	private void loadAllRadioStations() throws ClassNotFoundException, SQLException {
 		RadioSql sql = new RadioSql();
-
 		
 		radioStations.removeAll();
 		for(RadioEntity radio : sql.loadAllRadios()){
 			radioStations.addItem(radio);
 		}
+		
+		//match radio station to mpc play list
+		
 
 	}
 

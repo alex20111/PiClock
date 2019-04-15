@@ -26,6 +26,10 @@ import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
 
+import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
+
+import net.piclock.arduino.ArduinoCmd;
+import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.AlarmRepeat;
@@ -68,13 +72,18 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	 * @throws IOException 
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
+	 * @throws UnsupportedBusNumberException 
 	 */
-	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException {		
+	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException, UnsupportedBusNumberException {		
 		logger.config("Starting alarmView");
 		sql = new AlarmSql();
 		sql.CreateAlarmTable();
 		
 		AlarmEntity alarmEnt = sql.loadActiveAlarm();
+		
+		//add listener for button
+		ArduinoCmd cm = ArduinoCmd.getInstance();
+		cm.addButtonListener(new AlarmBtnHandler());
 		
 		setLayout(null);
 		setOpaque(false);
