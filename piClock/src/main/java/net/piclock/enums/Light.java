@@ -1,7 +1,7 @@
 package net.piclock.enums;
 
 public enum Light {
-	DARK(255,240, 0), DIM(220,200, 5), LIGHT(199,150, 15), BRIGHT(149,70, 50), VERY_BRIGHT(69,0, 100), NONE(0,0, 100);
+	DARK(255,234, 0), DIM(226,194, 5), LIGHT(186,126, 15), BRIGHT(118,60, 50), VERY_BRIGHT(52,0, 100), GREY_ZONE(0,0, 100);
 	
 	private int ldrHighLevel = -1;
 	private int ldrLowLevel = -1;
@@ -36,6 +36,6 @@ public enum Light {
 		}else if (ldrLevel >= Light.VERY_BRIGHT.ldrLowLevel && ldrLevel <= Light.VERY_BRIGHT.ldrHighLevel){
 			return Light.VERY_BRIGHT;
 		}
-		return Light.NONE;
+		return Light.GREY_ZONE;
 	}
 }

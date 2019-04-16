@@ -21,6 +21,8 @@ public class LDRStatusWorker implements Runnable{
 	private DayNightCycle lastStatus = DayNightCycle.NONE;
 	private Light lastLightStatus = Light.VERY_BRIGHT;
 	
+	private int changeCount = 4;
+	
 	@Override
 	public void run() {
 		try{
@@ -65,12 +67,15 @@ public class LDRStatusWorker implements Runnable{
 			lastStatus = DayNightCycle.valueOf(cycle.name());				
 			
 			
-			if (cycle == DayNightCycle.DAY && lastLightStatus != lightStatus) {
+			if (cycle == DayNightCycle.DAY && lastLightStatus != lightStatus && lightStatus != Light.GREY_ZONE) {
 				//adjust LCD based on the LDR.
 				handler.setBrightness(lightStatus);
 			}
 			
-			lastLightStatus = Light.valueOf(lightStatus.name()); 
+			//only keeo previous status if it's not in the grey zone
+			if(lightStatus != Light.GREY_ZONE) {
+				lastLightStatus = Light.valueOf(lightStatus.name());
+			}
 			
 			
 //			//check is screen is on OR off, if it's off and it's supposed to be off , then start the auto shutdown.
@@ -83,5 +88,13 @@ public class LDRStatusWorker implements Runnable{
 		}catch(Throwable tr){
 			logger.log(Level.SEVERE,"Error in ldr",tr);
 		}
+	}
+	
+	
+	private void varifyMonitorBrightness() {
+		
+		
+		
+		
 	}
 }
