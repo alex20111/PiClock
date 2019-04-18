@@ -129,7 +129,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				try {
 					LogConfig logs = new LogConfig();
 //					OFF SEVERE	WARNING	INFO CONFIG(is debug),  FINE FINER FINEST ALL  -- height 480 - width 800
-					logs.configLogs("mainAppLog", Level.CONFIG, true, false);  //TODO turn on file log					
+					logs.configLogs("mainAppLog", Level.CONFIG, true, true);  //TODO turn on file log					
 					
 					MainApp frame = new MainApp();
 //					frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);

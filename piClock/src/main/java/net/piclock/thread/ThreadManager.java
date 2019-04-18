@@ -86,7 +86,7 @@ public class ThreadManager {
 	}
 	public void startLdr() {
 		 
-		scheduler.scheduleWithFixedDelay(new LDRStatusWorker(), 1, 10, TimeUnit.SECONDS);
+		scheduler.scheduleWithFixedDelay(new LDRStatusWorker(), 1, 5, TimeUnit.SECONDS);
 	}
 	
 	public void startClock (JLabel clockLabel, JLabel weekDateLable, long delay) {

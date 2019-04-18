@@ -62,7 +62,7 @@ public class PiHandler {
 
 		System.out.println("Init");
 		Gpio.wiringPiSetup();
-		SoftPwm.softPwmCreate(24, 0, 100);
+		SoftPwm.softPwmCreate(24, 70, 100);
 	}
 	
 	public static PiHandler getInstance() {

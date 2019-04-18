@@ -24,10 +24,9 @@ audio radio setup.:
 https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 		
-brightness
-implement radio and fix the screen view
-When changing from light to dark or dark to light , wait 5 minutes before swithcing between modes. brightness stay the same .. 
-
+refresh time .. look into it
+implement radio and fix the screen view. Disable buttos of radio when wifi not connected.
+Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
 
 Tests: 
 	1- wifi turn off when screen is off.. (3 min)
