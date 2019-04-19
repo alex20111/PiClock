@@ -50,7 +50,7 @@ public class LDRStatusWorker implements Runnable{
 				Integer cMap = cntMap.get(lightStatus);
 				int cnt = (cMap == null ? 0 : cMap.intValue());
 				
-				if (cnt  >= 4) {
+				if (cnt  >= getCnt(lightStatus)) {
 					cntMap.clear();
 					//adjust LCD based on the LDR.
 					handler.setBrightness(lightStatus);
@@ -104,6 +104,15 @@ public class LDRStatusWorker implements Runnable{
 
 		}catch(Throwable tr){
 			logger.log(Level.SEVERE,"Error in ldr",tr);
+		}
+	}
+	
+	private int getCnt(Light current) {
+		if (lastLightStatus == Light.DARK && current.isDayLight() || 
+				lastLightStatus.isDayLight() && !current.isDayLight()) {
+			return 4;
+		}else {
+			return 1;
 		}
 	}
 	

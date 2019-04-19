@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,13 +30,15 @@ import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.ImageUtils;
 
-public class RadioStationsView extends JPanel {
+public class RadioStationsView extends JPanel implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger( RadioStationsView.class.getName() );
 	private JComboBox<RadioEntity> radioStations;
 	private JButton btnReload;
+	private JButton btnPlay;
+	private JButton btnStop;
 	
 	private SwingContext ct;	
 	private JLabel lblRadioIcon;
@@ -48,7 +52,7 @@ public class RadioStationsView extends JPanel {
 	 * @throws ClassNotFoundException 
 	 */
 	public  RadioStationsView(JLabel radioIcon) throws IOException, ClassNotFoundException, SQLException {
-		
+		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		this.lblRadioIcon = radioIcon;
 		setLayout(new BorderLayout(0, 0));
 		
@@ -122,9 +126,10 @@ public class RadioStationsView extends JPanel {
 		
 		ImageUtils ut = ImageUtils.getInstance();
 		
-		JButton btnPlay = new JButton();
+		btnPlay = new JButton();
 		btnPlay.setIcon(ut.getImage("play.png"));
 		btnPanel.add(btnPlay);
+		btnPlay.setEnabled(false);
 		
 		btnPlay.addActionListener(new ActionListener() {
 			
@@ -151,8 +156,9 @@ public class RadioStationsView extends JPanel {
 			}
 		});
 		
-		JButton btnStop = new JButton();
+		btnStop = new JButton();
 		btnStop.setIcon(ut.getImage("stop.png"));
+		btnStop.setEnabled(false);
 		btnPanel.add(btnStop);
 		
 		btnStop.addActionListener(new ActionListener() {
@@ -221,6 +227,25 @@ public class RadioStationsView extends JPanel {
 			logger.log(Level.SEVERE, "Error greater than 0");
 		}
 
+	}
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){
+		String initValue = ((String)evt.getNewValue());
+		String value = initValue.substring(4,initValue.length() );
+		
+		if ("success".equals(value)){
+			btnPlay.setEnabled(true);
+			btnStop.setEnabled(true);
+		}else if ("wifiOff".equals(value)) {
+			btnPlay.setEnabled(false);
+			btnStop.setEnabled(false);			
+		}
+			
+		
+		
+		}
+		
 	}
 
 }

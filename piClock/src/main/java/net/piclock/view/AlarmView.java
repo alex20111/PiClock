@@ -36,12 +36,10 @@ import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
-import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ThreadManager;
-import net.piclock.util.PreferencesHandler;
 
 public class AlarmView extends JPanel implements PropertyChangeListener {
 
@@ -82,8 +80,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		AlarmEntity alarmEnt = sql.loadActiveAlarm();
 		
 		//add listener for button
+		AlarmBtnHandler btnHandler = new AlarmBtnHandler();
+		ct.putSharedObject(Constants.ALARM_BTN_HANDLER, btnHandler);
 		ArduinoCmd cm = ArduinoCmd.getInstance();
-		cm.addButtonListener(new AlarmBtnHandler());
+		cm.addButtonListener(btnHandler);
 		
 		setLayout(null);
 		setOpaque(false);

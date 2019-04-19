@@ -98,13 +98,13 @@ public class ArduinoCmd {
 		if (btnListener.size() == 0){
 			throw new ListenerNotFoundException("Listener not found, add listener");
 		}		
-		
-		if (btnMon != null && btnMon.isRunning()) {
-			throw new IOException("Button monitor is already running");
-		}
-		btnMon = new ButtonMonitor(btnListener, 200);
-		btnMon.start();
 
+		if (btnMon != null && btnMon.isRunning()) {
+			logger.log(Level.CONFIG, "Btn monitor already started");
+		}else {
+			btnMon = new ButtonMonitor(btnListener, 200);
+			btnMon.start();
+		}
 	}
 
 	public void addButtonListener(ButtonChangeListener bsl){
@@ -118,8 +118,16 @@ public class ArduinoCmd {
 	public void stopBtnMonitor() throws InterruptedException {
 		logger.log(Level.CONFIG, "stopBtnMonitor");
 		if (btnMon != null) {
-			btnMon.stop();
+			if (anyActiveBtnListener()) {
+				logger.log(Level.CONFIG, "There is still active listeners");
+			}else {
+				btnMon.stop();
+			}
 		}
+	}
+	
+	public boolean isBtnMonitorRunning() {
+		return btnMon != null && btnMon.isRunning();
 	}
 
 	private synchronized int sendCommand(Commands command) throws InterruptedException, IOException{
@@ -139,7 +147,18 @@ public class ArduinoCmd {
 			device.write(byteVal);
 		}		
 		return -1;
-	}	
+	}
+	private boolean anyActiveBtnListener() {
+		if(this.btnListener.size() > 0) {
+			for(ButtonChangeListener l : btnListener) {
+				if(l.isActive()) {
+					return true;
+				}
+			}
+		}
+			return false;
+		
+	}
 	enum Commands{
 		LDR('l'), DSP_TIME('t'), TIME_OFF('o'), BTN_A('a'), BUZZER('b'), NONE('-');
 		

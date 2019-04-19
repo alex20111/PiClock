@@ -12,15 +12,21 @@ import net.piclock.thread.Alarm;
 public class AlarmBtnHandler  implements ButtonChangeListener{
 
 	private static final Logger logger = Logger.getLogger( AlarmBtnHandler.class.getName() );
+	private boolean active = false;
 	
 	@Override
 	public void stateChanged(ButtonState state) {
 
-		System.out.println("Button state: " + state);
+		boolean alarmTriggered = Alarm.isAlarmTriggered();
+		
+		logger.log(Level.CONFIG, "Button State: " + state + " alarmTriggered: " + alarmTriggered);
 		try {
-			if (Alarm.isAlarmTriggered() && state == ButtonState.HIGH) {
+			if (alarmTriggered && state == ButtonState.HIGH) {
 				System.out.println("Turning off alarm");
 				Alarm.turnOffAlarmSound();
+				deactivateListener();
+				
+				
 				ArduinoCmd cm = ArduinoCmd.getInstance();
 				cm.stopBtnMonitor();
 			}
@@ -31,5 +37,22 @@ public class AlarmBtnHandler  implements ButtonChangeListener{
 		}
 
 
+	}
+
+	@Override
+	public boolean isActive() {
+		
+		return active;
+	}
+
+	@Override
+	public void setListenerActive() {
+		this.active = true;
+		
+	}
+
+	@Override
+	public void deactivateListener() {
+		active = false;
 	}
 }

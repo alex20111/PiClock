@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.piclock.arduino.ArduinoCmd;
+import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
@@ -75,6 +76,8 @@ public class Alarm implements Runnable{
 			}
 			
 			//start button
+			AlarmBtnHandler btnH = (AlarmBtnHandler)ct.getSharedObject(Constants.ALARM_BTN_HANDLER);
+			btnH.setListenerActive();
 			ArduinoCmd cm = ArduinoCmd.getInstance();
 			cm.startBtnMonitoring();
 			

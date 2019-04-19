@@ -21,11 +21,11 @@ import com.pi4j.wiringpi.SoftPwm;
 import home.fileutils.FileUtils;
 import home.misc.Exec;
 import net.piclock.arduino.ArduinoCmd;
+import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ListenerNotFoundException;
-import net.piclock.button.AlarmBtnHandler;
+import net.piclock.button.MonitorButtonHandler;
 import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
-import net.piclock.enums.DayNightCycle;
 import net.piclock.enums.Light;
 import net.piclock.swing.component.SwingContext;
 
@@ -38,6 +38,8 @@ public class PiHandler {
 	private static final Logger logger = Logger.getLogger( PiHandler.class.getName() );
 
 	private static PiHandler piHandler;
+	
+	private ArduinoCmd cmd;
 	
 	private  boolean screenOn = true;
 	private  boolean wifiConnected = false; //if connected to the WIFI.
@@ -55,14 +57,20 @@ public class PiHandler {
 	private  String LDR 	 = "ldr";
 	private  String TIME 	 = "time";
 	private  String TIME_OFF = "timeOff";
-	private String BTN_MNTR_ON = "btnMntrOn";
-	private String BTN_MNTR_OFF = "btnMntrOff";
 	
-	private PiHandler(){
-
-		System.out.println("Init");
+	private ButtonChangeListener monitorBtnHandler;
+	
+	private PiHandler() {
 		Gpio.wiringPiSetup();
 		SoftPwm.softPwmCreate(24, 70, 100);
+		
+		monitorBtnHandler = new MonitorButtonHandler();
+		try {
+			cmd = ArduinoCmd.getInstance();
+			cmd.addButtonListener(monitorBtnHandler);
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, "Error in PiHandler", ex);
+		} 
 	}
 	
 	public static PiHandler getInstance() {
@@ -83,17 +91,17 @@ public class PiHandler {
 //		logger.log(Level.CONFIG,"Starting button monitoring");
 //		sendI2cCommand(BTN_MNTR_OFF,null);
 //	}
-	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException{
+	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException, UnsupportedBusNumberException{
 		logger.log(Level.CONFIG,"turnOffScreen()");
 
-		Exec e = new Exec();
-		e.addCommand("sudo").addCommand("DISPLAY=:0.0").addCommand("xset").addCommand("dpms").addCommand("force").addCommand("off");
+//		Exec e = new Exec();
+//		e.addCommand("sudo").addCommand("DISPLAY=:0.0").addCommand("xset").addCommand("dpms").addCommand("force").addCommand("off");
+//
+//		e.timeout(10000);
 
-		e.timeout(10000);
+//		int ext = e.run();
 
-		int ext = e.run();
-
-		if (ext == 0) {
+//		if (ext == 0) {
 			if (wifiShutDown != null && wifiShutDown.isAlive()){
 				wifiShutDown.interrupt();
 				while(wifiShutDown.isAlive()){
@@ -117,24 +125,36 @@ public class PiHandler {
 
 			setScreenOn(false);
 			setBrightness(Light.DARK);
-		}else {
-			logger.log(Level.SEVERE, "Cannot turn monitor off. " +  e.getOutput());
-		}
+			
+			monitorBtnHandler.setListenerActive();
+			if (!cmd.isBtnMonitorRunning()) {
+			cmd.startBtnMonitoring();
+			}
+//		}else {
+//			logger.log(Level.SEVERE, "Cannot turn monitor off. " +  e.getOutput());
+//		}
 
 	}
 	/*withWifiOn: then turn on the wifi on request*/
 	public void turnOnScreen(boolean withWifiOn) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.CONFIG,"Turning on screen. Wifi on option: " + withWifiOn);
-		
-		Exec e = new Exec();
-		e.addCommand("sudo").addCommand("DISPLAY=:0.0").addCommand("xset").addCommand("dpms").addCommand("force").addCommand("on");
+//		
+//		Exec e = new Exec();
+//		e.addCommand("sudo").addCommand("DISPLAY=:0.0").addCommand("xset").addCommand("dpms").addCommand("force").addCommand("on");
+//
+//		e.timeout(10000);
 
-		e.timeout(10000);
-
-		int ext = e.run();
+//		int ext = e.run();
+//		
+//		if (ext > 0) {
+//			logger.log(Level.SEVERE, "Error turning on monitor. " + e.getOutput());
+//		}
 		
-		if (ext > 0) {
-			logger.log(Level.SEVERE, "Error turning on monitor. " + e.getOutput());
+		
+		monitorBtnHandler.deactivateListener();
+		
+		if (cmd.isBtnMonitorRunning()) {
+			cmd.stopBtnMonitor();
 		}
 		
 		//interrupt wifi shutdown if in process because screen turned back on.
@@ -252,7 +272,7 @@ public class PiHandler {
 			public void run() {
 				isScreenAutoShutdown = true;
 				try {
-					Thread.sleep(60000);
+					Thread.sleep(40000);
 					try {
 						turnOffScreen();
 					} catch (Exception e) {
@@ -446,16 +466,16 @@ public class PiHandler {
 		try {
 
 			if (command.equals(TIME)){
-				ArduinoCmd.getInstance().writeTime(value);
+				cmd.writeTime(value);
 			}else if(command.equals(LDR)) {
-				retCd = ArduinoCmd.getInstance().readLDR();
+				retCd = cmd.readLDR();
 			}else if(command.equals(TIME_OFF)) {
-				ArduinoCmd.getInstance().timeOff();
+				cmd.timeOff();
 			}else if(command.equals(BUZZER)) {
 				if ( value.equals("true")) {
-					ArduinoCmd.getInstance().buzzer(true);
+					cmd.buzzer(true);
 				}else {
-					ArduinoCmd.getInstance().buzzer(false);
+					cmd.buzzer(false);
 				}
 			}
 //			else if(command.equals(BTN_MNTR_ON)){
@@ -467,7 +487,7 @@ public class PiHandler {
 //				cm.addButtonListener(new AlarmBtnHandler());
 //				cm.startBtnMonitoring();
 //			}
-		} catch (IOException | InterruptedException | UnsupportedBusNumberException e) {
+		} catch (IOException | InterruptedException  e) {
 			logger.log(Level.SEVERE, "Error contacting arduino", e);
 		} 
 		return retCd;
