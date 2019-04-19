@@ -37,7 +37,7 @@ public class ArduinoCmd {
 	}
 	
 	private ArduinoCmd() throws UnsupportedBusNumberException, IOException {
-		System.out.println("init arduino cmd");
+		logger.log(Level.CONFIG,"Initi arduino");
 		 i2c = I2CFactory.getInstance(I2CBus.BUS_3);
 		device = i2c.getDevice(0x08);
 	}
@@ -108,6 +108,7 @@ public class ArduinoCmd {
 	}
 
 	public void addButtonListener(ButtonChangeListener bsl){
+		logger.log(Level.CONFIG,"Add button listener");
 		btnListener.add(bsl);
 	}
 	public void clearButtonListeners() {

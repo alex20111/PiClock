@@ -43,7 +43,6 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 	private SwingContext ct;	
 	private JLabel lblRadioIcon;
 	
-//	private SwingContext ct = SwingContext.getInstance();
 	/**
 	 * Create the panel.
 	 * @return 
@@ -203,20 +202,17 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 		
 		if(ex == 0) {
 			String out = exec.getOutput();
-			System.out.println("!!!!!!!!!!!!!!!!!!! " + out);
 			if (out.length() > 0) {
 				String outSplit[] = out.split("\n");
 				
 				for(int i = 0 ; i <  outSplit.length ; i ++) {
 					
 					String play = outSplit[i];
-					System.out.println("!!!!!!!!!!!!!!!!!!! " + play);
 					for(RadioEntity r : radios) {
 						if (play.trim().equals(r.getRadioLink())) {
 							r.setTrackNbr(i+1);
 							
 							sql.update(r);;
-							System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!updated radio : " + r);
 							break;
 						}
 					}
@@ -231,21 +227,17 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){
-		String initValue = ((String)evt.getNewValue());
-		String value = initValue.substring(4,initValue.length() );
-		
-		if ("success".equals(value)){
-			btnPlay.setEnabled(true);
-			btnStop.setEnabled(true);
-		}else if ("wifiOff".equals(value)) {
-			btnPlay.setEnabled(false);
-			btnStop.setEnabled(false);			
+			String initValue = ((String)evt.getNewValue());
+			String value = initValue.substring(4,initValue.length() );
+
+			if ("success".equals(value)){
+				btnPlay.setEnabled(true);
+				btnStop.setEnabled(true);
+			}else if ("wifiOff".equals(value)) {
+				btnPlay.setEnabled(false);
+				btnStop.setEnabled(false);			
+			}
 		}
-			
-		
-		
-		}
-		
 	}
 
 }

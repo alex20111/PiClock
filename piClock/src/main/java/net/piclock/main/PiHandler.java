@@ -83,80 +83,51 @@ public class PiHandler {
 		}
 		return piHandler;
 	}	
-//	public void startButtonMonitoring() {
-//		logger.log(Level.CONFIG,"Starting button monitoring");
-//		sendI2cCommand(BTN_MNTR_ON,null);
-//	}
-//	public void stopButtonMonitoring() {
-//		logger.log(Level.CONFIG,"Starting button monitoring");
-//		sendI2cCommand(BTN_MNTR_OFF,null);
-//	}
+
 	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException, UnsupportedBusNumberException{
 		logger.log(Level.CONFIG,"turnOffScreen()");
 
-//		Exec e = new Exec();
-//		e.addCommand("sudo").addCommand("DISPLAY=:0.0").addCommand("xset").addCommand("dpms").addCommand("force").addCommand("off");
-//
-//		e.timeout(10000);
 
-//		int ext = e.run();
-
-//		if (ext == 0) {
-			if (wifiShutDown != null && wifiShutDown.isAlive()){
-				wifiShutDown.interrupt();
-				while(wifiShutDown.isAlive()){
-					wifiShutDown.join(100);
-				}
-				logger.log(Level.CONFIG, "turnOffScreen: Interrupted wifiShutDown");
+		if (wifiShutDown != null && wifiShutDown.isAlive()){
+			wifiShutDown.interrupt();
+			while(wifiShutDown.isAlive()){
+				wifiShutDown.join(100);
 			}
+			logger.log(Level.CONFIG, "turnOffScreen: Interrupted wifiShutDown");
+		}
 
-			//wait 3 minute before shutting down WIFI
-			wifiShutDown = new Thread(new Runnable() {				
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(180000);
-						wifiOff();
-					} catch (InterruptedException e) {}
+		//wait 3 minute before shutting down WIFI
+		wifiShutDown = new Thread(new Runnable() {				
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(180000);
+					wifiOff();
+				} catch (InterruptedException e) {}
 
-				}
-			});
-			wifiShutDown.start();
+			}
+		});
+		wifiShutDown.start();
 
-			setScreenOn(false);
-			setBrightness(Light.DARK);
-			
-			monitorBtnHandler.setListenerActive();
-			if (!cmd.isBtnMonitorRunning()) {
+		setScreenOn(false);
+		setBrightness(Light.DARK);
+
+		monitorBtnHandler.setListenerActive();
+		if (!cmd.isBtnMonitorRunning()) {
 			cmd.startBtnMonitoring();
-			}
-//		}else {
-//			logger.log(Level.SEVERE, "Cannot turn monitor off. " +  e.getOutput());
-//		}
+		}
 
 	}
 	/*withWifiOn: then turn on the wifi on request*/
 	public void turnOnScreen(boolean withWifiOn) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.CONFIG,"Turning on screen. Wifi on option: " + withWifiOn);
-//		
-//		Exec e = new Exec();
-//		e.addCommand("sudo").addCommand("DISPLAY=:0.0").addCommand("xset").addCommand("dpms").addCommand("force").addCommand("on");
-//
-//		e.timeout(10000);
 
-//		int ext = e.run();
-//		
-//		if (ext > 0) {
-//			logger.log(Level.SEVERE, "Error turning on monitor. " + e.getOutput());
-//		}
-		
-		
 		monitorBtnHandler.deactivateListener();
-		
+
 		if (cmd.isBtnMonitorRunning()) {
 			cmd.stopBtnMonitor();
 		}
-		
+
 		//interrupt wifi shutdown if in process because screen turned back on.
 		if (wifiShutDown != null && wifiShutDown.isAlive()){
 			wifiShutDown.interrupt();
@@ -165,10 +136,10 @@ public class PiHandler {
 			}
 			logger.log(Level.CONFIG, "turnOnScreen: Interrupted wifiShutDown");
 		}
-		
+
 		//if screen is auto shutting down and there is a request by the LDR to turn it back on, kill it.
 		cancelScreenAutoShutdown();
-		
+
 		if (withWifiOn){
 			turnWifiOn();
 		}
@@ -225,10 +196,8 @@ public class PiHandler {
 	}
 	public Light getLDRstatus(){
 
-
 		int ldrVal = sendI2cCommand(LDR,null);	
-		System.out.println("LDR STATUS !!!!!!!!!!!!!! : " + ldrVal);
-		
+		logger.log(Level.CONFIG, "getLDRstatus : LDR level: "+ ldrVal);		
 		return Light.setLightLevel(ldrVal);
 	}
 	/**Turn on the alarm based on the selected buzzer**/
@@ -478,15 +447,7 @@ public class PiHandler {
 					cmd.buzzer(false);
 				}
 			}
-//			else if(command.equals(BTN_MNTR_ON)){
-//				ArduinoCmd cm = ArduinoCmd.getInstance();
-//				cm.addButtonListener(new AlarmBtnHandler());
-//				cm.startBtnMonitoring();
-//			}else if(command.equals(BTN_MNTR_OFF)){
-//				ArduinoCmd cm = ArduinoCmd.getInstance();
-//				cm.addButtonListener(new AlarmBtnHandler());
-//				cm.startBtnMonitoring();
-//			}
+
 		} catch (IOException | InterruptedException  e) {
 			logger.log(Level.SEVERE, "Error contacting arduino", e);
 		} 
@@ -577,12 +538,6 @@ public class PiHandler {
 	 */
 	private boolean checkIfCanAccessInternet(){
 		logger.log(Level.CONFIG, "checkIfCanAccessInternet() ");
-		//		https://unix.stackexchange.com/questions/190513/shell-scripting-proper-way-to-check-for-internet-connectivity
-		//			if ping -q -c 1 -W 1 google.com >/dev/null; then
-		//			  echo "The network is up"
-		//			else
-		//			  echo "The network is down"
-		//			fi
 
 		try { 
 			URL url = new URL("https://www.google.ca/"); 
@@ -607,6 +562,4 @@ public class PiHandler {
 
 
 	}
-	
-
 }
