@@ -13,7 +13,7 @@ import net.weather.action.WeatherAction;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherCurrentModel;
 import net.weather.bean.WeatherGenericModel;
-import net.weather.enums.EnvCanLang;
+import net.weather.enums.WeatherLang;;
 
 public class EnvCanWorker implements Runnable {
 
@@ -45,7 +45,7 @@ public class EnvCanWorker implements Runnable {
 //				Utilities.proxy = proxy;
 //				Utilities.createAuthForProxy("axb161", "109256PO)");
 //				
-				wgm =  WeatherAction.getEnvironmentCanadaRSSWeather(pref.getStationCode(), EnvCanLang.english, false, true);
+				wgm =  WeatherAction.getEnvironmentCanadaRSSWeather(pref.getStationCode(), WeatherLang.english, false, true);
 //				
 //				wgm = TestAction.getLocal();
 				
@@ -63,16 +63,16 @@ public class EnvCanWorker implements Runnable {
 				WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
 //				wcm.setWeather("Mainly rain");
 				
-				if (wcm.getWeather().toLowerCase().contains("rain")){
+				if (wcm.getSummary().toLowerCase().contains("rain")){
 					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 					theme.loadRainBackdrop();
-				}else if (wcm.getWeather().toLowerCase().contains("sunny")){
+				}else if (wcm.getSummary().toLowerCase().contains("sunny")){
 					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 					theme.loadSunnyBackdrop();
-				}else if (wcm.getWeather().toLowerCase().contains("thunder")){
+				}else if (wcm.getSummary().toLowerCase().contains("thunder")){
 					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 					theme.loadThunderBackdrop();
-				}else if (wcm.getWeather().toLowerCase().contains("snow")){
+				}else if (wcm.getSummary().toLowerCase().contains("snow")){
 					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 					theme.loadSnowBackdrop();
 				}

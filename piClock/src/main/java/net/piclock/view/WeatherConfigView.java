@@ -61,8 +61,8 @@ public class WeatherConfigView extends JPanel {
 	private  SwingContext ct = SwingContext.getInstance();
 	private Preferences prefs;
 	
-	private JLabel lblCountry;
-	private JComboBox cmbCountry;
+//	private JLabel lblCountry;
+//	private JComboBox cmbCountry;
 	
 	private int whtChanged = 0; //pos number is active, neg number is not active.
 	private JLabel lblCountryLoading;
@@ -174,10 +174,10 @@ public class WeatherConfigView extends JPanel {
 		lblCountryLoading = new JLabel("");
 		lblCountryLoading.setVisible(false);
 
-		lblCountry = new JLabel("Country");
-		lblCountry.setVisible(false);
-		lblCountry.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		add(lblCountry, "hidemode 3,cell 2 4,alignx trailing");
+//		lblCountry = new JLabel("Country");
+//		lblCountry.setVisible(false);
+//		lblCountry.setFont(new Font("Tahoma", Font.PLAIN, 20));
+//		add(lblCountry, "hidemode 3,cell 2 4,alignx trailing");
 		add(lblCountryLoading, "flowx,cell 4 4,alignx left");
 
 
@@ -247,7 +247,6 @@ public class WeatherConfigView extends JPanel {
 						cardLayout.show(cardsPanel, Constants.MAIN_VIEW);
 
 						if(fireForecastChange){
-							System.out.println("Fire forecast change!!");
 							ct.putSharedObject(Constants.FETCH_FORECAST, whtChanged);
 						}					
 					}
@@ -289,10 +288,10 @@ public class WeatherConfigView extends JPanel {
 		add(btnBack, "cell 0 11");
 		//		theme.registerLabelTextColor(lblProvider, LabelEnums.WC_PROVIDER);
 
-		cmbCountry = new JComboBox();
-		cmbCountry.setPreferredSize(new Dimension(28, 35));
-		cmbCountry.setVisible(false);
-		add(cmbCountry, "hidemode 3,cell 3 4 2 1,growx");
+//		cmbCountry = new JComboBox();
+//		cmbCountry.setPreferredSize(new Dimension(28, 35));
+//		cmbCountry.setVisible(false);
+//		add(cmbCountry, "hidemode 3,cell 3 4 2 1,growx");
 
 		cmbCity = new JComboBox<City>();
 		cmbCity.setPreferredSize(new Dimension(28, 35));
@@ -330,37 +329,21 @@ public class WeatherConfigView extends JPanel {
 
 			if (provider == Host.envCanada){
 				System.out.println("canada");
-				lblCountry.setVisible(false);
-				cmbCountry.setVisible(false);
+//				lblCountry.setVisible(false);
+//				cmbCountry.setVisible(false);
 				//set provider
 				cmbProvider.setSelectedItem(Host.envCanada);
 				//load city						
 				loadProviderCity();			
 				
-				if (prefs.getWeatherCity() != null && prefs.getWeatherCity().trim().length() > 0){
-					ComboBoxModel<City> model = cmbCity.getModel();
-					int size = model.getSize();
-					for(int i=0;i<size;i++) {
-						City element = model.getElementAt(i);
-
-						if (element.getNameEn().equalsIgnoreCase(prefs.getWeatherCity())){
-							cmbCity.setSelectedIndex(i);
-							break;
-						}
-					}
-				}
-			}else if(provider == Host.weatherUnderground){
-				cmbProvider.setSelectedIndex(1);
-				lblCountry.setVisible(true);
-				cmbCountry.setVisible(true);
+			
+			}else if(provider == Host.DARKSKY){
+				cmbProvider.setSelectedItem(Host.DARKSKY);
+//				lblCountry.setVisible(true);
+//				cmbCountry.setVisible(true);
 				
-				//	TODO load country
-				if (prefs.getWeatherCountry() != null && prefs.getWeatherCountry().trim().length() > 0){
-					
-				}
-				if (prefs.getWeatherCity() != null && prefs.getWeatherCity().trim().length() > 0){
-					
-				}				
+				loadProviderCity();
+							
 			}			
 			if (prefs.getWeatherRefresh() > 0){
 				refreshInMinutes.setValue(prefs.getWeatherRefresh());
@@ -373,26 +356,33 @@ public class WeatherConfigView extends JPanel {
 	}	
 	private void loadProviderCity() throws Exception{
 
-		System.out.println("loadProviderCity()");
 		cmbCity.removeAllItems();
-		if ((Host)cmbProvider.getSelectedItem() == Host.envCanada){
 
-			List<City> cities = new ArrayList<City>();
+		List<City> cities = new ArrayList<City>();
 
+		for(net.weather.bean.City city : WeatherAction.loadAllEnvCanCities(true)){
+			City localCity = new City(city);
+			cities.add(localCity);
 
-			for(net.weather.bean.City city : WeatherAction.loadAllEnvCanCities(true)){
-				City localCity = new City(city);
-				cities.add(localCity);
+		}
 
+		Collections.sort(cities, new CityNameSort());
+		//add cities to box
+		for(City c : cities){
+			cmbCity.addItem(c);
+		}
+
+		if (prefs.getWeatherCity() != null && prefs.getWeatherCity().trim().length() > 0){
+			ComboBoxModel<City> model = cmbCity.getModel();
+			int size = model.getSize();
+			for(int i=0;i<size;i++) {
+				City element = model.getElementAt(i);
+
+				if (element.getNameEn().equalsIgnoreCase(prefs.getWeatherCity())){
+					cmbCity.setSelectedIndex(i);
+					break;
+				}
 			}
-			System.out.println("Cities size2: " +cities.size() );
-			
-			Collections.sort(cities, new CityNameSort());
-			//add cities to box
-			for(City c : cities){
-				cmbCity.addItem(c);
-			}
-
 		}
 	}
 	private void enableDisable(){

@@ -1,7 +1,7 @@
 <!--Using JAVA Color names . Color.WHITE, Color.BLUE, Color.Black -->
 <base>
 	<theme name="defaultTheme" >
-		<background name="SUNNY" image="sunny-day-background.jpg" imageFolder="img">
+		<background name="SUNNY" image="sunny-day-background.jpg" imageNight="" imageFolder="img">
 			<label name="labels">
 				<labelTheme name="CLOCK" 			colorDay="#000000" colorNight="#ffffff"></labelTheme>
 				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
@@ -40,7 +40,7 @@
 				<IconTheme name="WEB_SERVER"	    iconDay="web-black-24.png" 			iconNight="web-black-24.png"></IconTheme>		
 			</labelIcon>
 		</background>
-	<background name="RAIN" image="rain-orig-480.jpg" imageFolder="img">
+	<background name="RAIN" image="rain-orig-480.jpg" imageFolder="img" imageNight="">
 			<label name="labels">
 				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>

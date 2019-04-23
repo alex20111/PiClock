@@ -550,12 +550,12 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				
 					Date dt = parseToDate.parse(wcm.getObservationTime()); 
 					
-					addCurrentWeather(wcm.getWeather().trim(),icon,dt );
+					addCurrentWeather(wcm.getSummary().trim(),icon,dt );
 				}else{
 					
 					Date dt = parseToDate.parse(wcm.getObservationTime());					
-					addCurrentWeather(wcm.getWeather().trim(),icon , dt);
-					addCurrentTemp(String.valueOf(wcm.getCurrectTempC()), "--");
+					addCurrentWeather(wcm.getSummary().trim(),icon , dt);
+					addCurrentTemp(String.valueOf(wcm.getCurrTemp()), "--");
 				}				
 
 				if (wgm.getWeatherAlert() != null){ 
@@ -704,7 +704,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		Host provider = Host.valueOf(prefs.getWeatherProvider());
 		if (provider == Host.envCanada){
 			envCanThread = (ScheduledFuture<EnvCanWorker>) scheduler.scheduleAtFixedRate(new EnvCanWorker(), initDelay, prefs.getWeatherRefresh(), TimeUnit.MINUTES);
-		}else if (provider == Host.weatherUnderground){
+		}else if (provider == Host.DARKSKY){
 			//TODO fetch wther undr
 		}
 	}	

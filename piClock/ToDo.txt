@@ -4,7 +4,6 @@ Disable blank screen on pi:
 	sudo apt-get install xscreensaver
 	Once this has been installed, you can find the screensaver application under the Preferences option on the main desktop menu
 	
-	
 toolbar on PI..
 	Configure in properties to hide at 0 pixel
 	
@@ -23,8 +22,8 @@ Create folder PiClock.
 audio radio setup.:
 https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
-		
-implement radio and fix the screen view. Disable buttos of radio when wifi not connected.
+
+TODO:		
 Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
 
 Tests: 
