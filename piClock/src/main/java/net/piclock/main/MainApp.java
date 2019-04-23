@@ -49,7 +49,7 @@ import net.piclock.enums.LabelEnums;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeEnum;
 import net.piclock.theme.ThemeHandler;
-import net.piclock.thread.EnvCanWorker;
+import net.piclock.thread.WeatherWorker;
 import net.piclock.thread.ScreenAutoClose;
 import net.piclock.thread.TempSensorWorker;
 import net.piclock.thread.ThreadManager;
@@ -106,7 +106,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	
 	//thread executor
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
-	private ScheduledFuture<EnvCanWorker> envCanThread;
+	private ScheduledFuture<WeatherWorker> weatherThread;
 	private ScheduledFuture<TempSensorWorker> sensorThread;		
 
 	//wifi blinking
@@ -696,35 +696,31 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	@SuppressWarnings("unchecked")
 	private void fetchForecast(int initDelay){		
 		logger.config("Fetching forecast (fetchForecast())");
-		
+
 		prefs = (Preferences)ct.getSharedObject(Constants.PREFERENCES);		
-		
+
 		killWeatherWorker();
 
-		Host provider = Host.valueOf(prefs.getWeatherProvider());
-		if (provider == Host.envCanada){
-			envCanThread = (ScheduledFuture<EnvCanWorker>) scheduler.scheduleAtFixedRate(new EnvCanWorker(), initDelay, prefs.getWeatherRefresh(), TimeUnit.MINUTES);
-		}else if (provider == Host.DARKSKY){
-			//TODO fetch wther undr
-		}
+		weatherThread = (ScheduledFuture<WeatherWorker>) scheduler.scheduleAtFixedRate(new WeatherWorker(), initDelay, prefs.getWeatherRefresh(), TimeUnit.MINUTES);
+
 	}	
 	private void killWeatherWorker(){
 		logger.config("killing Weather thread (killWeatherWorker())");
-		if (envCanThread != null){
+		if (weatherThread != null){
 			
-			if (!envCanThread.isDone()){
+			if (!weatherThread.isDone()){
 			
-				envCanThread.cancel(true); //cancel worker if running
+				weatherThread.cancel(true); //cancel worker if running
 				
-				logger.config("Thread done: " +  envCanThread.isDone());
+				logger.config("Thread done: " +  weatherThread.isDone());
 				//wait until cancelled
-				while(!envCanThread.isDone()){
+				while(!weatherThread.isDone()){
 					try {
 						Thread.sleep(40);
 					} catch (InterruptedException e1) {}
 				}
 			}
-		}//TODO Add weather undr		
+		}		
 		
 	}
 	/**now we know that the wifi just connected, then call programs that require wifi **/ 

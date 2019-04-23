@@ -235,6 +235,7 @@ public class WeatherConfigView extends JPanel {
 							prefs.setWeatherCity(((City)cmbCity.getSelectedItem()).getNameEn());
 							prefs.setWeatherRefresh((Integer)refreshInMinutes.getValue());					
 							prefs.setStationCode(((City)cmbCity.getSelectedItem()).getKey() );
+							ct.putSharedObject(Constants.FORECAST_CITY, (City)cmbCity.getSelectedItem());
 						}
 					}
 					if (canExit){
@@ -380,6 +381,7 @@ public class WeatherConfigView extends JPanel {
 
 				if (element.getNameEn().equalsIgnoreCase(prefs.getWeatherCity())){
 					cmbCity.setSelectedIndex(i);
+					ct.putSharedObject(Constants.FORECAST_CITY, element);
 					break;
 				}
 			}

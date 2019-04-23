@@ -26,6 +26,7 @@ public class Constants {
 	
 	public static final String FORECAST_DISPLAY_LOAD = "DisplayForecastLoading";
 	public static final String FORECAST_DISPLAY_ERROR = "DisplayError";
+	public static final String FORECAST_CITY = "forecastCity";
 	
 	
 	public static final String THEMES_HANDLER = "themesHandler";
