@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.exec.ExecuteException;
 
+import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.SoftPwm;
@@ -116,6 +117,8 @@ public class PiHandler {
 		if (!cmd.isBtnMonitorRunning()) {
 			cmd.startBtnMonitoring();
 		}
+		logger.log(Level.CONFIG,"end turnOffScreen(). is btn mon active: " + cmd.isBtnMonitorRunning());
+
 
 	}
 	/*withWifiOn: then turn on the wifi on request*/
@@ -241,7 +244,7 @@ public class PiHandler {
 			public void run() {
 				isScreenAutoShutdown = true;
 				try {
-					Thread.sleep(40000);
+					Thread.sleep(20000);
 					try {
 						turnOffScreen();
 					} catch (Exception e) {
@@ -393,6 +396,10 @@ public class PiHandler {
 	public void setBrightness(Light light) {
 		logger.log(Level.CONFIG, "setBrightness : " + light + "   pwn: " + light.getPwmLevel());
 		SoftPwm.softPwmWrite(24, light.getPwmLevel());
+	}
+	public void shutdown() {
+		setBrightness(Light.VERY_BRIGHT);
+		GpioFactory.getInstance().shutdown();
 	}
 	public  boolean isScreenOn() {
 		return screenOn;

@@ -66,7 +66,6 @@ import net.piclock.weather.WeatherBean;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherCurrentModel;
 import net.weather.bean.WeatherGenericModel;
-import net.weather.enums.Host;
 import net.weather.utils.MessageHandl;
 
 public class MainApp extends JFrame implements PropertyChangeListener {
@@ -149,12 +148,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	public MainApp() throws Exception {
 		logger.info("Start Program");	
 		
-		tm = ThreadManager.getInstance();
-//		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//		int screenHeight = screenSize.height;
-//		int screenWidth = screenSize.width;
-//		System.out.println("SCREEN SIZEEEEEEEEEEEEEEE: " + screenHeight + " --  Width: " + screenWidth);
-		
+		tm = ThreadManager.getInstance();		
 		
 		ImageIO.setUseCache(true);
 		
@@ -410,7 +404,18 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		if (prefs.isWifiCredentialProvided()){
 			handler.checkInternetConnection();		
 		}
-			
+		
+		//ADD shutdown hook
+		Runtime.getRuntime().addShutdownHook(new Thread() 
+	    { 
+	      public void run() 
+	      { 
+	        handler.shutdown(); 
+	      } 
+	    }); 
+		
+		
+		
 	}
 	/**change the background image **/
 	public void changeBackImage(File backImage){

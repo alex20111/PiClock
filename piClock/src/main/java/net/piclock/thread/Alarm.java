@@ -59,7 +59,7 @@ public class Alarm implements Runnable{
 	private void triggerAlarm(){
 		
 		Date start = new Date();
-		alarmTriggered = true;
+		
 		
 		try {
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
@@ -89,6 +89,8 @@ public class Alarm implements Runnable{
 			//pause for 1 min before triggering the alarm.
 			System.out.println("Time rem: " + timeRemaining);
 			Thread.sleep(timeRemaining);// sleep 1 min then turn buzzer on.
+			alarmTriggered = true;
+			
 			if (!handler.isScreenOn()){						
 				handler.turnOnScreen(false);
 				handler.autoShutDownScreen();

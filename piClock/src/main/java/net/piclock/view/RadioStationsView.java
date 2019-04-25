@@ -51,6 +51,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 	 * @throws ClassNotFoundException 
 	 */
 	public  RadioStationsView(JLabel radioIcon) throws IOException, ClassNotFoundException, SQLException {
+		ct = SwingContext.getInstance();
+		
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		this.lblRadioIcon = radioIcon;
 		setLayout(new BorderLayout(0, 0));

@@ -77,7 +77,7 @@ public class WeatherWorker implements Runnable {
 						theme.loadSnowBackdrop();
 					}
 				}else if (host == Host.DARKSKY) {
-
+//TODO add darksy theme changes
 				}
 
 

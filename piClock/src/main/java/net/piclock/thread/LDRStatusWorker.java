@@ -26,17 +26,18 @@ public class LDRStatusWorker implements Runnable{
 	private Light lastLightStatus = Light.VERY_BRIGHT;
 	
 	private Map<Light, Integer> cntMap = new HashMap<Light, Integer>();
-	
+	PiHandler handler;
 	
 	public LDRStatusWorker() {
 		cntMap.put(Light.DARK, 4);
+		handler = PiHandler.getInstance();
 	}
 	
 	@Override
 	public void run() {
 		try{
 
-			PiHandler handler = PiHandler.getInstance();
+			
 			//call it every 10 seconds
 			Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 
@@ -52,12 +53,12 @@ public class LDRStatusWorker implements Runnable{
 				
 				if (cnt  >= getCnt(lightStatus)) {
 					cntMap.clear();
-					//adjust LCD based on the LDR.
-					handler.setBrightness(lightStatus);
+					//adjust LCD based on the LDR.					
 					lastLightStatus = lightStatus;
 					if (lightStatus == Light.DARK) {
 						cycle = DayNightCycle.NIGHT;
 					}else {
+						handler.setBrightness(lightStatus);
 						cycle = DayNightCycle.DAY;
 					}
 				}else {
