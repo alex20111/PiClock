@@ -66,15 +66,15 @@ public class WeatherWorker implements Runnable {
 					if (wcm.getSummary().toLowerCase().contains("rain")){
 						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 						theme.loadRainBackdrop();
-					}else if (wcm.getSummary().toLowerCase().contains("sunny")){
-						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-						theme.loadSunnyBackdrop();
 					}else if (wcm.getSummary().toLowerCase().contains("thunder")){
 						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 						theme.loadThunderBackdrop();
 					}else if (wcm.getSummary().toLowerCase().contains("snow")){
 						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 						theme.loadSnowBackdrop();
+					}else {//default sunny
+						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+						theme.loadSunnyBackdrop();
 					}
 				}else if (host == Host.DARKSKY) {
 //TODO add darksy theme changes

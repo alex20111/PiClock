@@ -15,7 +15,7 @@ import javax.swing.JLabel;
 
 import net.piclock.db.entity.AlarmEntity;
 
-//TODO create new button handler. only run handler when alarm is triggered. 
+ 
 //add code to main code.. 
 public class ThreadManager {
 

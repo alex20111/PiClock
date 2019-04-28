@@ -24,7 +24,15 @@ https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-con
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 
 TODO:		
-Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
+Alarm., add radio option.
+when auto screen off is disabled. Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
+add volume.
+test new turn off screen and turn on screen and wifi on button. 
+install speakers.
+install website to add radio stations.
+work on MP3 - also add page on website to add/delete files for mp3. Add new table for MP3.
+
+
 
 Tests: 
 	1- wifi turn off when screen is off.. (3 min)

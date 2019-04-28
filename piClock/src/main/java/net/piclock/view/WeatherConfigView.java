@@ -322,8 +322,7 @@ public class WeatherConfigView extends JPanel {
 
 	}
 	private void loadPreferences() throws Exception{
-		//TODO load country checkbox if needed
-		
+				
 		if (prefs.getWeatherProvider() != null && prefs.getWeatherProvider().trim().length() > 0){
 
 			Host provider = Host.valueOf(prefs.getWeatherProvider().trim());

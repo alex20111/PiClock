@@ -122,7 +122,7 @@ public class PiHandler {
 
 	}
 	/*withWifiOn: then turn on the wifi on request*/
-	public void turnOnScreen(boolean withWifiOn) throws InterruptedException, ExecuteException, IOException{
+	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.CONFIG,"Turning on screen. Wifi on option: " + withWifiOn);
 
 		monitorBtnHandler.deactivateListener();
@@ -148,7 +148,7 @@ public class PiHandler {
 		}
 
 		setScreenOn(true);
-		setBrightness(Light.VERY_BRIGHT);
+		setBrightness(brightness);
 
 	}
 	public List<String> fetchWifiList() throws Exception{

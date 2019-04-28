@@ -13,6 +13,7 @@ import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
+import net.piclock.enums.Light;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
@@ -92,7 +93,7 @@ public class Alarm implements Runnable{
 			alarmTriggered = true;
 			
 			if (!handler.isScreenOn()){						
-				handler.turnOnScreen(false);
+				handler.turnOnScreen(false, Light.VERY_BRIGHT);
 				handler.autoShutDownScreen();
 			}
 			handler.turnOnAlarm(buzzer);

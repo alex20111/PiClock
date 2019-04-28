@@ -28,7 +28,7 @@ public class ImageUtils {
 	private ImageUtils(){
 		try{
 			weatherNA = getImage("NotAvailable.png");
-			weatherAlertIcon = getImage("weather-alert-24.png");
+			weatherAlertIcon = getImage("weather-alert-32.png");
 			weatherLoader = getAnimatedImage("loader-weather.gif");
 			buttonLoader = getAnimatedImage("loader-btn.gif");
 			

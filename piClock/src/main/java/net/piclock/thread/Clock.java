@@ -27,7 +27,7 @@ public class Clock implements Runnable {
 		clockLabel.setText(time);
 		weekDateLable.setText(sdfDate.format(dt));
 		
-		if (!handler.isScreenOn()){
+		if (!handler.isScreenOn()){//TODO monitor and may add function to check LDR instated of checking the screen stsatus
 			handler.displayTM1637Time(time);
 		}
 		

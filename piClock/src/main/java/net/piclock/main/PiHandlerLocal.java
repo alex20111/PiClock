@@ -20,13 +20,6 @@ import net.piclock.enums.DayNightCycle;
 import net.piclock.enums.Light;
 import net.piclock.swing.component.SwingContext;
 
-//TODO fetch Wifi list
-//TODO add connect to WIFI
-//TODO add disconnect to WIFI
-//TODO add call to Ard
-//TODO add wifi turn off and on (Not disconnect)
-//TODO add buzzer handler ARD
-//TODo add check internet connection
 //https://computers.tutsplus.com/articles/using-a-usb-audio-device-with-a-raspberry-pi--mac-55876
 //https://die-antwort.eu/techblog/2017-12-raspberry-pi-usb-audio-interface-command-line/
 public class PiHandlerLocal {
@@ -127,14 +120,14 @@ public class PiHandlerLocal {
 		wifiList.add("bob");
 		wifiList.add("Long do");
 		wifiList.add("Long do da");
-		//TODO call process builder
+	
 		return wifiList;
 		
 	}
 	/**When 1st connecting to a new WIFI*/
 	public void connectToWifi(String wifiName, String pass) throws InterruptedException{
 		logger.log(Level.CONFIG,"connectToWifi()");
-		//TODO write exec
+		
 		System.out.println("trying to connect to WIFI: " + wifiName + "  With pass: " + pass);
 		
 		if (wifiName != null && wifiName.length() > 0 && pass != null && pass.length() > 0){			
@@ -143,7 +136,7 @@ public class PiHandlerLocal {
 		
 	}
 	public Light getLDRstatus(){
-		//TODO add call to ard
+	
 		DayNightCycle cycle = null;
 		
 		Random r = new Random();
@@ -282,7 +275,7 @@ public class PiHandlerLocal {
 		context.putSharedObject(Constants.CHECK_INTERNET, "end_disconnect");
 		setWifiConnected(false);
 		wifiInternetConnected = false;
-		//TODO add disconnect
+		
 	}
 	/** turn wifi card ON. This does not mean that we are connected to it, it just turn it ON**/
 	public void turnWifiOn() throws InterruptedException{
@@ -291,7 +284,7 @@ public class PiHandlerLocal {
 			wifiOn = true;	
 //			Exec exec = new Exec();
 //			exec.addCommand("ifconfig").addCommand("wlan0").addCommand("up").timeout(10, TimeUnit.SECONDS);
-////			exec.run(); //TODO enable.
+////			exec.run();
 			SwingContext context = SwingContext.getInstance();
 			Preferences p = (Preferences)context.getSharedObject(Constants.PREFERENCES);
 			
@@ -305,7 +298,7 @@ public class PiHandlerLocal {
 	}
 	//verify if the monitor is actually ON of OFF	
 	public boolean isMonitorOn() {
-		//TODO
+		
 		return true;
 	}
 	public void setBrightness(Light light) {
@@ -326,7 +319,7 @@ public class PiHandlerLocal {
 	private synchronized void sendI2cCommand(){
 		
 		if (command.equals(TIME)){
-			//TODO create class ard controller
+			
 		}		
 		
 	}
@@ -363,7 +356,7 @@ public class PiHandlerLocal {
 		logger.log(Level.CONFIG, "wifiOff() : wifiOn : " + wifiOn);
 		if (wifiOn){
 			System.out.println("Turn off wifi - 2");
-			//TODO call process builder
+		
 			wifiOn = false;	
 			setWifiConnected(false);
 			wifiInternetConnected = false;
@@ -371,8 +364,8 @@ public class PiHandlerLocal {
 			context.putSharedObject(Constants.CHECK_INTERNET, "end_wifiOff");
 			
 			Exec exec = new Exec();
-			exec.addCommand("ifconfig").addCommand("wlan0").addCommand("down").timeout(10); //TODO add time unit
-//			exec.run(); //TODO enable
+			exec.addCommand("ifconfig").addCommand("wlan0").addCommand("down").timeout(10); 
+//			exec.run(); 
 		}
 	}
 	/**
@@ -403,7 +396,7 @@ public class PiHandlerLocal {
 	private boolean checkIfCanAccessInternet(){
 		logger.log(Level.CONFIG, "checkIfCanAccessInternet() ");
 //		https://unix.stackexchange.com/questions/190513/shell-scripting-proper-way-to-check-for-internet-connectivity
-		//TODO add it to a script
+		
 //			if ping -q -c 1 -W 1 google.com >/dev/null; then
 //			  echo "The network is up"
 //			else

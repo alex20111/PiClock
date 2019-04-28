@@ -1,5 +1,6 @@
 package net.piclock.button;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,18 +20,24 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 	@Override
 	public void stateChanged(ButtonState state) {
 		piHandler = PiHandler.getInstance();
-		
+
 		logger.log(Level.CONFIG, "Screen on : " + piHandler.isScreenOn() + "  button state: " + state);
-		
-		if (!piHandler.isScreenOn() && state == ButtonState.HIGH) {
-			piHandler.setBrightness(Light.VERY_DIM);
-			try {
-				piHandler.autoShutDownScreen();
-			} catch (InterruptedException e) {
+
+		try {
+			if (!piHandler.isScreenOn() && state == ButtonState.HIGH) {
+				try {
+				piHandler.turnOnScreen(true, Light.DIM);
+//				piHandler.setBrightness(Light.VERY_DIM);
+				
+					piHandler.autoShutDownScreen();
+				} catch (InterruptedException e) {
+					logger.log(Level.CONFIG, "Interrupted in button monitor");
+				}
 			}
-		}
-		
-		
+		}catch(IOException ex) {
+			logger.log(Level.SEVERE, "Problem with monitorbutton", ex);
+		} 
+
 	}
 
 	@Override

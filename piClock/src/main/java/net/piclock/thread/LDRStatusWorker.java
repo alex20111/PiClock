@@ -85,7 +85,7 @@ public class LDRStatusWorker implements Runnable{
 
 			}else if (cycle == DayNightCycle.DAY && cycle != lastStatus){
 				if(p.isAutoOffScreen()){
-					handler.turnOnScreen(true);
+					handler.turnOnScreen(true, lightStatus);
 					handler.turnOffTM1637Time();
 				}
 				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.DAY);

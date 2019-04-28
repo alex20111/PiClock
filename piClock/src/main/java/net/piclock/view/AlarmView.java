@@ -427,97 +427,9 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		
 		btnBuzzer.setBounds(615, 235, 140, 40);
 		add(btnBuzzer);
-		
-//		startStopTimer();
-		
+	
 	}
-	/**
-	 * Toggle on off has changed, update timer
-	 */
-//	private void startStopTimer(){
-//		logger.config("startStopTimer()");
-//		
-//		ThreadManager tm = ThreadManager.getInstance();
-//		
-//		tm.stopAlarm();
-//		
-//		if (tglbtnOnOff.isSelected()){
-////			tm.startAlarm(alarm);
-//		}
-//		//verify if timer is running, if yes , kill it
-//		if (alarmThread != null && !alarmThread.isDone()){
-//
-//			logger.config("startStopTimer::alarmThread Done? " + alarmThread.isDone());
-//			
-//			alarmThread.cancel(true);	
-//			//wait for timer to stop
-//			while(!alarmThread.isDone()){
-//				try {
-//					Thread.sleep(50);
-//				} catch (InterruptedException e) {}
-//			}
-//			logger.config("alarmThread end loop Done? " + alarmThread.isDone());
-//		}		
-//		
-//		//if alarm is on, start it
-//		if (tglbtnOnOff.isSelected()){
-//						
-//			logger.config("tglbtnOnOff selected, Starting alarm thread");
-//			
-//			//calculate delay
-//			LocalDateTime currentDate = LocalDateTime.now();
-//			LocalDateTime alarmTime = LocalDateTime.now();
-//			
-//			if ( hours > alarmTime.getHour()  ||
-//					hours == alarmTime.getHour() && minutes > alarmTime.getMinute()){
-//				//time after current time
-//				alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0);
-//			}else{
-//				//time before current time, set date for next day.
-//				alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0).plusDays(1);
-//			}
-//
-//			long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime);
-//			
-//			alarmThread  = alarmScheduler.scheduleAtFixedRate(new Runnable(){
-//
-//				@Override
-//				public void run() {
-//					PiHandler handler = PiHandler.getInstance();
-//					System.out.println(new Date());
-//					alarmOn = true; // alarm is active and buzzing
-//					try {
-//						Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
-//						Buzzer buzzer = Buzzer.valueOf(pref.getAlarmType());
-//						
-//						handler.turnOnAlarm(buzzer);
-//						
-//						if (!handler.isScreenOn()){						
-//							handler.turnOnScreen(false);
-//							handler.autoShutDownScreen();
-//						}
-//						
-//						if (pref.isWeatherActivated() ){
-//							
-//							if (!handler.isWifiConnected() && pref.isWifiCredentialProvided()){
-//								handler.turnWifiOn();
-//							}else{
-//								int triggerForecast = new Random().nextInt(999999);
-//								ct.putSharedObject(Constants.FETCH_FORECAST, triggerForecast);
-//							}
-//						}
-//						
-//					} catch (Exception e) {
-//						logger.log(Level.SEVERE,"Error in setting off timer" , e);
-//						//TODO set someting letting the user know that there is been a log generated!!! 						
-//					}					
-//				}				
-//			}, initDelay, 86400000, TimeUnit.MILLISECONDS);			
-//			
-//			logger.config("Setting alarm at: " + alarmTime );
-//			
-//		}		
-//	}
+	
 	public void setAlarmNotToggled() {
 		this.alarmToggled = false;
 	}
