@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 
 import net.piclock.db.entity.AlarmEntity;
+import net.piclock.main.Preferences;
 
  
 //add code to main code.. 
@@ -23,10 +24,13 @@ public class ThreadManager {
 	private ScheduledExecutorService scheduler;
 
 	private ScheduledFuture<?> alarmThread ;
+	private ScheduledFuture<WeatherWorker> weatherThread;
+	private ScheduledFuture<TempSensorWorker> sensorThread;
 	
 	private static ThreadManager threadManager;
+	
 	private ThreadManager(){
-		scheduler = Executors.newScheduledThreadPool(4);
+		scheduler = Executors.newScheduledThreadPool(5);
 	}
 	public static ThreadManager getInstance(){
 		if (threadManager == null){
@@ -84,12 +88,60 @@ public class ThreadManager {
 			System.out.println("alarmThread end loop Done? " + alarmThread.isDone());
 		}	
 	}
+	@SuppressWarnings("unchecked")
+	public void startWeatherThread(int initDelay, Preferences pref) {
+		logger.config("startWeatherThread");
+		
+		weatherThread = (ScheduledFuture<WeatherWorker>) scheduler.scheduleAtFixedRate(new WeatherWorker(), initDelay, pref.getWeatherRefresh(), TimeUnit.MINUTES);
+		
+	}
+	public void stopWeatherThread() {
+		logger.log(Level.CONFIG, "Stop Weather thread");
+		if (weatherThread != null && !weatherThread.isDone()){
+
+			System.out.println("weatherThread::weatherThread Done? " + weatherThread.isDone());			
+
+			weatherThread.cancel(true);	
+			//wait for timer to stop
+			while(!weatherThread.isDone()){
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {}
+			}		
+
+			System.out.println("weatherThread end loop Done? " + weatherThread.isDone());
+		}	
+	}
 	public void startLdr() {
-		 
+		logger.log(Level.CONFIG, "startLdr");
 		scheduler.scheduleWithFixedDelay(new LDRStatusWorker(), 1, 5, TimeUnit.SECONDS);
 	}
 	
 	public void startClock (JLabel clockLabel, JLabel weekDateLable, long delay) {
+		logger.log(Level.CONFIG, "startClock");
 		scheduler.scheduleAtFixedRate(new Clock(clockLabel, weekDateLable), delay, 60000, TimeUnit.MILLISECONDS);
+	}
+	@SuppressWarnings("unchecked")
+	public void startSensorThread() {
+		logger.log(Level.CONFIG, "startSensorThread");
+		sensorThread = (ScheduledFuture<TempSensorWorker>) scheduler.scheduleAtFixedRate(new TempSensorWorker(), 0, 5, TimeUnit.MINUTES);
+	}
+	public void stopSensorThread() {
+		logger.config("stopSensorThread");
+		if (sensorThread != null){
+			
+			if (!sensorThread.isDone()){
+			
+				sensorThread.cancel(true); //cancel worker if running
+				
+				logger.config("sensorThread Thread done: " +  sensorThread.isDone());
+				//wait until cancelled
+				while(!sensorThread.isDone()){
+					try {
+						Thread.sleep(40);
+					} catch (InterruptedException e1) {}
+				}
+			}
+		}		
 	}
 }

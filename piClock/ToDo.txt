@@ -23,7 +23,8 @@ audio radio setup.:
 https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 
-TODO:		
+TODO:
+test darksky wreather		
 Alarm., add radio option.
 when auto screen off is disabled. Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
 add volume.
@@ -38,7 +39,6 @@ Tests:
 	1- wifi turn off when screen is off.. (3 min)
 	2- LDR status on light. Turn off monitor. LDR take precedence. So if LDR says hat monitor should be off, then the monitor will shutdown after 1 min.
 	3- Weather fetch automatically.
-	4- everthing turn off properly when wifi is down.
 	
 	
 	mpc play 1   --> play 1st track

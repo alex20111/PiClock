@@ -78,6 +78,7 @@ public class PiHandler {
 		if (piHandler == null) {
 			synchronized (PiHandler.class) {
 				if(piHandler == null) {
+					logger.log(Level.INFO, "PiHandler initialized");
 					piHandler = new PiHandler();
 				}
 			}
@@ -86,7 +87,7 @@ public class PiHandler {
 	}	
 
 	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException, UnsupportedBusNumberException{
-		logger.log(Level.CONFIG,"turnOffScreen()");
+		logger.log(Level.INFO,"turnOffScreen()");
 
 
 		if (wifiShutDown != null && wifiShutDown.isAlive()){
@@ -123,7 +124,7 @@ public class PiHandler {
 	}
 	/*withWifiOn: then turn on the wifi on request*/
 	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
-		logger.log(Level.CONFIG,"Turning on screen. Wifi on option: " + withWifiOn);
+		logger.log(Level.INFO,"Turning on screen. Wifi on option: " + withWifiOn);
 
 		monitorBtnHandler.deactivateListener();
 
@@ -161,10 +162,10 @@ public class PiHandler {
 
 		int ext = e.run();
 
-		System.out.println("scanSSId: output: " + e.getOutput() + "exit value: " + ext);
-
 		if (ext == 0) {
 			wifiList = FileUtils.readFileToArray("/home/pi/piClock/scripts/essid.txt");
+		}else {
+			logger.log(Level.INFO, "fetchWifiList not return code 0: " + ext +  "  out: " + e.getOutput());
 		}
 		return wifiList;
 		
@@ -172,9 +173,7 @@ public class PiHandler {
 	/**When 1st connecting to a new WIFI
 	 * @throws IOException */
 	public void connectToWifi(String wifiName, String pass) throws InterruptedException, IOException{
-		logger.log(Level.CONFIG,"connectToWifi()");
-
-		System.out.println("trying to connect to WIFI: " + wifiName + "  With pass: " + pass);
+		logger.log(Level.INFO,"connectToWifi()");
 		
 		if (wifiName != null && wifiName.length() > 0 && pass != null && pass.length() > 0){
 			//1st remove any network if exist
@@ -339,13 +338,12 @@ public class PiHandler {
 		}
 		
 		refreshWifi();
-		Thread.sleep(1000);
-		
+		Thread.sleep(2000);		
 		
 		SwingContext context = SwingContext.getInstance();
 		context.putSharedObject(Constants.CHECK_INTERNET, "end_disconnect");
 		setWifiConnected(false);
-		wifiInternetConnected = false;
+		setWifiInternetConnected(false);
 	
 	}
 	/** turn wifi card ON. This does not mean that we are connected to it, it just turn it ON
@@ -426,6 +424,7 @@ public class PiHandler {
 		this.isScreenAutoShutdown = isScreenAutoShutdown;
 	}
 	private void cancelScreenAutoShutdown() throws InterruptedException{
+		logger.log(Level.CONFIG, "cancelScreenAutoShutdown");
 		if (screenAutoShutDown != null && screenAutoShutDown.isAlive()){
 			screenAutoShutDown.interrupt();
 			while(screenAutoShutDown.isAlive()){
@@ -491,7 +490,7 @@ public class PiHandler {
 			
 	}		
 	private void wifiOff(){
-		logger.log(Level.CONFIG, "wifiOff() : wifiOn : " + wifiOn);
+		logger.log(Level.INFO, "wifiOff() : wifiOn : " + wifiOn);
 		if (wifiOn){
 
 			Exec e = new Exec();
@@ -529,12 +528,17 @@ public class PiHandler {
 
 			exec.addCommand("hostname").addCommand("--all-ip-addresses").timeout(5000);
 
-			exec.run();
+			int ext = exec.run();
 
+			if (ext == 0) {
 			if (exec.getOutput().contains("192.168")){
 				return true;
 			}
+			}else {
+				logger.log(Level.INFO, "checkIfIpPresent(), error in return exec:  " + ext +". Output: " + exec.getOutput());
+			}
 		}catch (Exception ex) {
+			logger.log(Level.SEVERE, "Error in checkIfIpPresent", ex);
 			return false;
 
 		}
@@ -558,6 +562,7 @@ public class PiHandler {
 		} 
 	}
 	private void refreshWifi() throws ExecuteException, IOException {
+		logger.log(Level.CONFIG, "refreshWifi() ");
 		//wpa_cli -i wlan0 reconfigure
 		Exec e = new Exec();
 		e.addCommand("sudo").addCommand("wpa_cli").addCommand("-i").addCommand("wlan0").addCommand("reconfigure");
@@ -565,7 +570,9 @@ public class PiHandler {
 		e.timeout(10000);
 
 		int ext = e.run();
-		System.out.println("Refresh exit code: " + ext);
+		if (ext != 0) {
+			logger.log(Level.CONFIG, "refreshWifi(), ext is not 0: " + ext + "  output: " + e.getOutput());
+		}
 
 
 	}

@@ -21,9 +21,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,9 +46,7 @@ import net.piclock.enums.LabelEnums;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeEnum;
 import net.piclock.theme.ThemeHandler;
-import net.piclock.thread.WeatherWorker;
 import net.piclock.thread.ScreenAutoClose;
-import net.piclock.thread.TempSensorWorker;
 import net.piclock.thread.ThreadManager;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.LogConfig;
@@ -103,11 +98,6 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	private RadioStationsView radioStationsView;
 	private AlarmView av;
 	
-	//thread executor
-	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
-	private ScheduledFuture<WeatherWorker> weatherThread;
-	private ScheduledFuture<TempSensorWorker> sensorThread;		
-
 	//wifi blinking
 	private boolean blinking = true;
 	private Timer blinkingWifiTimer;
@@ -163,8 +153,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		ct.addPropertyChangeListener(Constants.THEMES_BACKGROUND_IMG_UPDATE, this);
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		ct.addPropertyChangeListener(Constants.SENSOR_INFO, this);
-		
-		
+				
 		setBackground(Color.BLUE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize( 800, 480);	
@@ -335,8 +324,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				ScreenAutoClose.start(cardsPanel, 45, TimeUnit.SECONDS);
 			}
 		});
-		
-		
+				
 		lblRadioIcon.setVisible(false);
 		lblRadioIcon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
 		themes.registerIconColor(lblRadioIcon, IconEnum.RADIO_ICON);
@@ -399,7 +387,6 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		//start the LDR
 		tm.startLdr();
 			
-		
 		//check if we have wifi credentials.
 		if (prefs.isWifiCredentialProvided()){
 			handler.checkInternetConnection();		
@@ -413,9 +400,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	        handler.shutdown(); 
 	      } 
 	    }); 
-		
-		
-		
+					
 	}
 	/**change the background image **/
 	public void changeBackImage(File backImage){
@@ -505,8 +490,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		JMenuItem mp3Player = new JMenuItem("Mp3");
 		mp3Player.setFont(new Font("Tahoma", Font.BOLD, 20));
 		
-//		JMenuItem webServer = new JMenuItem("Web Server");
-//		webServer.setFont(new Font("Tahoma", Font.BOLD, 20));
+		JMenuItem webServer = new JMenuItem("Web Server");
+		webServer.setFont(new Font("Tahoma", Font.BOLD, 20));
 		
 		JMenuItem settings = new JMenuItem("Settings");
 		settings.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -527,7 +512,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		options.add(radio);
 		options.add(mp3Player);
 		options.add(forecast);
-//		options.add(webServer);
+		options.add(webServer);
 		options.add(settings);		
 	}
 
@@ -582,7 +567,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				addCurrentWeather("Not Available",weatherNaIcon, null);
 				addCurrentTemp("--", "--");
 				//kill worker if running.
-				killWeatherWorker();
+				tm.stopWeatherThread();
 				lblWeatherAlert.setVisible(false);
 
 			}
@@ -602,7 +587,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 					weatherNaIcon , null);
 			addCurrentTemp("--", "--");
 			lblWeatherAlert.setVisible(false);
-			killWeatherWorker();
+			tm.stopWeatherThread();
 		}else  if(evt.getPropertyName().equals(Constants.THEMES_BACKGROUND_IMG_UPDATE)){
 
 			changeBackImage(new File((String)evt.getNewValue()));
@@ -698,36 +683,38 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		lblWeatherIcon.setText("");
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void fetchForecast(int initDelay){		
 		logger.config("Fetching forecast (fetchForecast())");
 
 		prefs = (Preferences)ct.getSharedObject(Constants.PREFERENCES);		
 
-		killWeatherWorker();
+		tm.stopWeatherThread();
+		
+		tm.startWeatherThread(initDelay, prefs);
+//		killWeatherWorker();
 
-		weatherThread = (ScheduledFuture<WeatherWorker>) scheduler.scheduleAtFixedRate(new WeatherWorker(), initDelay, prefs.getWeatherRefresh(), TimeUnit.MINUTES);
+//		weatherThread = (ScheduledFuture<WeatherWorker>) scheduler.scheduleAtFixedRate(new WeatherWorker(), initDelay, prefs.getWeatherRefresh(), TimeUnit.MINUTES);
 
 	}	
-	private void killWeatherWorker(){
-		logger.config("killing Weather thread (killWeatherWorker())");
-		if (weatherThread != null){
-			
-			if (!weatherThread.isDone()){
-			
-				weatherThread.cancel(true); //cancel worker if running
-				
-				logger.config("Thread done: " +  weatherThread.isDone());
-				//wait until cancelled
-				while(!weatherThread.isDone()){
-					try {
-						Thread.sleep(40);
-					} catch (InterruptedException e1) {}
-				}
-			}
-		}		
-		
-	}
+//	private void killWeatherWorker(){
+//		logger.config("killing Weather thread (killWeatherWorker())");
+//		if (weatherThread != null){
+//			
+//			if (!weatherThread.isDone()){
+//			
+//				weatherThread.cancel(true); //cancel worker if running
+//				
+//				logger.config("Thread done: " +  weatherThread.isDone());
+//				//wait until cancelled
+//				while(!weatherThread.isDone()){
+//					try {
+//						Thread.sleep(40);
+//					} catch (InterruptedException e1) {}
+//				}
+//			}
+//		}		
+//		
+//	}
 	/**now we know that the wifi just connected, then call programs that require wifi **/ 
 	private void callProgThatReqWiFi(){
 		Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
@@ -750,24 +737,27 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			handler.autoShutDownScreen();
 		}
 	}
-	@SuppressWarnings("unchecked")
 	private void fetchSensorInfo(){ //every 5 min
-		logger.config("killing fetchSensorInfo");
-		if (sensorThread != null){
-			
-			if (!sensorThread.isDone()){
-			
-				sensorThread.cancel(true); //cancel worker if running
-				
-				logger.config("sensorThread Thread done: " +  sensorThread.isDone());
-				//wait until cancelled
-				while(!sensorThread.isDone()){
-					try {
-						Thread.sleep(40);
-					} catch (InterruptedException e1) {}
-				}
-			}
-		}		
-		sensorThread = (ScheduledFuture<TempSensorWorker>) scheduler.scheduleAtFixedRate(new TempSensorWorker(), 0, 5, TimeUnit.MINUTES);
+		
+		tm.stopSensorThread();
+		
+		tm.startSensorThread();
+//		logger.config("killing fetchSensorInfo");
+//		if (sensorThread != null){
+//			
+//			if (!sensorThread.isDone()){
+//			
+//				sensorThread.cancel(true); //cancel worker if running
+//				
+//				logger.config("sensorThread Thread done: " +  sensorThread.isDone());
+//				//wait until cancelled
+//				while(!sensorThread.isDone()){
+//					try {
+//						Thread.sleep(40);
+//					} catch (InterruptedException e1) {}
+//				}
+//			}
+//		}		
+//		sensorThread = (ScheduledFuture<TempSensorWorker>) scheduler.scheduleAtFixedRate(new TempSensorWorker(), 0, 5, TimeUnit.MINUTES);
 	}
 }
