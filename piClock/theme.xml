@@ -37,7 +37,8 @@
 				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-32-black.png" 	iconNight="wifi-off-32-black.png"></IconTheme>
 				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-32-black.png" 		iconNight="wifi-32-black.png"></IconTheme>
 				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet.png" 		iconNight="wifi_on_no_inet.png"></IconTheme>	
-				<IconTheme name="WEB_SERVER"	    iconDay="web-black-24.png" 			iconNight="web-black-24.png"></IconTheme>		
+				<IconTheme name="WEB_SERVER"	    iconDay="web-black-24.png" 			iconNight="web-black-24.png"></IconTheme>
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-24-black.png" 		iconNight="volume-24-black.png"></IconTheme>			
 			</labelIcon>
 		</background>
 	<background name="RAIN" image="rain-orig-480.jpg" imageFolder="img" imageNight="">
@@ -76,7 +77,8 @@
 				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-32-black.png" 	iconNight="wifi-off-32-black.png"></IconTheme>
 				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-32-black.png" 		iconNight="wifi-32-black.png"></IconTheme>
 				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet.png" 		iconNight="wifi_on_no_inet.png"></IconTheme>	
-				<IconTheme name="WEB_SERVER"	    iconDay="web-black-24.png" 			iconNight="web-black-24.png"></IconTheme>			
+				<IconTheme name="WEB_SERVER"	    iconDay="web-black-24.png" 			iconNight="web-black-24.png"></IconTheme>	
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-24-black.png" 		iconNight="volume-24-black.png"></IconTheme>			
 			</labelIcon>
 		</background>
 	</theme>	

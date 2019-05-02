@@ -54,14 +54,17 @@ import net.piclock.util.PreferencesHandler;
 import net.piclock.view.AlarmView;
 import net.piclock.view.ConfigView;
 import net.piclock.view.RadioStationsView;
+import net.piclock.view.Volume;
 import net.piclock.view.WeatherAlertView;
 import net.piclock.view.WeatherConfigView;
 import net.piclock.view.WeatherForecastView;
+import net.piclock.view.WebServerView;
 import net.piclock.weather.WeatherBean;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherCurrentModel;
 import net.weather.bean.WeatherGenericModel;
 import net.weather.utils.MessageHandl;
+import java.awt.FlowLayout;
 
 public class MainApp extends JFrame implements PropertyChangeListener {
 	private static final Logger logger = Logger.getLogger( MainApp.class.getName() );
@@ -97,6 +100,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	private WeatherAlertView weatherAlertView;
 	private RadioStationsView radioStationsView;
 	private AlarmView av;
+	private WebServerView webServerView;
 	
 	//wifi blinking
 	private boolean blinking = true;
@@ -109,6 +113,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	
 	private PiHandler handler;
 	private ThreadManager tm ;
+	private JPanel btnPanel;
+	private JButton btnVolume;
 	/**
 	 * Launch the application.
 	 */
@@ -207,7 +213,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		JPanel timePanel = new JPanel();
 		mainPanel.add(timePanel, BorderLayout.CENTER);
-		timePanel.setLayout(new MigLayout("", "[][grow 80][][grow 90,right]", "[][grow 40][center][][grow 50][]"));
+		timePanel.setLayout(new MigLayout("", "[][grow 80][][grow 70,right]", "[][grow 40][center][][grow 50][]"));
 		timePanel.setOpaque(false);
 		
 		clockLabel = new JLabel("00:00");
@@ -225,9 +231,32 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		lblWebserverIcon.setBorder(new EmptyBorder(10,10,0,0));
 		themes.registerIconColor(lblWebserverIcon, IconEnum.WEB_SERVER);
 		
+		btnPanel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) btnPanel.getLayout();
+		flowLayout.setHgap(15);
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		timePanel.add(btnPanel, "cell 3 5,grow");
+		
+		btnVolume = new JButton("");
+		btnVolume.setFocusPainted(false);
+		btnVolume.setOpaque(false);
+		btnVolume.setContentAreaFilled(false);
+		btnVolume.setBorderPainted(false);
+		btnVolume.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Volume vol = new Volume();
+				vol.setVisible(true);
+				
+			}
+		});
+		btnPanel.add(btnVolume);
+		themes.registerIconColor(btnVolume, IconEnum.VOLUME_ICON);
+		
 		btnOptionsIcon = new JButton("");
+		btnPanel.add(btnOptionsIcon);
 		btnOptionsIcon.setFocusPainted(false);
-		timePanel.add(btnOptionsIcon, "cell 3 5,alignx right,aligny bottom");
 		btnOptionsIcon.setOpaque(false);
 		btnOptionsIcon.setContentAreaFilled(false);
 		btnOptionsIcon.setBorderPainted(false);
@@ -358,13 +387,14 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		weatherPanel.add(lblTempShade, "cell 5 0,alignx right");
 		
 		av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
+		webServerView = new WebServerView();
 		
 		cardsPanel.add(av, Constants.ALARM_VIEW);
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
 		cardsPanel.add(forecastView, Constants.WEATHER_FORECAST_VIEW);
 		cardsPanel.add(weatherAlertView, Constants.WEATHER_ALERT_VIEW);
 		cardsPanel.add(radioStationsView, Constants.RADIO_STATION_VIEW);
-		
+		cardsPanel.add(webServerView, Constants.WEB_SERVER_VIEW);
 		
 		//settings
 		ConfigView configView = new ConfigView();
@@ -492,6 +522,19 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		JMenuItem webServer = new JMenuItem("Web Server");
 		webServer.setFont(new Font("Tahoma", Font.BOLD, 20));
+		webServer.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try{
+					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
+					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+					cardLayout.show(cardsPanel, Constants.WEB_SERVER_VIEW);
+				}catch (Exception ex){
+					logger.log(Level.SEVERE, "Error in Option settings", ex);
+				}
+			}
+		});		
 		
 		JMenuItem settings = new JMenuItem("Settings");
 		settings.setFont(new Font("Tahoma", Font.BOLD, 20));

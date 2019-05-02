@@ -21,6 +21,9 @@ public class Preferences {
 	private boolean radioSleep = false;
 	private int sleepInMin = 0;
 	
+	//volume
+	private int lastVolumeLevel = 20;
+	
 	
 
 	public String getWeatherProvider() {
@@ -112,6 +115,12 @@ public class Preferences {
 	}
 	public void setSleepInMin(int sleepInMin) {
 		this.sleepInMin = sleepInMin;
+	}
+	public int getLastVolumeLevel() {
+		return lastVolumeLevel;
+	}
+	public void setLastVolumeLevel(int lastVolumeLevel) {
+		this.lastVolumeLevel = lastVolumeLevel;
 	}
 	@Override
 	public String toString() {

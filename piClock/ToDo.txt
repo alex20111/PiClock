@@ -32,6 +32,8 @@ test new turn off screen and turn on screen and wifi on button.
 install speakers.
 install website to add radio stations.
 work on MP3 - also add page on website to add/delete files for mp3. Add new table for MP3.
+get Web server icon
+add/remove web server icon when the web server is started
 
 
 

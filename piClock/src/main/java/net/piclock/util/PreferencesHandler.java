@@ -29,6 +29,9 @@ public class PreferencesHandler {
 	private final static String RADIO_SLEEP 		= "RADIO_SLEEP";
 	private final static String RADIO_SLEEP_TIME	= "RADIO_SLEEP_TIME";
 	
+	//VOLUME
+	private final static String LAST_VOLUME	= "VOLUME";
+	
 	private final static String prefFileName = "user_prf.cfg";
 	
 	
@@ -59,7 +62,8 @@ public class PreferencesHandler {
 			prop.setProperty(RADIO_SLEEP, String.valueOf(prefs.isRadioSleep()));
 			prop.setProperty(RADIO_SLEEP_TIME, String.valueOf(prefs.getSleepInMin()));
 			
-
+			prop.setProperty(LAST_VOLUME, String.valueOf(prefs.getLastVolumeLevel()));
+			
 			// save properties to project root folder
 			prop.store(output, "User preferences for world best clock");
 		
@@ -106,6 +110,8 @@ public class PreferencesHandler {
 			userPrefs.setRadioStation(prop.getProperty(RADIO_STATION, ""));
 			userPrefs.setSleepInMin(Integer.parseInt(prop.getProperty(RADIO_SLEEP_TIME, "0")));	
 			
+			//volume
+			userPrefs.setLastVolumeLevel(Integer.parseInt(prop.getProperty(LAST_VOLUME, "20")));	
 
 		}catch(FileNotFoundException f){
 			userPrefs = new Preferences();

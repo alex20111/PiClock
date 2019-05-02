@@ -37,6 +37,7 @@ import net.piclock.enums.Buzzer;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
+import net.piclock.swing.component.AlarmDayMouseSelector;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ThreadManager;
@@ -64,7 +65,16 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	
 	private AlarmSql sql;
 	
-	private  boolean alarmToggled = false;	
+	private  boolean alarmToggled = false;
+	
+	//days of the week label
+	private AlarmDayMouseSelector sunday;
+	private AlarmDayMouseSelector monday;
+	private AlarmDayMouseSelector tuesday;
+	private AlarmDayMouseSelector wednesday;
+	private AlarmDayMouseSelector thursday;
+	private AlarmDayMouseSelector friday;
+	private AlarmDayMouseSelector saturday;
 	/**
 	 * Create the panel.
 	 * @throws IOException 
@@ -74,6 +84,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	 */
 	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException, UnsupportedBusNumberException {		
 		logger.config("Starting alarmView");
+		
 		sql = new AlarmSql();
 		sql.CreateAlarmTable();
 		
@@ -358,14 +369,31 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 							ae.setAlarmSound(btnBuzzer.getText());
 							ae.setActive(true);
 
+
 							List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
-							rp.add(AlarmRepeat.MONDAY);
-							rp.add(AlarmRepeat.TUESDAY);
-							rp.add(AlarmRepeat.WEDNESDAY);
-							rp.add(AlarmRepeat.THURSDAY);
-							rp.add(AlarmRepeat.FRIDAY);
-							rp.add(AlarmRepeat.SATURDAY);
-							rp.add(AlarmRepeat.SUNDAY);
+							
+							if (sunday.isSelected()) {
+								rp.add(AlarmRepeat.SUNDAY);
+							}
+							if (monday.isSelected()) {
+								rp.add(AlarmRepeat.MONDAY);
+							}
+							if (tuesday.isSelected()) {
+								rp.add(AlarmRepeat.TUESDAY);
+							}
+							if (wednesday.isSelected()) {
+								rp.add(AlarmRepeat.WEDNESDAY);
+							}
+							if (thursday.isSelected()) {
+								rp.add(AlarmRepeat.THURSDAY);
+							}
+							if (friday.isSelected()) {
+								rp.add(AlarmRepeat.FRIDAY);
+							}
+							if (saturday.isSelected()) {
+								rp.add(AlarmRepeat.SATURDAY);
+							}
+											
 							ae.setAlarmRepeat(rp);
 
 							if (add) {
@@ -428,6 +456,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		btnBuzzer.setBounds(615, 235, 140, 40);
 		add(btnBuzzer);
 	
+		dayDaysToSelect(alarmEnt);
 	}
 	
 	public void setAlarmNotToggled() {
@@ -437,6 +466,64 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent evt) {
 		
 		btnBuzzer.setText(((Buzzer)evt.getNewValue()).name());
+		
+	}
+	private void dayDaysToSelect(AlarmEntity alarm) {	
+		
+		List<AlarmRepeat> ar = new ArrayList<AlarmRepeat>();
+		if (alarm != null) {
+			ar = alarm.getAlarmRepeat();
+		}
+		
+		JLabel lblDaySunday = new JLabel("S");
+		sunday = new AlarmDayMouseSelector(lblDaySunday, ar.contains(AlarmRepeat.SUNDAY) ? true : false);
+		lblDaySunday.addMouseListener(sunday);
+		lblDaySunday.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDaySunday.setBounds(55,109,26,23);
+		
+		JLabel lblDayMonday = new JLabel("M");
+		monday = new AlarmDayMouseSelector(lblDayMonday, ar.contains(AlarmRepeat.MONDAY) ? true : false);
+		lblDayMonday.addMouseListener(monday);
+		lblDayMonday.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDayMonday.setBounds(55,133,26,23);
+		
+		JLabel lblDayTue = new JLabel("T");
+		tuesday = new AlarmDayMouseSelector(lblDayTue, ar.contains(AlarmRepeat.TUESDAY) ? true : false);
+		lblDayTue.addMouseListener(tuesday);
+		lblDayTue.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDayTue.setBounds(55,157,26,23);
+		
+		JLabel lblDayWed = new JLabel("W");
+		wednesday = new AlarmDayMouseSelector(lblDayWed, ar.contains(AlarmRepeat.WEDNESDAY) ? true : false);
+		lblDayWed.addMouseListener(wednesday);
+		lblDayWed.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDayWed.setBounds(55,181,26,23);
+		
+		JLabel lblDayThu = new JLabel("T");
+		thursday = new AlarmDayMouseSelector(lblDayThu, ar.contains(AlarmRepeat.THURSDAY) ? true : false);
+		lblDayThu.addMouseListener(thursday);
+		lblDayThu.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDayThu.setBounds(55,205,26,23);
+		
+		JLabel lblDayFriday = new JLabel("F");
+		friday = new AlarmDayMouseSelector(lblDayFriday, ar.contains(AlarmRepeat.FRIDAY) ? true : false);
+		lblDayFriday.addMouseListener(friday);
+		lblDayFriday.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDayFriday.setBounds(55,229,26,23);
+		
+		JLabel lblDaySat = new JLabel("S");
+		saturday = new AlarmDayMouseSelector(lblDaySat, ar.contains(AlarmRepeat.SATURDAY) ? true : false);
+		lblDaySat.addMouseListener(saturday);
+		lblDaySat.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDaySat.setBounds(55,253,26,23);
+		
+		add(lblDaySunday);
+		add(lblDayMonday);
+		add(lblDayTue);
+		add(lblDayWed);
+		add(lblDayThu);
+		add(lblDayFriday);
+		add(lblDaySat);
 		
 	}
 }

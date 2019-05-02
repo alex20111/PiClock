@@ -13,6 +13,7 @@ public class Constants {
 	public static final String CONFIG_VIEW = "configViewPanel";
 	public static final String WEATHER_ALERT_VIEW = "weatherAlertView";
 	public static final String RADIO_STATION_VIEW = "radioStationsView";
+	public static final String WEB_SERVER_VIEW = "webServerView";
 	
 	
 	public static final String CARD_PANEL = "card_panel";
