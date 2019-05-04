@@ -1,5 +1,6 @@
 package net.piclock.swing.component;
 
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -16,6 +17,7 @@ public class AlarmDayMouseSelector extends MouseAdapter{
 	public AlarmDayMouseSelector(JLabel label, boolean initSelected) {
 		this.label = label;
 		this.selected = initSelected;
+		this.border = new RoundedBorder(Color.black, 40);
 		
 		if (selected) {
 			label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
@@ -24,6 +26,7 @@ public class AlarmDayMouseSelector extends MouseAdapter{
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		System.out.println("LALALAALALLA clicked !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		if(selected) {
 			label.setBorder(new EmptyBorder(0,0,0,0));
 			selected = false;

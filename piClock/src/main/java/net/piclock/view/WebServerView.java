@@ -1,6 +1,7 @@
 package net.piclock.view;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -13,6 +14,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.main.Constants;
+import net.piclock.main.PiHandler;
+import net.piclock.server.MiniWebServer;
+import net.piclock.swing.component.SwingContext;
 
 public class WebServerView extends JPanel {
 
@@ -25,7 +30,7 @@ public class WebServerView extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public WebServerView() {
+	public WebServerView(final JLabel lblWebserverIcon) {
 		setSize(new Dimension(800, 480));
 		setLayout(new BorderLayout(0, 0));
 		setOpaque(false);
@@ -38,7 +43,7 @@ public class WebServerView extends JPanel {
 		add(titlePanel, BorderLayout.NORTH);
 
 		JLabel lblWebServer = new JLabel("Web  Server");
-		lblWebServer.setFont(new Font("Tahoma", Font.BOLD, 22));
+		lblWebServer.setFont(new Font("Tahoma", Font.BOLD, 35));
 		titlePanel.add(lblWebServer);
 
 		JPanel bodyPanel = new JPanel();
@@ -71,7 +76,7 @@ public class WebServerView extends JPanel {
 		btnStart = new JButton("Start");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				start();
+				start(lblWebserverIcon);
 			}
 		});
 		btnStart.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -81,6 +86,7 @@ public class WebServerView extends JPanel {
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				stop();
+				lblWebserverIcon.setVisible(false);
 			}
 		});
 		btnStop.setEnabled(false);
@@ -93,20 +99,24 @@ public class WebServerView extends JPanel {
 	}
 	private void back(){
 		System.out.println("Back");
-//		CardLayout cl = (CardLayout)(cards.getLayout());
-//        cl.show(cards,"ha" );
+		SwingContext context = SwingContext.getInstance();
+		JPanel cards = (JPanel)context.getSharedObject(Constants.CARD_PANEL);
+		CardLayout cl = (CardLayout)(cards.getLayout());
+        cl.show(cards, Constants.MAIN_VIEW );
 	}
-	private void start(){
+	private void start(JLabel lblWebserverIcon){
 		try{
 			btnStart.setEnabled(false);
 			btnStop.setEnabled(true);
 
-//			MiniWebServer server = MiniWebServer.getInstance();
-//			server.startServer();
+			MiniWebServer server = MiniWebServer.getInstance();
+			server.startServer();
 
-			lblAddressTxt.setText("http://192.168.1.180/");
+			String IP=	PiHandler.getInstance().getIpAddress();
+			lblAddressTxt.setText("http://" + IP + "/");
 			lblStatusresult.setText("Running");
 			lblStatusresult.setForeground(Color.GREEN);
+			lblWebserverIcon.setVisible(true);
 		}catch(Exception e){
 			lblAddressTxt.setText("ERROR while starting");
 			btnStart.setEnabled(true);
@@ -120,8 +130,8 @@ public class WebServerView extends JPanel {
 	private void stop(){
 		btnStart.setEnabled(true);
 		btnStop.setEnabled(false);
-//		MiniWebServer server = MiniWebServer.getInstance();
-//		server.stop();
+		MiniWebServer server = MiniWebServer.getInstance();
+		server.stop();
 		lblAddressTxt.setText("");
 		lblStatusresult.setText("Stopped");
 		lblStatusresult.setForeground(Color.RED);

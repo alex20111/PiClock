@@ -162,13 +162,13 @@ public class PiHandler {
 
 		int ext = e.run();
 
-		if (ext == 0) {
-			wifiList = FileUtils.readFileToArray("/home/pi/piClock/scripts/essid.txt");
-		}else {
-			logger.log(Level.INFO, "fetchWifiList not return code 0: " + ext +  "  out: " + e.getOutput());
-		}
+
+		wifiList = FileUtils.readFileToArray("/home/pi/piClock/scripts/essid.txt");
+
+		logger.log(Level.INFO, "fetchWifiList ext return: " + ext +  "  out: " + e.getOutput());
+
 		return wifiList;
-		
+
 	}
 	/**When 1st connecting to a new WIFI
 	 * @throws IOException */
@@ -185,8 +185,9 @@ public class PiHandler {
 
 			String newContents = new String(Files.readAllBytes(wpaFile));
 
-			String newString = newContents.concat(newNetwork);
-
+			String newString = newContents.trim().concat(newNetwork);
+			
+			logger.log(Level.CONFIG, "Wpa conf content: " + newContents + "  Appended (newString): " + newString + " WPA exist:" + Files.exists(wpaFile));
 			byte[] strToBytes = newString.getBytes();
 			Files.write(wpaFile, strToBytes);
 			
@@ -313,12 +314,11 @@ public class PiHandler {
 				} catch (InterruptedException e) {					
 					context.putSharedObject(Constants.CHECK_INTERNET, "end_interrupted");
 					keepRunning = false;
-				} catch (SocketException e) {
+				}  catch ( IOException e) {
 					context.putSharedObject(Constants.CHECK_INTERNET, "end_timeout");
 					keepRunning = false;
 					logger.log(Level.SEVERE, "Error connecting to wifi", e);
-				}
-				
+				} 
 			}
 		});
 		checkConnection.start();
@@ -359,19 +359,18 @@ public class PiHandler {
 			e.timeout(10000);
 
 			int ext = e.run();
-			if (ext == 0) {
-				SwingContext context = SwingContext.getInstance();
-				Preferences p = (Preferences)context.getSharedObject(Constants.PREFERENCES);
 
-				if (p.getWifi() != null && p.getWifi().length() > 0 
-						&& p.getWifiPass() != null && p.getWifiPass().length() > 0){				
-					checkInternetConnection(); //chekc if internet connection is still working
-				}
-			}else {
-				logger.log(Level.SEVERE, "Error turning wifi up. Exit: " + ext + ".  output: " + e.getOutput() );
+			SwingContext context = SwingContext.getInstance();
+			Preferences p = (Preferences)context.getSharedObject(Constants.PREFERENCES);
+
+			if (p.getWifi() != null && p.getWifi().length() > 0 
+					&& p.getWifiPass() != null && p.getWifiPass().length() > 0){				
+				checkInternetConnection(); //chekc if internet connection is still working
 			}
 
+			logger.log(Level.CONFIG, "turning wifi up. Exit : " + ext + ".  output: " + e.getOutput() );
 		}
+	
 	}
 	//verify if the monitor is actually ON of OFF	
 	public boolean isMonitorOn() throws ExecuteException, IOException {
@@ -423,6 +422,19 @@ public class PiHandler {
 	public  void setScreenAutoShutdown(boolean isScreenAutoShutdown) {
 		this.isScreenAutoShutdown = isScreenAutoShutdown;
 	}
+	public String getIpAddress() throws ExecuteException, IOException {
+		Exec exec = new Exec();
+
+		exec.addCommand("hostname").addCommand("--all-ip-addresses").timeout(5000);
+
+		int ext = exec.run();
+
+		logger.log(Level.INFO, "getIpAddress(), error in return exec:  " + ext +". Output: " + exec.getOutput());
+		return exec.getOutput();
+
+	}
+	
+	
 	private void cancelScreenAutoShutdown() throws InterruptedException{
 		logger.log(Level.CONFIG, "cancelScreenAutoShutdown");
 		if (screenAutoShutDown != null && screenAutoShutDown.isAlive()){
@@ -501,47 +513,35 @@ public class PiHandler {
 			try {
 				int ext = e.run();
 
-				if (ext == 0) {
-					wifiOn = false;	
-					setWifiConnected(false);
-					wifiInternetConnected = false;
-					SwingContext context = SwingContext.getInstance();
-					context.putSharedObject(Constants.CHECK_INTERNET, "end_wifiOff");
-				}else {
-					logger.log(Level.SEVERE, "Exit code greater than 0: " + ext);
-				}
+
+				wifiOn = false;	
+				setWifiConnected(false);
+				wifiInternetConnected = false;
+				SwingContext context = SwingContext.getInstance();
+				context.putSharedObject(Constants.CHECK_INTERNET, "end_wifiOff");
+
+				logger.log(Level.INFO, "Exit code : " + ext + " OUtput: " + e.getOutput());
+
 
 			} catch (IOException e1) {
-				logger.log(Level.CONFIG, "wifiOff() : Error shutting wifi : " , e1);
+				logger.log(Level.SEVERE, "wifiOff() : Error shutting wifi : " , e1);
 			}
 		}
 	}
 	/**
 	 * Check if the computer has an ip address.
 	 * @return
+	 * @throws IOException 
+	 * @throws ExecuteException 
 	 * @throws SocketException
 	 */
-	private boolean checkIfIpPresent() throws SocketException{
+	private boolean checkIfIpPresent() throws ExecuteException, IOException {
 		logger.log(Level.CONFIG, "checkIfIpPresent() ");
-		try {
-			Exec exec = new Exec();
-
-			exec.addCommand("hostname").addCommand("--all-ip-addresses").timeout(5000);
-
-			int ext = exec.run();
-
-			if (ext == 0) {
-			if (exec.getOutput().contains("192.168")){
+		
+			if (getIpAddress().contains("192.168")){
 				return true;
 			}
-			}else {
-				logger.log(Level.INFO, "checkIfIpPresent(), error in return exec:  " + ext +". Output: " + exec.getOutput());
-			}
-		}catch (Exception ex) {
-			logger.log(Level.SEVERE, "Error in checkIfIpPresent", ex);
-			return false;
-
-		}
+		
 		return false;
 	}
 	/**
@@ -570,9 +570,9 @@ public class PiHandler {
 		e.timeout(10000);
 
 		int ext = e.run();
-		if (ext != 0) {
-			logger.log(Level.CONFIG, "refreshWifi(), ext is not 0: " + ext + "  output: " + e.getOutput());
-		}
+
+		logger.log(Level.CONFIG, "refreshWifi(), ext: " + ext + "  output: " + e.getOutput());
+
 
 
 	}

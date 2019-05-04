@@ -37,6 +37,9 @@ public class Constants {
 	
 	public static final String CHECK_INTERNET = "CheckingNetConnection";
 	
+	public static final String RADIO_VOLUME_ICON_TRIGGER = "radioVolTrigger";
+	public static final String MP3_VOLUME_ICON_TRIGGER = "mp3VolTrigger";
+	
 	public static final String NA_ICON = "cloudNa.png";
 	
 	//time mask

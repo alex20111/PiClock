@@ -159,6 +159,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		ct.addPropertyChangeListener(Constants.THEMES_BACKGROUND_IMG_UPDATE, this);
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		ct.addPropertyChangeListener(Constants.SENSOR_INFO, this);
+		ct.addPropertyChangeListener(Constants.RADIO_VOLUME_ICON_TRIGGER, this);
 				
 		setBackground(Color.BLUE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -234,6 +235,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		btnPanel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) btnPanel.getLayout();
 		flowLayout.setHgap(15);
+		btnPanel.setOpaque(false);
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		timePanel.add(btnPanel, "cell 3 5,grow");
 		
@@ -242,6 +244,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		btnVolume.setOpaque(false);
 		btnVolume.setContentAreaFilled(false);
 		btnVolume.setBorderPainted(false);
+		btnVolume.setVisible(false);
 		btnVolume.addActionListener(new ActionListener() {
 			
 			@Override
@@ -387,7 +390,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		weatherPanel.add(lblTempShade, "cell 5 0,alignx right");
 		
 		av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
-		webServerView = new WebServerView();
+		webServerView = new WebServerView(lblWebserverIcon);
 		
 		cardsPanel.add(av, Constants.ALARM_VIEW);
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
@@ -692,6 +695,11 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			}catch (Exception ex){
 				logger.log(Level.SEVERE, "Error in blinking wifi", ex);
 			}
+		}else if(evt.getPropertyName().equals(Constants.RADIO_VOLUME_ICON_TRIGGER) ||
+				evt.getPropertyName().equals(Constants.MP3_VOLUME_ICON_TRIGGER)){
+			boolean showVolume = (Boolean)evt.getNewValue();
+			//TODO add function for MP3 also.. when radio or mp3 is on, then the voluem is still on
+			btnVolume.setVisible(showVolume);
 		}
 	}		
  

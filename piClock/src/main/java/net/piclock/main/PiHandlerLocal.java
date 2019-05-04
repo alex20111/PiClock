@@ -1,5 +1,6 @@
 package net.piclock.main;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -10,6 +11,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.wiringpi.SoftPwm;
 
 import home.misc.Exec;
@@ -25,7 +27,7 @@ import net.piclock.swing.component.SwingContext;
 public class PiHandlerLocal {
 	private static final Logger logger = Logger.getLogger( PiHandler.class.getName() );
 
-	private static PiHandlerLocal piHandler;
+	private static PiHandler piHandler;
 	
 	private  boolean screenOn = true;
 	private  boolean wifiConnected = false; //if connected to the WIFI.
@@ -52,16 +54,16 @@ public class PiHandlerLocal {
 		System.out.println("Init");
 	}
 	
-	public static PiHandlerLocal getInstance() {
-		if (piHandler == null) {
-			synchronized (PiHandlerLocal.class) {
-				if(piHandler == null) {
-					piHandler = new PiHandlerLocal();
-				}
-			}
-		}
-		return piHandler;
-	}	
+//	public static PiHandler getInstance() {
+//		if (piHandler == null) {
+//			synchronized (PiHandler.class) {
+//				if(piHandler == null) {
+//					piHandler = new PiHandler();
+//				}
+//			}
+//		}
+//		return piHandler;
+//	}	
 
 	public void turnOffScreen() throws InterruptedException{
 		logger.log(Level.CONFIG,"turnOffScreen()");
@@ -91,7 +93,7 @@ public class PiHandlerLocal {
 		setBrightness(Light.DARK);
 	}
 	/*withWifiOn: then turn on the wifi on request*/
-	public void turnOnScreen(boolean withWifiOn) throws InterruptedException{
+	public void turnOnScreen(boolean withWifiOn, Light light) throws InterruptedException, IOException{
 		logger.log(Level.CONFIG,"Turning on screen. Wifi on option: " + withWifiOn);
 		
 		//interrupt wifi shutdown if in process because screen turned back on.
@@ -433,5 +435,8 @@ public class PiHandlerLocal {
 	}
 	public  void setScreenAutoShutdown(boolean isScreenAutoShutdown) {
 		this.isScreenAutoShutdown = isScreenAutoShutdown;
+	}
+	public void shutdown() {
+		System.out.println("Shutdown");
 	}
 }

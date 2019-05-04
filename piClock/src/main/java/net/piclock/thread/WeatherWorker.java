@@ -54,7 +54,7 @@ public class WeatherWorker implements Runnable {
 				if (host == Host.envCanada) {
 					wgm =  WeatherAction.getEnvironmentCanadaRSSWeather(pref.getStationCode(), WeatherLang.english, false, true);
 				}else if (host == Host.DARKSKY) {
-					wgm = WeatherAction.getDarkSkyForecast(Long.valueOf(city.getLat()).longValue(),Long.valueOf( city.getLon()).longValue(), null, DarkSkyUnits.SI,  WeatherLang.english);
+					wgm = WeatherAction.getDarkSkyForecast(Double.valueOf(city.getLat()).longValue(),Double.valueOf( city.getLon()).longValue(), null, DarkSkyUnits.SI,  WeatherLang.english);
 				}
 
 				ct.putSharedObject(Constants.WEATHER_LST_UPD, new Date());//to prevent too many refresh.

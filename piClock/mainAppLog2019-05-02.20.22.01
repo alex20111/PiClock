@@ -1,0 +1,32 @@
+May 02, 2019 8:22:01 PM net.piclock.main.MainApp <init> INFO: Start Program
+May 02, 2019 8:22:02 PM net.piclock.view.RadioStationsView loadAllRadioStations CONFIG: loadAllRadioStations
+May 02, 2019 8:22:02 PM net.piclock.main.MainApp$1 run SEVERE: Error starting
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "is_last_selection" not found [42122-199]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:451)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:427)
+	at org.h2.message.DbException.get(DbException.java:205)
+	at org.h2.message.DbException.get(DbException.java:181)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3188)
+	at org.h2.jdbc.JdbcResultSet.get(JdbcResultSet.java:3287)
+	at org.h2.jdbc.JdbcResultSet.getBoolean(JdbcResultSet.java:570)
+	at net.piclock.db.entity.RadioEntity.<init>(RadioEntity.java:28)
+	at net.piclock.db.sql.RadioSql.loadAllRadios(RadioSql.java:99)
+	at net.piclock.view.RadioStationsView.loadAllRadioStations(RadioStationsView.java:194)
+	at net.piclock.view.RadioStationsView.<init>(RadioStationsView.java:185)
+	at net.piclock.main.MainApp.<init>(MainApp.java:193)
+	at net.piclock.main.MainApp$1.run(MainApp.java:129)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:758)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:74)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:728)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:205)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+

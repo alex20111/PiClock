@@ -38,6 +38,7 @@ import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.AlarmDayMouseSelector;
+import net.piclock.swing.component.RoundedBorder;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ThreadManager;
@@ -477,45 +478,59 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		
 		JLabel lblDaySunday = new JLabel("S");
 		sunday = new AlarmDayMouseSelector(lblDaySunday, ar.contains(AlarmRepeat.SUNDAY) ? true : false);
+		lblDaySunday.setFont(new Font("Tahoma", Font.BOLD, 16));
+//		lblDaySunday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDaySunday.addMouseListener(sunday);
 		lblDaySunday.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDaySunday.setBounds(55,109,26,23);
+		lblDaySunday.setBounds(55,109,36,33);
 		
 		JLabel lblDayMonday = new JLabel("M");
+//		lblDayMonday.setBorder(new RoundedBorder(Color.BLACK, 40));
+		lblDayMonday.setFont(new Font("Tahoma", Font.BOLD, 16));
 		monday = new AlarmDayMouseSelector(lblDayMonday, ar.contains(AlarmRepeat.MONDAY) ? true : false);
 		lblDayMonday.addMouseListener(monday);
 		lblDayMonday.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDayMonday.setBounds(55,133,26,23);
+		lblDayMonday.setBounds(55,143,36,33);
 		
 		JLabel lblDayTue = new JLabel("T");
+//		lblDayTue.setBorder(new RoundedBorder(Color.BLACK, 40));
+		lblDayTue.setFont(new Font("Tahoma", Font.BOLD, 16));
 		tuesday = new AlarmDayMouseSelector(lblDayTue, ar.contains(AlarmRepeat.TUESDAY) ? true : false);
 		lblDayTue.addMouseListener(tuesday);
 		lblDayTue.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDayTue.setBounds(55,157,26,23);
+		lblDayTue.setBounds(55,177,36,33);
 		
 		JLabel lblDayWed = new JLabel("W");
+//		lblDayWed.setBorder(new RoundedBorder(Color.BLACK, 40));
+		lblDayWed.setFont(new Font("Tahoma", Font.BOLD, 16));
 		wednesday = new AlarmDayMouseSelector(lblDayWed, ar.contains(AlarmRepeat.WEDNESDAY) ? true : false);
 		lblDayWed.addMouseListener(wednesday);
 		lblDayWed.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDayWed.setBounds(55,181,26,23);
+		lblDayWed.setBounds(55,211,36,33);
 		
 		JLabel lblDayThu = new JLabel("T");
+		lblDayThu.setFont(new Font("Tahoma", Font.BOLD, 16));
+//		lblDayThu.setBorder(new RoundedBorder(Color.BLACK, 40));
 		thursday = new AlarmDayMouseSelector(lblDayThu, ar.contains(AlarmRepeat.THURSDAY) ? true : false);
 		lblDayThu.addMouseListener(thursday);
 		lblDayThu.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDayThu.setBounds(55,205,26,23);
+		lblDayThu.setBounds(55,245,36,33);
 		
 		JLabel lblDayFriday = new JLabel("F");
+		lblDayFriday.setFont(new Font("Tahoma", Font.BOLD, 16));
+//		lblDayFriday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		friday = new AlarmDayMouseSelector(lblDayFriday, ar.contains(AlarmRepeat.FRIDAY) ? true : false);
 		lblDayFriday.addMouseListener(friday);
 		lblDayFriday.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDayFriday.setBounds(55,229,26,23);
+		lblDayFriday.setBounds(55,279,36,33);
 		
 		JLabel lblDaySat = new JLabel("S");
+		lblDaySat.setFont(new Font("Tahoma", Font.BOLD, 16));
+//		lblDaySat.setBorder(new RoundedBorder(Color.BLACK, 40));
 		saturday = new AlarmDayMouseSelector(lblDaySat, ar.contains(AlarmRepeat.SATURDAY) ? true : false);
 		lblDaySat.addMouseListener(saturday);
 		lblDaySat.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDaySat.setBounds(55,253,26,23);
+		lblDaySat.setBounds(55,313,36,33);
 		
 		add(lblDaySunday);
 		add(lblDayMonday);

@@ -28,19 +28,19 @@ import home.misc.Exec;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.PreferencesHandler;
 
 public class Volume extends JDialog {
 	
 	private static final Logger logger = Logger.getLogger( Volume.class.getName() );
 
 	//Add volume call on radio or mp3.
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private final JPanel volumePanel = new JPanel();
 	private SwingContext ct;
 	private Preferences prefs;
+	
+	private JSlider slider;
 
 	/**
 	 * Create the dialog.
@@ -60,7 +60,7 @@ public class Volume extends JDialog {
 
 		getContentPane().add(volumePanel);
 		
-		final JSlider slider = new JSlider(JSlider.VERTICAL, 0, 100, 20);
+		slider = new JSlider(JSlider.VERTICAL, 0, 100, 20);
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
 		slider.setMinorTickSpacing(1);
@@ -68,7 +68,7 @@ public class Volume extends JDialog {
 
 		volumePanel.add(slider);
 		
-		JLabel lblVolume = new JLabel("Volume");
+		JLabel lblVolume = new JLabel("Vol");
 		lblVolume.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblVolume.setHorizontalAlignment(SwingConstants.CENTER);
 		volumePanel.add(lblVolume, BorderLayout.NORTH);
@@ -122,6 +122,9 @@ public class Volume extends JDialog {
 		
 		if (ext > 0 ){
 			logger.log(Level.INFO, "Problem with volume. Ext: " + ext + "  output: " + exec.getOutput());
+		}else {
+			prefs.setLastVolumeLevel(slider.getValue());
+			PreferencesHandler.save(prefs);
 		}
 		
 //		amixer -c 1 set Speaker 49%

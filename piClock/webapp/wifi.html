@@ -1,0 +1,39 @@
+ <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">WIFI</h1>
+      
+      </div>
+
+
+	   <div class="row">
+		<div class="col-md-4 order-md-2 mb-4">
+			<h4> WIFI configuration </h4>
+			
+			%-message1-%
+		  <form method="get">
+			
+			
+			<div class="mb-3">
+			  <label for="wifiName">Wifi Name</label>
+			  <div class="form-group">			
+				<select class="form-control" name="wifiName"> 
+				  %-wifilist-%
+				</select>
+			  </div>
+			</div>
+			<div class="mb-3">
+			  <label for="WifiPassword">WIFI Password</label>
+			  <div class="input-group">			
+				<input type="text" class="form-control" id="WifiPassId" name="wifiPassword" placeholder="Password" required>
+			  </div>
+			</div>
+			
+			
+			<button type="submit" class="btn btn-primary"> Save </button>
+		  </form>
+     </div>
+	 </div>
+      
+    </main>
+  </div>
+</div>

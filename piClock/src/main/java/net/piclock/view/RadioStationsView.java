@@ -136,14 +136,14 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(radioStations.getSelectedIndex() != -1) {
-					
+				if(radioStations.getSelectedIndex() != -1) {					
 				
 				lblRadioIcon.setVisible(true);
+					ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, true);
 				
 				
 				RadioEntity re = (RadioEntity)radioStations.getSelectedItem();
-				System.out.println("Playing : " + re.getRadioName() + " TRACK: " + re.getTrackNbr());
+				logger.log(Level.CONFIG, "Playing : " + re.getRadioName() + " TRACK: " + re.getTrackNbr());
 				
 				Exec exec = new Exec();
 				exec.addCommand("mpc").addCommand("play").addCommand(String.valueOf(re.getTrackNbr())).timeout(10000);
@@ -167,6 +167,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				lblRadioIcon.setVisible(false);
+				ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, false);
 				
 				Exec exec = new Exec();
 				exec.addCommand("mpc").addCommand("stop").timeout(10000);
@@ -175,9 +176,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 					exec.run();
 				} catch (IOException e1) {
 					logger.log(Level.SEVERE, "Error stopping music", e1);
-				}				
-				
-				
+				}					
 			}
 		});
 		

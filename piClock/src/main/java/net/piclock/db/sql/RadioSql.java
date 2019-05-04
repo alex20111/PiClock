@@ -35,6 +35,7 @@ public class RadioSql {
 				columns.add(new ColumnType(RadioEntity.RADIO_NAME, false).VarChar(200));
 				columns.add(new ColumnType(RadioEntity.RADIO_LINK, false).VarChar(500));
 				columns.add(new ColumnType(RadioEntity.TRACK_NBR, false).TinyInt());
+				columns.add(new ColumnType(RadioEntity.RADIO_LAST_SELECTION, false).Boolean());
 				
 				con.createTable(RadioEntity.TBL_NM, columns);				
 			}
@@ -56,6 +57,7 @@ public class RadioSql {
 			.setParameter(RadioEntity.RADIO_NAME, radio.getRadioName())
 			.setParameter(RadioEntity.RADIO_LINK, radio.getRadioLink())
 			.setParameter(RadioEntity.TRACK_NBR, radio.getTrackNbr())
+			.setParameter(RadioEntity.RADIO_LAST_SELECTION, radio.isLastSelection())
 
 			.add();
 		}finally {
@@ -72,6 +74,7 @@ public class RadioSql {
 					.setParameter(RadioEntity.RADIO_NAME, radio.getRadioName())
 					.setParameter(RadioEntity.RADIO_LINK, radio.getRadioLink())
 					.setParameter(RadioEntity.TRACK_NBR, radio.getTrackNbr())
+					.setParameter(RadioEntity.RADIO_LAST_SELECTION, radio.isLastSelection())
 					.addUpdWhereClause("Where "+RadioEntity.ID+" = :idValue", radio.getId()).update();
 //					.update(RadioEntity.ID, radio.getId());//TODO
 

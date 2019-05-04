@@ -8,7 +8,7 @@ toolbar on PI..
 	Configure in properties to hide at 0 pixel
 	
 Create folder PiClock.
-	Copy whole structure from Eclipse:
+	Copy whole structure from Eclipse into /home/pi/piClock:
 		/PiClock
 		/piClock/img
 		/piClock/themes.xml 
@@ -17,30 +17,43 @@ Create folder PiClock.
 		/piClock/user_prf.cfg
 		/piClock/scripts/scanssid.sh   after chmod 755 scanssid.sh to make it execuatable
 		/piClock/PiClock.mv.db
-		
+
+//in piClock folder , add web structure
+/home/pi/piClock/webapp
+/home/pi/piClock/webapp/css
+/home/pi/piClock/webapp/js
+/home/pi/piClock/webapp/webpages
+/home/pi/piClock/temp
+/home/pi/piClock/mp3
 		
 audio radio setup.:
 https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 
+
+
+
+
+
 TODO:
-test darksky wreather		
-Alarm., add radio option.
+add splash screen
+Auto shutdown the alarm if snoose if not clicked.
+Add days of week in the theme for color
+Add Radio as buzzer option in alarm. 
+test darksky wreather	-- fix date parse exception	
 when auto screen off is disabled. Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
-add volume.
 test new turn off screen and turn on screen and wifi on button. 
-install speakers.
 install website to add radio stations.
-work on MP3 - also add page on website to add/delete files for mp3. Add new table for MP3.
-get Web server icon
+work on MP3 
 add/remove web server icon when the web server is started
+//add new mosfet control tu turn on or off speakers in arduino
+wifi not writing pass and user to conf.
+add webserver icon
 
 
 
 Tests: 
-	1- wifi turn off when screen is off.. (3 min)
-	2- LDR status on light. Turn off monitor. LDR take precedence. So if LDR says hat monitor should be off, then the monitor will shutdown after 1 min.
-	3- Weather fetch automatically.
+
 	
 	
 	mpc play 1   --> play 1st track

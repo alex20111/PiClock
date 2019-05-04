@@ -1,0 +1,38 @@
+<base>	
+	<page name="dashboard">
+		<page_part name="header.html"/>
+		<page_part name="sideMenu.html"/>
+		<page_part name="main.html"/>
+		<page_part name="footer.html"/>		
+	</page>
+	<page name="alarmView">
+		<page_part name="header.html"/>
+		<page_part name="sideMenu.html"/>
+		<page_part name="main.html"/>
+		<page_part name="footer.html"/>		
+	</page>
+	<page name="radioView">
+		<page_part name="header.html"/>
+		<page_part name="sideMenu.html"/>
+		<page_part name="radio.html"/>
+		<page_part name="footer.html"/>		
+	</page>
+	<page name="wifiView">
+		<page_part name="header.html"/>
+		<page_part name="sideMenu.html"/>
+		<page_part name="wifi.html"/>
+		<page_part name="footer.html"/>		
+	</page>
+	<page name="mp3Page">
+		<page_part name="header.html"/>
+		<page_part name="sideMenu.html"/>
+		<page_part name="mp3.html"/>
+		<page_part name="footer.html"/>		
+	</page>
+	<page name="addMp3Page">
+		<page_part name="header.html"/>
+		<page_part name="sideMenu.html"/>
+		<page_part name="addMp3.html"/>
+		<page_part name="footer.html"/>		
+	</page>
+</base>

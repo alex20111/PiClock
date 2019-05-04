@@ -35,6 +35,7 @@ public class Alarm implements Runnable{
 	}
 	@Override
 	public void run() {
+		logger.log(Level.INFO, "Alarm triggered for: " + alarm);
 		
 		System.out.println("Alerm Triggered");
 		List<AlarmRepeat> repeats = alarm.getAlarmRepeat();
