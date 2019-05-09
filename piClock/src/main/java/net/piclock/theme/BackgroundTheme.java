@@ -70,7 +70,7 @@ public class BackgroundTheme {
 	@Override
 	public String toString() {
 		return "BackgroundTheme [name=" + name + ", backgroundImage=" + backgroundImage + ", cycle=" + cycle
-				+ ", labels=" + labels +  ", imageFolder=" + imageFolder + "]";
+				+ ", labels=" + labels +  ", iCONS: " + labelIconMap + ", imageFolder=" + imageFolder + "]";
 	}
 
 }

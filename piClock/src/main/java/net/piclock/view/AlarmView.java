@@ -457,7 +457,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		btnBuzzer.setBounds(615, 235, 140, 40);
 		add(btnBuzzer);
 	
-		dayDaysToSelect(alarmEnt);
+		dayDaysToSelect(alarmEnt, theme);
 	}
 	
 	public void setAlarmNotToggled() {
@@ -469,7 +469,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		btnBuzzer.setText(((Buzzer)evt.getNewValue()).name());
 		
 	}
-	private void dayDaysToSelect(AlarmEntity alarm) {	
+	private void dayDaysToSelect(AlarmEntity alarm, ThemeHandler theme) {	
 		
 		List<AlarmRepeat> ar = new ArrayList<AlarmRepeat>();
 		if (alarm != null) {
@@ -483,6 +483,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblDaySunday.addMouseListener(sunday);
 		lblDaySunday.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDaySunday.setBounds(55,109,36,33);
+		theme.registerLabelTextColor(lblDaySunday, LabelEnums.ALARM_SUNDAY);
 		
 		JLabel lblDayMonday = new JLabel("M");
 //		lblDayMonday.setBorder(new RoundedBorder(Color.BLACK, 40));
@@ -491,6 +492,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblDayMonday.addMouseListener(monday);
 		lblDayMonday.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayMonday.setBounds(55,143,36,33);
+		theme.registerLabelTextColor(lblDayMonday, LabelEnums.ALARM_MON);
 		
 		JLabel lblDayTue = new JLabel("T");
 //		lblDayTue.setBorder(new RoundedBorder(Color.BLACK, 40));
@@ -499,6 +501,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblDayTue.addMouseListener(tuesday);
 		lblDayTue.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayTue.setBounds(55,177,36,33);
+		theme.registerLabelTextColor(lblDayTue, LabelEnums.ALARM_TU);
 		
 		JLabel lblDayWed = new JLabel("W");
 //		lblDayWed.setBorder(new RoundedBorder(Color.BLACK, 40));
@@ -507,6 +510,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblDayWed.addMouseListener(wednesday);
 		lblDayWed.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayWed.setBounds(55,211,36,33);
+		theme.registerLabelTextColor(lblDayWed, LabelEnums.ALARM_WED);
 		
 		JLabel lblDayThu = new JLabel("T");
 		lblDayThu.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -515,6 +519,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblDayThu.addMouseListener(thursday);
 		lblDayThu.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayThu.setBounds(55,245,36,33);
+		theme.registerLabelTextColor(lblDayThu, LabelEnums.ALARM_TH);
 		
 		JLabel lblDayFriday = new JLabel("F");
 		lblDayFriday.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -523,6 +528,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblDayFriday.addMouseListener(friday);
 		lblDayFriday.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayFriday.setBounds(55,279,36,33);
+		theme.registerLabelTextColor(lblDayFriday, LabelEnums.ALARM_FRI);
 		
 		JLabel lblDaySat = new JLabel("S");
 		lblDaySat.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -531,6 +537,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblDaySat.addMouseListener(saturday);
 		lblDaySat.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDaySat.setBounds(55,313,36,33);
+		theme.registerLabelTextColor(lblDaySat, LabelEnums.ALARM_SAT);
 		
 		add(lblDaySunday);
 		add(lblDayMonday);

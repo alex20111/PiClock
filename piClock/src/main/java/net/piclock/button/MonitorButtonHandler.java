@@ -26,7 +26,7 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 		try {
 			if (!piHandler.isScreenOn() && state == ButtonState.HIGH) {
 				try {
-//				piHandler.turnOnScreen(true, Light.DIM);
+
 				piHandler.setBrightness(Light.VERY_DIM);
 				piHandler.turnWifiOn();
 				

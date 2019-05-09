@@ -37,18 +37,15 @@ https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 
 TODO:
 add splash screen
-Auto shutdown the alarm if snoose if not clicked.
-Add days of week in the theme for color
+Auto shutdown the alarm if snooze if not clicked.
 Add Radio as buzzer option in alarm. 
-test darksky wreather	-- fix date parse exception	
 when auto screen off is disabled. Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
-test new turn off screen and turn on screen and wifi on button. 
-install website to add radio stations.
+darksky - complete icons and correct forecast (some of the previous forecast is there)
 work on MP3 
-add/remove web server icon when the web server is started
-//add new mosfet control tu turn on or off speakers in arduino
-wifi not writing pass and user to conf.
-add webserver icon
+return mute icon to normal after mute.. change mute button text to unmute
+
+//tests
+add muted option  -- TEST .. add theme.xml and icons 
 
 
 

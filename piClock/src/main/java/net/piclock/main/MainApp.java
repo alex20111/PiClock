@@ -109,7 +109,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	private boolean sensorActive = true; //for the external temperature sensors.. only if available.
 	
 	private final SimpleDateFormat sdfTime = new SimpleDateFormat(Constants.HOUR_MIN);
-	private SimpleDateFormat parseToDate = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
+	private SimpleDateFormat parseToDateEnv = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
+	private SimpleDateFormat parseToDateDsky = new SimpleDateFormat("yyyy-mm-dd HH:mm.ss");
 	
 	private PiHandler handler;
 	private ThreadManager tm ;
@@ -185,8 +186,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		};
 						
 		setContentPane(cardsPanel);
-		lblRadioIcon = new JLabel();
-		
+		lblRadioIcon = new JLabel();		
 		
 		weatherConfig = new WeatherConfigView();
 		forecastView = new WeatherForecastView(cardsPanel);
@@ -249,7 +249,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Volume vol = new Volume();
+				Volume vol = new Volume(btnVolume);
 				vol.setVisible(true);
 				
 			}
@@ -583,13 +583,24 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				
 								
 				if (sensorActive){
-				
-					Date dt = parseToDate.parse(wcm.getObservationTime()); 
-					
+
+					Date dt = null;
+					try {
+						dt = parseToDateEnv.parse(wcm.getObservationTime()); //env cadada format	
+					}catch (ParseException px) {
+						dt = parseToDateDsky.parse(wcm.getObservationTime()); //darksky format
+					}
+
 					addCurrentWeather(wcm.getSummary().trim(),icon,dt );
 				}else{
 					
-					Date dt = parseToDate.parse(wcm.getObservationTime());					
+					Date dt = null;
+					try {
+						dt = parseToDateEnv.parse(wcm.getObservationTime());
+					}catch (ParseException px) {
+						dt = parseToDateDsky.parse(wcm.getObservationTime());
+					}
+												
 					addCurrentWeather(wcm.getSummary().trim(),icon , dt);
 					addCurrentTemp(String.valueOf(wcm.getCurrTemp()), "--");
 				}				
@@ -635,8 +646,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			lblWeatherAlert.setVisible(false);
 			tm.stopWeatherThread();
 		}else  if(evt.getPropertyName().equals(Constants.THEMES_BACKGROUND_IMG_UPDATE)){
-
-			changeBackImage(new File((String)evt.getNewValue()));
+			String image = (String)evt.getNewValue();
+			logger.config("Image background update. Image: " + image);
+			changeBackImage(new File(image));
 			
 		}else if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){
 			try{
@@ -742,30 +754,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		tm.stopWeatherThread();
 		
 		tm.startWeatherThread(initDelay, prefs);
-//		killWeatherWorker();
-
-//		weatherThread = (ScheduledFuture<WeatherWorker>) scheduler.scheduleAtFixedRate(new WeatherWorker(), initDelay, prefs.getWeatherRefresh(), TimeUnit.MINUTES);
 
 	}	
-//	private void killWeatherWorker(){
-//		logger.config("killing Weather thread (killWeatherWorker())");
-//		if (weatherThread != null){
-//			
-//			if (!weatherThread.isDone()){
-//			
-//				weatherThread.cancel(true); //cancel worker if running
-//				
-//				logger.config("Thread done: " +  weatherThread.isDone());
-//				//wait until cancelled
-//				while(!weatherThread.isDone()){
-//					try {
-//						Thread.sleep(40);
-//					} catch (InterruptedException e1) {}
-//				}
-//			}
-//		}		
-//		
-//	}
+
 	/**now we know that the wifi just connected, then call programs that require wifi **/ 
 	private void callProgThatReqWiFi(){
 		Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
@@ -783,8 +774,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	 * @throws InterruptedException **/ 
 	private void keepAliveIfScreenShutdown() throws InterruptedException{
 		//if screen is in auto shutdown mode , them restart the countdown when user do something.
-		logger.log(Level.CONFIG, "keepAliveIfScreenShutdown. PiHandler.isScreenAutoShutdown: " + handler.isScreenAutoShutdown());
-		if (handler.isScreenAutoShutdown()){			
+		logger.log(Level.CONFIG, "keepAliveIfScreenShutdown. PiHandler.isAutoShutdownInProgress: " + handler.isAutoShutdownInProgress());
+		if (handler.isAutoShutdownInProgress()){			
 			handler.autoShutDownScreen();
 		}
 	}
@@ -793,22 +784,5 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		tm.stopSensorThread();
 		
 		tm.startSensorThread();
-//		logger.config("killing fetchSensorInfo");
-//		if (sensorThread != null){
-//			
-//			if (!sensorThread.isDone()){
-//			
-//				sensorThread.cancel(true); //cancel worker if running
-//				
-//				logger.config("sensorThread Thread done: " +  sensorThread.isDone());
-//				//wait until cancelled
-//				while(!sensorThread.isDone()){
-//					try {
-//						Thread.sleep(40);
-//					} catch (InterruptedException e1) {}
-//				}
-//			}
-//		}		
-//		sensorThread = (ScheduledFuture<TempSensorWorker>) scheduler.scheduleAtFixedRate(new TempSensorWorker(), 0, 5, TimeUnit.MINUTES);
 	}
 }

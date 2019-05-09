@@ -53,6 +53,7 @@ public class RadioPage extends HttpBase {
 				}
 				sql.update(r);
 				System.out.println("radio updated");
+				return Response.newFixedLengthResponse("Success");
 				
 			}else if (radioName.isPresent() && radioLink.isPresent() || deleteRadio.isPresent() ){
 

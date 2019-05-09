@@ -37,7 +37,6 @@ public class Alarm implements Runnable{
 	public void run() {
 		logger.log(Level.INFO, "Alarm triggered for: " + alarm);
 		
-		System.out.println("Alerm Triggered");
 		List<AlarmRepeat> repeats = alarm.getAlarmRepeat();
 		
 		DayOfWeek dayOfWeek = LocalDate.now().getDayOfWeek();
@@ -58,17 +57,15 @@ public class Alarm implements Runnable{
 		alarmTriggered = false;
 		handler.turnOffAlarm(Buzzer.valueOf(alarm.getAlarmSound()));
 	}	
-	private void triggerAlarm(){
-		
+	private void triggerAlarm(){	
 		Date start = new Date();
-		
-		
+
 		try {
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 			Buzzer buzzer = Buzzer.valueOf(alarm.getAlarmSound());			
-			
+
 			if (pref.isWeatherActivated() ){
-				
+
 				if (!handler.isWifiConnected() && pref.isWifiCredentialProvided()){
 					handler.turnWifiOn();
 				}else{
@@ -76,35 +73,36 @@ public class Alarm implements Runnable{
 					ct.putSharedObject(Constants.FETCH_FORECAST, triggerForecast);
 				}
 			}
-			
+
 			//start button
 			AlarmBtnHandler btnH = (AlarmBtnHandler)ct.getSharedObject(Constants.ALARM_BTN_HANDLER);
 			btnH.setListenerActive();
 			ArduinoCmd cm = ArduinoCmd.getInstance();
-			cm.startBtnMonitoring();
-			
-			
+			cm.startBtnMonitoring();			
+
 			Date end = new Date();
 			long timeRemaining = 60000 - (end.getTime() - start.getTime());
-			
-			
+
 			//pause for 1 min before triggering the alarm.
-			System.out.println("Time rem: " + timeRemaining);
-			Thread.sleep(timeRemaining);// sleep 1 min then turn buzzer on.
-			alarmTriggered = true;
-			
-			if (!handler.isScreenOn()){						
-				handler.turnOnScreen(false, Light.VERY_BRIGHT);
-				handler.autoShutDownScreen();
+			try {
+				Thread.sleep(timeRemaining);// sleep 1 min then turn buzzer on.
+				alarmTriggered = true;
+
+				if (!handler.isScreenOn()){						
+					handler.turnOnScreen(false, Light.VERY_BRIGHT);
+					handler.autoShutDownScreen();
+				}
+				handler.turnOnAlarm(buzzer);
+
+			}catch (InterruptedException ie) {					
+				logger.log(Level.CONFIG, "Current thread interrupted");
+				btnH.deactivateListener();
+				cm.stopBtnMonitor();
+				Thread.currentThread().interrupt();
 			}
-			handler.turnOnAlarm(buzzer);
-//			cm.stopBtnMonitor();
-//			cm.clearButtonListeners();
-			
-			
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,"Error in setting off timer" , e);
-			//TODO set someting letting the user know that there is been a log generated!!! 						
+			logger.log(Level.SEVERE,"Error in setting off timer" , e); 	
+
 		}				
 	}
 }

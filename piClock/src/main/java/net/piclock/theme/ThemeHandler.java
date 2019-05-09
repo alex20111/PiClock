@@ -33,10 +33,13 @@ public class ThemeHandler {
 	//registered labels
 	private Map<LabelEnums, JLabel> registeredLabels = new HashMap<LabelEnums, JLabel>();
 	private Map<IconEnum, Object> registeredIcon = new HashMap<IconEnum, Object>();
+	
+	private boolean init = true;
 
 	public ThemeHandler() throws Exception{
 		//init Themes
 		themesMap = LoadThemesFromXml.loadThemeFromXml();
+//		logger.log(Level.CONFIG, "theme map: " + themesMap);
 	}
 
 	public void loadTheme(ThemeEnum theme){
@@ -79,7 +82,8 @@ public class ThemeHandler {
 		logger.log(Level.CONFIG, "loadSunnyBackdrop(). Current: " + currBackground.getName());
 
 		//load only when it's not the same
-		if (currBackground.getName() != BackgroundEnum.SUNNY){
+		if (currBackground.getName() != BackgroundEnum.SUNNY || init){
+			init = false;
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
 			for(BackgroundTheme bt : back){
@@ -193,7 +197,6 @@ public class ThemeHandler {
 					Map<LabelEnums, LabelTheme> lblMap = currBackground.getLabels();
 
 					for(Map.Entry<LabelEnums, JLabel> label : registeredLabels.entrySet()){
-						
 						LabelTheme lblTheme = lblMap.get(label.getKey());
 						//COLOR
 						Color color = currBackground.getCycle() == DayNightCycle.DAY ? lblTheme.getTextDayColor() :

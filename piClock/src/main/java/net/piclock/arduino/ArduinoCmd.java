@@ -57,14 +57,14 @@ public class ArduinoCmd {
 		commBuffer[0] = (byte)Commands.DSP_TIME.getCommand(); //for time request.. 'b' will be for buzzer requestt
 		commBuffer[1] = (byte)hours;
 		commBuffer[2] = (byte)minutes;
-		sendCommand(Commands.DSP_TIME,null,commBuffer);
+		sendCommand(Commands.DSP_TIME,commBuffer);
 	}
 	public void timeOff() throws IOException, InterruptedException {
 		logger.log(Level.CONFIG, "time Off");
 		byte[] commBuffer = new byte[1];
 
 		commBuffer[0] = (byte)Commands.TIME_OFF.getCommand(); //for time request.. 'b' will be for buzzer request
-		sendCommand(Commands.TIME_OFF,null,commBuffer);
+		sendCommand(Commands.TIME_OFF,commBuffer);
 	}
 	public void buzzer(boolean on) throws IOException, InterruptedException {
 		byte[] commBuffer = new byte[3];
@@ -80,7 +80,23 @@ public class ArduinoCmd {
 			commBuffer[2] = (byte)2;			
 		}
 
-		sendCommand(Commands.BUZZER,null,commBuffer);
+		sendCommand(Commands.BUZZER,commBuffer);
+	}
+	public void turnSpeakerOn() throws InterruptedException, IOException {
+		logger.log(Level.CONFIG, "turnSpeakerOn");
+		byte[] commBuffer = new byte[2];
+
+		commBuffer[0] = (byte)Commands.SPEAKER.getCommand();
+		commBuffer[1] = (byte)1;
+		sendCommand(Commands.SPEAKER,commBuffer);
+	}
+	public void turnSpeakerOff() throws InterruptedException, IOException {
+		logger.log(Level.CONFIG, "turnSpeakerOff");
+		byte[] commBuffer = new byte[2];
+
+		commBuffer[0] = (byte)Commands.SPEAKER.getCommand();
+		commBuffer[1] = (byte)2;
+		sendCommand(Commands.SPEAKER,commBuffer);
 	}
 	/**
 	 * Monitor button. you must register a listener event to listen to the button events.
@@ -132,9 +148,9 @@ public class ArduinoCmd {
 	}
 
 	private synchronized int sendCommand(Commands command) throws InterruptedException, IOException{
-		return sendCommand(command, null, null);
+		return sendCommand(command,  null);
 	}
-	private synchronized int sendCommand(Commands command, String value, byte[] byteVal) throws InterruptedException, IOException{
+	private synchronized int sendCommand(Commands command, byte[] byteVal) throws InterruptedException, IOException{
 		
 		if (command.isReturnVal()  ){ //set the command 1st to expect a retuen value
 			if (command != prevCmd){
@@ -161,7 +177,7 @@ public class ArduinoCmd {
 		
 	}
 	enum Commands{
-		LDR('l'), DSP_TIME('t'), TIME_OFF('o'), BTN_A('a'), BUZZER('b'), NONE('-');
+		LDR('l'), DSP_TIME('t'), TIME_OFF('o'), BTN_A('a'), BUZZER('b'), SPEAKER('m'), NONE('-');
 		
 		private char cmdName;
 		
@@ -176,7 +192,7 @@ public class ArduinoCmd {
 			return this == LDR || this == BTN_A;
 		}
 		public boolean isWriteOnly(){
-			return this == DSP_TIME || this == TIME_OFF || this == BUZZER;
+			return this == DSP_TIME || this == TIME_OFF || this == BUZZER || this == SPEAKER;
 		}		
 	}
 }

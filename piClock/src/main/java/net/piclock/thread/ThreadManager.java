@@ -66,7 +66,7 @@ public class ThreadManager {
 		
 		System.out.println("Delay starting: " + initDelay + " " + new Date(new Date().getTime() + initDelay));
 		
-		scheduler.scheduleAtFixedRate(new Alarm(alarm), initDelay, 86400000, TimeUnit.MILLISECONDS);
+		alarmThread = scheduler.scheduleAtFixedRate(new Alarm(alarm), initDelay, 86400000, TimeUnit.MILLISECONDS);
 	}
 	public void stopAlarm(){
 		logger.log(Level.CONFIG, "stopAlarm");
@@ -75,7 +75,7 @@ public class ThreadManager {
 			System.out.println("startStopTimer::alarmThread Done? " + alarmThread.isDone());			
 
 			if (Alarm.isAlarmTriggered()){
-				//TODO , shut down alarm sound if running
+				Alarm.turnOffAlarmSound();
 			}
 			alarmThread.cancel(true);	
 			//wait for timer to stop
@@ -85,7 +85,7 @@ public class ThreadManager {
 				} catch (InterruptedException e) {}
 			}		
 
-			System.out.println("alarmThread end loop Done? " + alarmThread.isDone());
+			logger.log(Level.CONFIG, "alarmThread end loop Done? " + alarmThread.isDone());
 		}	
 	}
 	@SuppressWarnings("unchecked")
@@ -142,6 +142,7 @@ public class ThreadManager {
 					} catch (InterruptedException e1) {}
 				}
 			}
-		}		
+		}	
+		logger.config("sensorThread Thread finished");
 	}
 }

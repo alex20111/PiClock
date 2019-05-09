@@ -25,9 +25,11 @@ import javax.swing.border.EmptyBorder;
 import org.apache.commons.exec.ExecuteException;
 
 import home.misc.Exec;
+import net.piclock.enums.IconEnum;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.theme.ThemeHandler;
 import net.piclock.util.PreferencesHandler;
 
 public class Volume extends JDialog {
@@ -41,11 +43,17 @@ public class Volume extends JDialog {
 	private Preferences prefs;
 	
 	private JSlider slider;
+	private JButton volumeButton ;
+	
+	private JButton btnMute;
+	private int mutedVolLevel = 0;
 
 	/**
 	 * Create the dialog.
 	 */
-	public Volume() {
+	public Volume(JButton volume) {
+		
+		volumeButton = volume;
 		
 		ct = SwingContext.getInstance();
 		prefs = (Preferences) ct.getSharedObject(Constants.PREFERENCES);
@@ -54,7 +62,7 @@ public class Volume extends JDialog {
 		setUndecorated(true); 
 		setLocationRelativeTo(null);
 		
-		setSize(80,400);
+		setSize(100,390);
 		volumePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		volumePanel.setLayout(new BorderLayout(0, 0));
 
@@ -93,8 +101,35 @@ public class Volume extends JDialog {
 		
 		buttonPane.add(Box.createRigidArea(new Dimension(0, 5)));		
 		
-		JButton btnMute = new JButton("Mute");
+		 btnMute = new JButton("Mute");
 		btnMute.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnMute.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (btnMute.getText().equalsIgnoreCase("mute")) {
+						btnMute.setText("Un-Mute");
+						mutedVolLevel = slider.getValue();
+						manipulateVolume(0);
+						logger.log(Level.CONFIG, "Volume MUTED");
+						ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
+						volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_MUTED));
+						t.registerIconColor(volumeButton, IconEnum.VOLUME_MUTED);
+					}else if (btnMute.getText().equalsIgnoreCase("Un-Mute")) {
+						manipulateVolume(mutedVolLevel);
+						logger.log(Level.CONFIG, "Volume UN-MUTED");
+						ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
+						volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_ICON));
+						t.registerIconColor(volumeButton, IconEnum.VOLUME_ICON);
+
+					}
+				} catch (IOException e1) {
+					logger.log(Level.SEVERE, "Error muting " , e1);
+				}
+
+			}
+		});
 		buttonPane.add(btnMute);
 		
 		slider.setValue(prefs.getLastVolumeLevel());
@@ -125,6 +160,13 @@ public class Volume extends JDialog {
 		}else {
 			prefs.setLastVolumeLevel(slider.getValue());
 			PreferencesHandler.save(prefs);
+		}
+		
+		if (prefs.getLastVolumeLevel() == 0 && volume > 0) {
+			logger.log(Level.CONFIG, "Volume unmuted");
+			ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
+			volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_ICON));
+			t.registerIconColor(volumeButton, IconEnum.VOLUME_ICON);
 		}
 		
 //		amixer -c 1 set Speaker 49%

@@ -3,6 +3,8 @@ package net.piclock.theme;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -11,7 +13,8 @@ import net.piclock.enums.DayNightCycle;
 import net.piclock.enums.IconEnum;
 
 public class IconTheme {
-
+	private static final Logger logger = Logger.getLogger( IconTheme.class.getName() );
+	
 	private IconEnum name;
 	private String imgDayFileName = "";
 	private String imgNightFileName = "";
@@ -45,6 +48,9 @@ public class IconTheme {
 		this.imgNightFileName = imgNightFileName;
 	}
 	public ImageIcon getImage(DayNightCycle cycle) throws IOException{
+		
+		logger.log(Level.CONFIG, "Name: " + name + ".  PATH DAY: " + imageFolder + File.separatorChar + imgDayFileName + " .  Nighht: " + imageFolder + File.separatorChar + imgNightFileName);
+		
 		
 		BufferedImage img = null;
 		if(cycle == DayNightCycle.NIGHT){

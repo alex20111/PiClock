@@ -45,7 +45,6 @@ public class PiHandler {
 	private  boolean screenOn = true;
 	private  boolean wifiConnected = false; //if connected to the WIFI.
 	private  boolean wifiInternetConnected = false; //if connected to the internet.	
-	private  boolean isScreenAutoShutdown = false; //if screen is in auto shutdown mode.
 	
 	private  boolean 	wifiOn = true; //initially the wifi is always ON
 	
@@ -242,16 +241,19 @@ public class PiHandler {
 		screenAutoShutDown = new Thread(new Runnable() {				
 			@Override
 			public void run() {
-				isScreenAutoShutdown = true;
 				try {
 					Thread.sleep(20000);
 					try {
+						logger.log(Level.INFO, "autoShutDownScreen invoked, turning off screen");
 						turnOffScreen();
 					} catch (Exception e) {
 						logger.log(Level.SEVERE ,  "Cannot automatically shutdown monitor", e);
 					}
-				} catch (InterruptedException e) {}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}	
 				
+				logger.log(Level.CONFIG, "autoShutDownScreen RUN ethode finished");
 			}
 		});
 		screenAutoShutDown.start();
@@ -416,12 +418,7 @@ public class PiHandler {
 	public  void setWifiInternetConnected(boolean wifiInternetConnected) {
 		this.wifiInternetConnected = wifiInternetConnected;
 	}
-	public  boolean isScreenAutoShutdown() {
-		return isScreenAutoShutdown;
-	}
-	public  void setScreenAutoShutdown(boolean isScreenAutoShutdown) {
-		this.isScreenAutoShutdown = isScreenAutoShutdown;
-	}
+
 	public String getIpAddress() throws ExecuteException, IOException {
 		Exec exec = new Exec();
 
@@ -431,7 +428,6 @@ public class PiHandler {
 
 		logger.log(Level.INFO, "getIpAddress(), error in return exec:  " + ext +". Output: " + exec.getOutput());
 		return exec.getOutput();
-
 	}
 	
 	
@@ -439,11 +435,8 @@ public class PiHandler {
 		logger.log(Level.CONFIG, "cancelScreenAutoShutdown");
 		if (screenAutoShutDown != null && screenAutoShutDown.isAlive()){
 			screenAutoShutDown.interrupt();
-			while(screenAutoShutDown.isAlive()){
-				screenAutoShutDown.join(100);
-			}
+			
 			screenAutoShutDown = null;
-			isScreenAutoShutdown = false;
 			logger.log(Level.CONFIG, "Interrupted screenAutoShutDown");
 		}
 	}
