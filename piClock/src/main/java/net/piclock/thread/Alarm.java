@@ -1,5 +1,6 @@
 package net.piclock.thread;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Date;
@@ -55,7 +56,11 @@ public class Alarm implements Runnable{
 	public static void turnOffAlarmSound(){
 		logger.log(Level.CONFIG, "Turning off alarm");
 		alarmTriggered = false;
-		handler.turnOffAlarm(Buzzer.valueOf(alarm.getAlarmSound()));
+		try {
+			handler.turnOffAlarm(Buzzer.valueOf(alarm.getAlarmSound()));
+		} catch (IOException | InterruptedException e) {
+			logger.log(Level.SEVERE, "error turning off the alarm", e);
+		}
 	}	
 	private void triggerAlarm(){	
 		Date start = new Date();
@@ -87,6 +92,8 @@ public class Alarm implements Runnable{
 			try {
 				Thread.sleep(timeRemaining);// sleep 1 min then turn buzzer on.
 				alarmTriggered = true;
+				
+				btnH.autoAlarmShutOff(true);
 
 				if (!handler.isScreenOn()){						
 					handler.turnOnScreen(false, Light.VERY_BRIGHT);

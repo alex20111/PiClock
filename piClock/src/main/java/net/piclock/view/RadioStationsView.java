@@ -19,15 +19,17 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.exec.ExecuteException;
 
 import home.misc.Exec;
 import net.miginfocom.swing.MigLayout;
-import net.piclock.arduino.ArduinoCmd;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
+import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
+import net.piclock.main.PiHandler;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.ImageUtils;
 
@@ -44,7 +46,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 	private SwingContext ct;	
 	private JLabel lblRadioIcon;
 
-
+	private PiHandler handler;
+	
 	/**
 	 * Create the panel.
 	 * @return 
@@ -53,6 +56,9 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 	 * @throws ClassNotFoundException 
 	 */
 	public  RadioStationsView(JLabel radioIcon) throws IOException, ClassNotFoundException, SQLException {
+		
+		handler = PiHandler.getInstance();
+		
 		ct = SwingContext.getInstance();
 
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
@@ -105,16 +111,21 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 		btnReload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnReload.setText("Loading");
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
 
-				try {
+							loadAllRadioStations();
 
-					loadAllRadioStations();
-
-
-				} catch (ClassNotFoundException | SQLException | IOException e1) {		
-					logger.log(Level.SEVERE, "Error in loading" , e1);
-				}
-				btnReload.setText("Reload");
+						} catch (ClassNotFoundException | SQLException | IOException e1) {		
+							logger.log(Level.SEVERE, "Error in loading" , e1);
+						}
+						
+						btnReload.setText("Reload");
+					}
+				});			
 			}
 		});
 		btnReload.setPreferredSize(new Dimension(65, 30));
@@ -140,9 +151,6 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 			public void actionPerformed(ActionEvent e) {
 				if(radioStations.getSelectedIndex() != -1) {					
 					try {
-						ArduinoCmd cmd = ArduinoCmd.getInstance();
-						cmd.turnSpeakerOn();
-
 
 						lblRadioIcon.setVisible(true);
 						ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, true);
@@ -151,11 +159,12 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 						RadioEntity re = (RadioEntity)radioStations.getSelectedItem();
 						logger.log(Level.CONFIG, "Playing : " + re.getRadioName() + " TRACK: " + re.getTrackNbr());
 
-						Exec exec = new Exec();
-						exec.addCommand("mpc").addCommand("play").addCommand(String.valueOf(re.getTrackNbr())).timeout(10000);
+//						Exec exec = new Exec();
+//						exec.addCommand("mpc").addCommand("play").addCommand(String.valueOf(re.getTrackNbr())).timeout(10000);
 
 						try {
-							exec.run();
+							handler.playRadio(true, re.getTrackNbr());
+//							exec.run();
 
 							btnStop.setEnabled(true);
 						} catch (IOException e1) {
@@ -178,17 +187,12 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ArduinoCmd cmd = ArduinoCmd.getInstance();
-					cmd.turnSpeakerOff();
 
 					lblRadioIcon.setVisible(false);
 					ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, false);
 
-					Exec exec = new Exec();
-					exec.addCommand("mpc").addCommand("stop").timeout(10000);
-
 					try {
-						exec.run();
+						handler.playRadio(false, -1);
 						btnStop.setEnabled(false);
 					} catch (IOException e1) {
 						logger.log(Level.SEVERE, "Error stopping music", e1);
@@ -207,7 +211,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 		logger.log(Level.CONFIG,"loadAllRadioStations");
 		RadioSql sql = new RadioSql();
 
-		radioStations.removeAll();
+		radioStations.removeAllItems();
 
 		List<RadioEntity> radios = sql.loadAllRadios();
 		for(RadioEntity radio : radios){
@@ -216,7 +220,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 
 		//match radio station to mpc play list
 		Exec exec = new Exec();
-		exec.addCommand("mpc").addCommand("playlist");
+		exec.addCommand("mpc").addCommand("playlist").timeout(10000);
 
 		int ex = exec.run();
 
@@ -247,12 +251,11 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){
-			String initValue = ((String)evt.getNewValue());
-			String value = initValue.substring(4,initValue.length() );
-
-			if ("success".equals(value)){
+			CheckWifiStatus status = (CheckWifiStatus)evt.getNewValue();
+			
+			if (status == CheckWifiStatus.SUCCESS){
 				btnPlay.setEnabled(true);
-			}else if ("wifiOff".equals(value)) {
+			}else if (status == CheckWifiStatus.END_WIFI_OFF) {
 				btnPlay.setEnabled(false);
 				btnStop.setEnabled(false);			
 			}

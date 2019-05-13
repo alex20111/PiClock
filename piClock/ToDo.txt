@@ -30,27 +30,33 @@ audio radio setup.:
 https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 
-
+//RASPI-config
+Enable boot to desktop
+enable splash screen.
 
 
 
 
 TODO:
-add splash screen
-Auto shutdown the alarm if snooze if not clicked.
-Add Radio as buzzer option in alarm. 
+add splash screen  ok (maybe custom)
+add auto start.   ok 
 when auto screen off is disabled. Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
 darksky - complete icons and correct forecast (some of the previous forecast is there)
+hide radio lastVal (radioId) as a hidden field that jquery can access in docuemnt (WEB).
+Vtest wifi modification on web - finish implementing it with pi handler
 work on MP3 
-return mute icon to normal after mute.. change mute button text to unmute
+//ADD auto shutdown thread in the alarm monitor button sice it will have acces sto all the button class functions. ******  DONE need tottes
 
 //tests
-add muted option  -- TEST .. add theme.xml and icons 
+Test new therad for alarm auto shutdown with radio and buzzer.
+test settings on connect and refresh -- SwingUtilities.invokeLater
+volume muted text
 
-
-
-Tests: 
-
+/DONE test
+test radio   -- SwingUtilities.invokeLater
+add muted option  -- TEST .. add theme.xml and icons
+re-create table for alarm to add radio int and mp3 int
+test radio alarm buzzer option. And radio wake up alarm
 	
 	
 	mpc play 1   --> play 1st track

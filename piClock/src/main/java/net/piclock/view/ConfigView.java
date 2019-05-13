@@ -21,8 +21,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.enums.CheckWifiStatus;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
@@ -96,32 +98,36 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 			public void actionPerformed(ActionEvent e) {
 				logger.log(Level.CONFIG, "refresh Wifi");
 
-				PiHandler handler = PiHandler.getInstance();
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						PiHandler handler = PiHandler.getInstance();
 
-				wifiNames.removeAllItems();
-				wifiNames.addItem("Disable Wifi");
-				btnRefreshWifi.setIcon(img.getButtonLoader());
-				btnRefreshWifi.setText("");
+						wifiNames.removeAllItems();
+						wifiNames.addItem("Disable Wifi");
+						btnRefreshWifi.setIcon(img.getButtonLoader());
+						btnRefreshWifi.setText("");
 
-				List<String> wifiList;
-				try {
-					wifiList = handler.fetchWifiList();
-					if (!wifiList.isEmpty()){
-						for(String s : wifiList){
-							wifiNames.addItem(s);
+						List<String> wifiList;
+						try {
+							wifiList = handler.fetchWifiList();
+							if (!wifiList.isEmpty()){
+								for(String s : wifiList){
+									wifiNames.addItem(s);
+								}
+							}
+
+						} catch (Exception e1) {
+							logger.log(Level.SEVERE, "Error fetching SSIDs" , e);
 						}
+						btnRefreshWifi.setIcon(null);
+						btnRefreshWifi.setText("Refresh");	
+						
 					}
-
-				} catch (Exception e1) {
-					logger.log(Level.SEVERE, "Error fetching SSIDs" , e);
-				}
-				btnRefreshWifi.setIcon(null);
-				btnRefreshWifi.setText("Refresh");	
-
+				});
 			}
 		});
-		
-
 		 
 		 wifiNames.addActionListener(new ActionListener() {
 		 	
@@ -151,26 +157,36 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				try {
+				
 					if (txtWifiPass.getText().length() == 0){
 						JOptionPane.showMessageDialog(ConfigView.this, "Please enter password", "No Password", JOptionPane.ERROR_MESSAGE);
 					}else if(wifiNames.getSelectedIndex() == 0){ 
 						JOptionPane.showMessageDialog(ConfigView.this, "Please select WIFI", "WIFI", JOptionPane.ERROR_MESSAGE);
 					}else{
-						btnSave.setEnabled(false);
-						btnCancel.setEnabled(false);
-						txtWifiPass.setEditable(false);
-						btnConnect.setEnabled(false);
-						btnConnect.setIcon(img.getButtonLoader());
-						btnConnect.setText("");
-						PiHandler handler = PiHandler.getInstance();
-						handler.connectToWifi((String)wifiNames.getSelectedItem(),txtWifiPass.getText() );
+						SwingUtilities.invokeLater(new Runnable() {
+							
+							@Override
+							public void run() {
+
+								try {
+									btnSave.setEnabled(false);
+									btnCancel.setEnabled(false);
+									txtWifiPass.setEditable(false);
+									btnConnect.setEnabled(false);
+									btnConnect.setIcon(img.getButtonLoader());
+									btnConnect.setText("");
+									PiHandler handler = PiHandler.getInstance();
+									handler.connectToWifi((String)wifiNames.getSelectedItem(),txtWifiPass.getText() );
+								} catch (Exception e1) {
+									JOptionPane.showMessageDialog(ConfigView.this, "Serious error", "Error", JOptionPane.ERROR_MESSAGE);
+									logger.log(Level.SEVERE, "Error in Config", e1);
+									setConnectOrigValue();
+								}
+							}
+						});
+						
 					}
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(ConfigView.this, "Serious error", "Error", JOptionPane.ERROR_MESSAGE);
-					logger.log(Level.SEVERE, "Error in Config", e1);
-					setConnectOrigValue();
-				}
+				
 			}
 		});
 		
@@ -294,16 +310,17 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (isVisible()){
-			String initValue = (String)evt.getNewValue();
-			String value = initValue.substring(4,initValue.length() );
+//			String initValue = (String)evt.getNewValue();
+//			String value = initValue.substring(4,initValue.length() );
+			CheckWifiStatus status = (CheckWifiStatus) evt.getNewValue();
 
-			if ("success".equals(value)){
+			if (status == CheckWifiStatus.SUCCESS){
 				JOptionPane.showMessageDialog(ConfigView.this, "Connection Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
 				oldPassValue = txtWifiPass.getText();
 				oldWifiValue = (String)wifiNames.getSelectedItem();
 				setConnectOrigValue();
 
-			}else if (!"starting".equals(initValue) && !"disconnect".equals(value)){
+			}else if (status != CheckWifiStatus.STARTING && status != CheckWifiStatus.END_DISCONNECT){
 				JOptionPane.showMessageDialog(ConfigView.this, "Cannot Connect, wrong password or other problems.", "No Connection", JOptionPane.ERROR_MESSAGE);
 				setConnectOrigValue();
 			}

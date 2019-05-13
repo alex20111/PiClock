@@ -7,6 +7,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,6 +27,7 @@ import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ListenerNotFoundException;
 import net.piclock.button.MonitorButtonHandler;
 import net.piclock.enums.Buzzer;
+import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
 import net.piclock.enums.Light;
 import net.piclock.swing.component.SwingContext;
@@ -51,6 +53,7 @@ public class PiHandler {
 	private  Thread wifiShutDown;
 	private  Thread screenAutoShutDown;
 	private  Thread checkConnection; 	
+	
 	
 	//commands to ard
 	private  String BUZZER = "buzzer";
@@ -88,27 +91,7 @@ public class PiHandler {
 	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException, UnsupportedBusNumberException{
 		logger.log(Level.INFO,"turnOffScreen()");
 
-
-		if (wifiShutDown != null && wifiShutDown.isAlive()){
-			wifiShutDown.interrupt();
-			while(wifiShutDown.isAlive()){
-				wifiShutDown.join(100);
-			}
-			logger.log(Level.CONFIG, "turnOffScreen: Interrupted wifiShutDown");
-		}
-
-		//wait 3 minute before shutting down WIFI
-		wifiShutDown = new Thread(new Runnable() {				
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(180000);
-					wifiOff();
-				} catch (InterruptedException e) {}
-
-			}
-		});
-		wifiShutDown.start();
+		autoWifiShutDown(true);
 
 		setScreenOn(false);
 		setBrightness(Light.DARK);
@@ -131,14 +114,7 @@ public class PiHandler {
 			cmd.stopBtnMonitor();
 		}
 
-		//interrupt wifi shutdown if in process because screen turned back on.
-		if (wifiShutDown != null && wifiShutDown.isAlive()){
-			wifiShutDown.interrupt();
-			while(wifiShutDown.isAlive()){
-				wifiShutDown.join(100);
-			}
-			logger.log(Level.CONFIG, "turnOnScreen: Interrupted wifiShutDown");
-		}
+		autoWifiShutDown(false);
 
 		//if screen is auto shutting down and there is a request by the LDR to turn it back on, kill it.
 		cancelScreenAutoShutdown();
@@ -202,26 +178,32 @@ public class PiHandler {
 		logger.log(Level.CONFIG, "getLDRstatus : LDR level: "+ ldrVal);		
 		return Light.setLightLevel(ldrVal);
 	}
-	/**Turn on the alarm based on the selected buzzer**/
-	public void turnOnAlarm(Buzzer buzzerType){
+	/**Turn on the alarm based on the selected buzzer
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws IOException 
+	 * @throws ExecuteException 
+	 * @throws InterruptedException **/
+	public void turnOnAlarm(Buzzer buzzerType) throws   ExecuteException, IOException, InterruptedException{
 		logger.log(Level.CONFIG,"Turning on: " + buzzerType.getName());
 
 		if (buzzerType == Buzzer.BUZZER){
 			buzzer(true);
 		}else if (buzzerType == Buzzer.RADIO){
-			playAlarmRadio(true);
+			playRadio(true, 1);//TODO get track number
 		}else if (buzzerType == Buzzer.MP3){
-			playAlarmMp3(true);
+			playMp3(true);
 		}
 	}
-	public void turnOffAlarm(Buzzer buzzerType){
+	public void turnOffAlarm(Buzzer buzzerType) throws ExecuteException, IOException, InterruptedException{
 		logger.log(Level.CONFIG,"Turning off: " + buzzerType.getName());
+			
 		if (buzzerType == Buzzer.BUZZER){
 			buzzer(false);
 		}else if (buzzerType == Buzzer.RADIO){
-			playAlarmRadio(false);
+			playRadio(false, -1);
 		}else if (buzzerType == Buzzer.MP3){
-			playAlarmMp3(false);
+			playMp3(false);
 		}
 	}
 	public void displayTM1637Time(String time){
@@ -281,7 +263,7 @@ public class PiHandler {
 				SwingContext context = SwingContext.getInstance();	
 				try {
 						
-					context.putSharedObject(Constants.CHECK_INTERNET, "starting");					
+					context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.STARTING);					
 					boolean hasInternet = false;
 					boolean hasIp = false;
 					
@@ -292,18 +274,18 @@ public class PiHandler {
 						}
 						
 						if (count == 15 && !hasIp && !hasInternet){
-							context.putSharedObject(Constants.CHECK_INTERNET, "end_timeout");
+							context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_TIMEOUT);
 							keepRunning = false;
 						}else if (count == 10 && hasIp && !hasInternet){
 							setWifiConnected(true);							
 							wifiInternetConnected = false;
-							context.putSharedObject(Constants.CHECK_INTERNET, "end_no_inet");
+							context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_NO_INET);
 							keepRunning = false;
 						}
 						else if (hasIp && hasInternet){
 							setWifiConnected(true);							
 							wifiInternetConnected = true;
-							context.putSharedObject(Constants.CHECK_INTERNET, "end_success");
+							context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.SUCCESS);
 							keepRunning = false;
 						}else if (hasIp){
 							//check for internet
@@ -313,11 +295,12 @@ public class PiHandler {
 						count ++;
 						Thread.sleep(1000);
 					}
-				} catch (InterruptedException e) {					
-					context.putSharedObject(Constants.CHECK_INTERNET, "end_interrupted");
+				} catch (InterruptedException e) {	
+					Thread.currentThread().interrupt();
+					context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_INTERRUPTED);
 					keepRunning = false;
 				}  catch ( IOException e) {
-					context.putSharedObject(Constants.CHECK_INTERNET, "end_timeout");
+					context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_TIMEOUT);
 					keepRunning = false;
 					logger.log(Level.SEVERE, "Error connecting to wifi", e);
 				} 
@@ -343,7 +326,7 @@ public class PiHandler {
 		Thread.sleep(2000);		
 		
 		SwingContext context = SwingContext.getInstance();
-		context.putSharedObject(Constants.CHECK_INTERNET, "end_disconnect");
+		context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_DISCONNECT);
 		setWifiConnected(false);
 		setWifiInternetConnected(false);
 	
@@ -476,7 +459,7 @@ public class PiHandler {
 		}
 	}
 	/**play random mp3 on / off **/
-	private void playAlarmMp3(boolean on){
+	private void playMp3(boolean on){
 		logger.log(Level.CONFIG, "playAlarmMp3() : " + on);
 		if (on){
 			//play random MP3
@@ -484,15 +467,30 @@ public class PiHandler {
 			//off
 		}			
 	}
-	/**Play the radio on the user selected frequency **/
-	private void playAlarmRadio(boolean on){
+	/**Play the radio on the user selected frequency 
+	 * @throws IOException 
+	 * @throws ExecuteException 
+	 * @throws InterruptedException **/
+	public void playRadio(boolean on, int trackNbr) throws ExecuteException, IOException, InterruptedException{
 		logger.log(Level.CONFIG, "playAlarmRadio() : " + on);
+		int retCd = 0;
+		Exec exec = null;
 		if (on){
-			//play radio
-		}else{
-			//off
-		}
 			
+			cmd.turnSpeakerOn();
+			
+			exec = new Exec();
+			exec.addCommand("mpc").addCommand("play").addCommand(String.valueOf(trackNbr)).timeout(10000);
+			retCd = exec.run();
+		}else{
+			cmd.turnSpeakerOff();
+			
+			exec = new Exec();
+			exec.addCommand("mpc").addCommand("stop").timeout(10000);
+			retCd = exec.run();
+		}
+		logger.log(Level.CONFIG, "playAlarmRadio() , return code: " + retCd + " output: " + exec.getOutput());
+
 	}		
 	private void wifiOff(){
 		logger.log(Level.INFO, "wifiOff() : wifiOn : " + wifiOn);
@@ -511,7 +509,7 @@ public class PiHandler {
 				setWifiConnected(false);
 				wifiInternetConnected = false;
 				SwingContext context = SwingContext.getInstance();
-				context.putSharedObject(Constants.CHECK_INTERNET, "end_wifiOff");
+				context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_WIFI_OFF);
 
 				logger.log(Level.INFO, "Exit code : " + ext + " OUtput: " + e.getOutput());
 
@@ -565,8 +563,31 @@ public class PiHandler {
 		int ext = e.run();
 
 		logger.log(Level.CONFIG, "refreshWifi(), ext: " + ext + "  output: " + e.getOutput());
+	}
+	
+	
+	private void autoWifiShutDown(boolean startAutoShutdown) throws InterruptedException {
+		logger.log(Level.CONFIG, "autoWifiShutDown");
+		if (wifiShutDown != null && wifiShutDown.isAlive()){
+			wifiShutDown.interrupt();
+			logger.log(Level.CONFIG, "turnOffScreen: Interrupted wifiShutDown");
+		}
 
+		if (startAutoShutdown) {
+			//wait 3 minute before shutting down WIFI
+			wifiShutDown = new Thread(new Runnable() {				
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(180000);
+						wifiOff();
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
 
-
+				}
+			});
+			wifiShutDown.start();
+		}
 	}
 }

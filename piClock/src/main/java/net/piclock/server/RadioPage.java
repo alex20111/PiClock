@@ -82,7 +82,7 @@ public class RadioPage extends HttpBase {
 			Map<String, String> values = new HashMap<String, String>();
 			values.put("table", buildRadioTable(re)); //key in the html page is : %-valuel-%
 			values.put("radioFormError", errorMessages);
-			values.put("customScript", generateCustomJsScript());
+//			values.put("customScript", generateCustomJsScript());
 
 			webPage =	StaticPageHandler.processPage(webPageFiles, values);
 
@@ -177,26 +177,26 @@ public class RadioPage extends HttpBase {
 		}
 		return false;
 	}
-	private String generateCustomJsScript(){
-		StringBuilder sb = new StringBuilder();
-		sb.append("<script> ");
-		sb.append("var lastval = "+lastSelectedValue+"; \n");
-		sb.append("var check = false; \n");
-		sb.append("$('.selChkbox').change(function(){ ");
-		sb.append("if($('input.selChkbox').filter(':checked').length == 1) {  lastval=$('input.selChkbox').filter(':checked').val();  check = true;");
-		sb.append(" $('input.selChkbox:not(:checked)').attr('disabled', 'disabled');  ");
-		sb.append("}else{ ");
-		sb.append("$('input.selChkbox').removeAttr('disabled');  check = false; } \n");
-		sb.append("\n");//ajax call
-		sb.append("$.ajax({");
-		sb.append("method: 'GET',");
-		sb.append("url: '/radio?',");
-		sb.append("data: { selrad: lastval, selradChecked: check },");
-		sb.append("cache: false");
-		sb.append("});");
-		sb.append("}); ");
-		sb.append("</script> ");
-		
-		return sb.toString();
-	}
+//	private String generateCustomJsScript(){
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("<script> ");
+//		sb.append("var lastval = "+lastSelectedValue+"; \n");
+//		sb.append("var check = false; \n");
+//		sb.append("$('.selChkbox').change(function(){ ");
+//		sb.append("if($('input.selChkbox').filter(':checked').length == 1) {  lastval=$('input.selChkbox').filter(':checked').val();  check = true;");
+//		sb.append(" $('input.selChkbox:not(:checked)').attr('disabled', 'disabled');  ");
+//		sb.append("}else{ ");
+//		sb.append("$('input.selChkbox').removeAttr('disabled');  check = false; } \n");
+//		sb.append("\n");//ajax call
+//		sb.append("$.ajax({");
+//		sb.append("method: 'GET',");
+//		sb.append("url: '/radio?',");
+//		sb.append("data: { selrad: lastval, selradChecked: check },");
+//		sb.append("cache: false");
+//		sb.append("});");
+//		sb.append("}); ");
+//		sb.append("</script> ");
+//		
+//		return sb.toString();
+//	}
 }

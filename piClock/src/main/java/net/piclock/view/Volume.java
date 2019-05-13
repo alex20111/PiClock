@@ -119,6 +119,7 @@ public class Volume extends JDialog {
 					}else if (btnMute.getText().equalsIgnoreCase("Un-Mute")) {
 						manipulateVolume(mutedVolLevel);
 						logger.log(Level.CONFIG, "Volume UN-MUTED");
+						btnMute.setText("Mute");
 						ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
 						volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_ICON));
 						t.registerIconColor(volumeButton, IconEnum.VOLUME_ICON);

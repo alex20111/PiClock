@@ -10,7 +10,9 @@ import home.db.ColumnType;
 import home.db.DBConnection;
 import home.db.DbClass;
 import home.db.PkCriteria;
+import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.RadioEntity;
+import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
 
 public class RadioSql {
@@ -137,6 +139,17 @@ public class RadioSql {
 			String delete = "DELETE FROM " + RadioEntity.TBL_NM + " where id = :radioId";
 			con.createSelectQuery(delete)
 			.setParameter("radioId", radioId).delete();
+			
+			//verify if any alarm has the radio ID , if yes then remove it and put buzzer as sound type.
+			AlarmSql sql = new AlarmSql();
+			List<AlarmEntity> alarms = sql.loadAlarmByRadioId(radioId);
+			
+			for(AlarmEntity a : alarms) {
+				a.setRadioId(-1);
+				a.setAlarmSound(Buzzer.BUZZER.name());
+				sql.update(a);
+			}
+			
 
 		}finally {
 			con.close();

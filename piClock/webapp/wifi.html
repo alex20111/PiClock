@@ -1,3 +1,4 @@
+
  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">WIFI</h1>
@@ -6,7 +7,7 @@
 
 
 	   <div class="row">
-		<div class="col-md-4 order-md-2 mb-4">
+		<div class="col-8 col-md-6 order-md-2 mb-4 col-lg-4">
 			<h4> WIFI configuration </h4>
 			
 			%-message1-%
@@ -16,20 +17,27 @@
 			<div class="mb-3">
 			  <label for="wifiName">Wifi Name</label>
 			  <div class="form-group">			
-				<select class="form-control" name="wifiName"> 
+			    <div id="errorNameId" style="display:none" class="alert alert-danger"></div>
+				<select class="form-control" name="wifiName" id="wifiNameId"> 
 				  %-wifilist-%
 				</select>
 			  </div>
 			</div>
 			<div class="mb-3">
 			  <label for="WifiPassword">WIFI Password</label>
+			  <div id="errorPassId" style="display:none" class="alert alert-danger"></div>
 			  <div class="input-group">			
 				<input type="text" class="form-control" id="WifiPassId" name="wifiPassword" placeholder="Password" required>
 			  </div>
 			</div>
 			
+			<div class="mb-3 spinner-border text-primary" id="connectSpinnerId" style="display:none"></div>
+			<span class=mb-3" id"connectingId" style="display:none"> </span>
 			
-			<button type="submit" class="btn btn-primary"> Save </button>
+			<br/>
+			
+			
+			<button type="button" id="connectBtnId" class="btn btn-primary"> Connect </button>
 		  </form>
      </div>
 	 </div>
@@ -37,3 +45,6 @@
     </main>
   </div>
 </div>
+
+	<script src="/js/jquery-3.4.1.min.js" ></script>
+	<script src="/js/wifiScript.js" ></script>

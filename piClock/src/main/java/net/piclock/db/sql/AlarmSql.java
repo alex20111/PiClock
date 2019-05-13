@@ -35,6 +35,8 @@ public class AlarmSql {
 				columns.add(new ColumnType(AlarmEntity.ALARM_SOUND, false).VarChar(10));
 				columns.add(new ColumnType(AlarmEntity.REPEAT, false).VarChar(100));
 				columns.add(new ColumnType(AlarmEntity.ACTIVE, false).Boolean());
+				columns.add(new ColumnType(AlarmEntity.RADIO_ID, false).INT());
+				columns.add(new ColumnType(AlarmEntity.MP3_ID, false).INT());
 				
 				con.createTable(AlarmEntity.TBL_NM, columns);				
 			}
@@ -58,6 +60,8 @@ public class AlarmSql {
 			.setParameter(AlarmEntity.TIME_MIN, alarm.getMinutes())
 			.setParameter(AlarmEntity.ACTIVE, alarm.isActive())
 			.setParameter(AlarmEntity.REPEAT, alarm.getRepeatString())
+			.setParameter(AlarmEntity.RADIO_ID, alarm.getRadioId())
+			.setParameter(AlarmEntity.MP3_ID, alarm.getRadioId())
 
 			.add();
 		}finally {
@@ -75,7 +79,9 @@ public class AlarmSql {
 					.setParameter(AlarmEntity.TIME_HOUR, alarm.getHour())
 					.setParameter(AlarmEntity.TIME_MIN, alarm.getMinutes())
 					.setParameter(AlarmEntity.ACTIVE, alarm.isActive())
-					.setParameter(AlarmEntity.REPEAT, alarm.getRepeatString()).
+					.setParameter(AlarmEntity.REPEAT, alarm.getRepeatString())
+					.setParameter(AlarmEntity.RADIO_ID, alarm.getRadioId())
+					.setParameter(AlarmEntity.MP3_ID, alarm.getMp3Id()).
 					addUpdWhereClause("Where "+AlarmEntity.ID+" = :idValue", alarm.getId()).update();
 //					.update(AlarmEntity.ID, alarm.getId());
 
@@ -166,6 +172,29 @@ public class AlarmSql {
 		}
 
 	}	
+	
+	public List<AlarmEntity> loadAlarmByRadioId(int radioId) throws SQLException, ClassNotFoundException{
+		DBConnection con = null;
+		List<AlarmEntity> alarms = new ArrayList<AlarmEntity>();
+		try {
+			con = getConnection();
+
+			ResultSet rs = con.createSelectQuery("SELECT * FROM " + AlarmEntity.TBL_NM + " where " + AlarmEntity.RADIO_ID + " =  :radId ")
+					.setParameter("radId", radioId)
+					.getSelectResultSet();
+
+			if (rs!=null) {
+				while(rs.next()) {
+					AlarmEntity alarm  = new AlarmEntity(rs);
+					alarms.add(alarm);
+				}
+			}
+		}finally {
+			con.close();
+		}
+
+		return alarms;
+	}
 	private DBConnection getConnection() throws ClassNotFoundException, SQLException{
 		return  new DBConnection("jdbc:h2:"+Constants.DB_URL, Constants.DB_USER, Constants.DB_PASS, DbClass.H2 );
 	}

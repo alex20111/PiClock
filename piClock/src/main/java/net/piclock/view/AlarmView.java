@@ -38,7 +38,6 @@ import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.AlarmDayMouseSelector;
-import net.piclock.swing.component.RoundedBorder;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ThreadManager;
@@ -122,9 +121,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				minutes = Integer.parseInt(ala.get(0).getMinutes());
 			}
 		}
-		
-		
-		
+				
 		JButton btnHoursPlus = new JButton("+");
 		btnHoursPlus.setFont(new Font("tahoma", Font.BOLD, 20));
 		btnHoursPlus.addMouseListener(new MouseAdapter(){
@@ -369,7 +366,11 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 							ae.setMinutes(String.valueOf(minutes));
 							ae.setAlarmSound(btnBuzzer.getText());
 							ae.setActive(true);
-
+							if (Buzzer.valueOf(btnBuzzer.getText()) == Buzzer.RADIO) {
+								ae.setRadioId(wakeUpAlarmOptions.getRadioSelectedId());
+							}else {
+								ae.setRadioId(-1);
+							}
 
 							List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
 							
@@ -404,13 +405,15 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 							}
 
 							tm.startAlarm(ae);
+							logger.log(Level.INFO, "Alarm added: " + ae);
 						}else{
 							lblAlarm.setVisible(false);
 							AlarmEntity ae = aes.get(0);
 							ae.setActive(false);
 							sql.update(ae);
-
+							logger.log(Level.INFO, "Alarm updated: " + ae);
 						}
+						
 					}
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, "main");
@@ -445,9 +448,17 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		btnBuzzer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				wakeUpAlarmOptions.setBuzzerType(Buzzer.valueOf(btnBuzzer.getText()));
-				wakeUpAlarmOptions.setVisible(true);
-				alarmToggled = true;
+				try {
+					wakeUpAlarmOptions.setBuzzerType(Buzzer.valueOf(btnBuzzer.getText()));
+					if (Buzzer.valueOf(btnBuzzer.getText()) == Buzzer.RADIO) {
+						wakeUpAlarmOptions.loadRadioList();
+					}
+
+					wakeUpAlarmOptions.setVisible(true);
+					alarmToggled = true;
+				}catch(Exception ex) {
+					logger.log(Level.SEVERE, "Error while choosing the buzzer option", ex);
+				}
 			}
 		});
 		if (alarmEnt != null && alarmEnt.getAlarmSound() != null &&  alarmEnt.getAlarmSound().trim().length() > 0){

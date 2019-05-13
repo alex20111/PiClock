@@ -31,6 +31,7 @@ public class ButtonMonitor implements Runnable{
 	@Override
 	public void run() {
 		int prevBtnStatus = 0;
+		logger.log(Level.CONFIG, "Btn monitor started");
 		running.set(true);
 		try {
 			while (running.get()) {

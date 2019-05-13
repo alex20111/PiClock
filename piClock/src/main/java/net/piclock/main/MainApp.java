@@ -41,6 +41,7 @@ import javax.swing.border.EmptyBorder;
 import net.miginfocom.swing.MigLayout;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
+import net.piclock.enums.CheckWifiStatus;
 import net.piclock.enums.IconEnum;
 import net.piclock.enums.LabelEnums;
 import net.piclock.swing.component.SwingContext;
@@ -652,13 +653,15 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			
 		}else if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){
 			try{
-				String initValue = ((String)evt.getNewValue());
-				String value = initValue.substring(4,initValue.length() );
-				logger.config("CHECK INTERNET : " + evt.getNewValue() + " - Value: " + value);
+				CheckWifiStatus status = (CheckWifiStatus) evt.getNewValue();
+				
+//				String initValue = ((String)evt.getNewValue());
+//				String value = initValue.substring(4,initValue.length() );
+				logger.config("CHECK INTERNET : " + evt.getNewValue() + " - Value: " + status);
 
 				final ImageIcon wifiOn = themes.getIcon(IconEnum.WIFI_ON_ICON);
 				final ImageIcon wifiOFF = themes.getIcon(IconEnum.WIFI_OFF_ICON);
-				if ("starting".equals(initValue)){
+				if (status == CheckWifiStatus.STARTING){
 
 					lblWiFiIcon.setVisible(true);
 					
@@ -678,13 +681,13 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 					blinkingWifiTimer.setInitialDelay(0);
 					blinkingWifiTimer.start();
 
-				}else if ("success".equals(value)){
+				}else if (status == CheckWifiStatus.SUCCESS){
 					blinkingWifiTimer.stop();
 					lblWiFiIcon.setIcon(wifiOn);
 					themes.registerIconColor(lblWiFiIcon, IconEnum.WIFI_ON_ICON);
 					callProgThatReqWiFi();
 
-				}else if ("timeout".equals(value) || "interrupted".equals(value) || "disconnect".equals(value)){
+				}else if (status == CheckWifiStatus.END_TIMEOUT || status == CheckWifiStatus.END_INTERRUPTED || status == CheckWifiStatus.END_DISCONNECT){
 					lblWiFiIcon.setVisible(true);
 					lblWiFiIcon.setIcon(wifiOFF);
 					themes.registerIconColor(lblWiFiIcon, IconEnum.WIFI_OFF_ICON);
@@ -692,7 +695,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 					if (blinkingWifiTimer != null){
 						blinkingWifiTimer.stop();
 					}
-				}else if ("no_inet".equals(value)){
+				}else if (status == CheckWifiStatus.END_NO_INET){
 					lblWiFiIcon.setVisible(true);
 					lblWiFiIcon.setIcon(themes.getIcon(IconEnum.WIFI_ON_NO_INET));
 					themes.registerIconColor(lblWiFiIcon, IconEnum.WIFI_ON_NO_INET);
@@ -701,7 +704,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 						blinkingWifiTimer.stop();
 					}
 					
-				}else if ("wifiOff".equals(value)){
+				}else if (status == CheckWifiStatus.END_WIFI_OFF){
 					lblWiFiIcon.setVisible(false);
 				}
 			}catch (Exception ex){
