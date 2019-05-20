@@ -82,6 +82,7 @@ public class RadioPage extends HttpBase {
 			Map<String, String> values = new HashMap<String, String>();
 			values.put("table", buildRadioTable(re)); //key in the html page is : %-valuel-%
 			values.put("radioFormError", errorMessages);
+			values.put("lastid", String.valueOf(lastSelectedValue));
 //			values.put("customScript", generateCustomJsScript());
 
 			webPage =	StaticPageHandler.processPage(webPageFiles, values);

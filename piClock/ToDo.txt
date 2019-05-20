@@ -38,25 +38,37 @@ enable splash screen.
 
 
 TODO:
-add splash screen  ok (maybe custom)
+find background for each themes
+add splash screen  ok (maybe custom) - select 
 add auto start.   ok 
 when auto screen off is disabled. Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
 darksky - complete icons and correct forecast (some of the previous forecast is there)
-hide radio lastVal (radioId) as a hidden field that jquery can access in docuemnt (WEB).
-Vtest wifi modification on web - finish implementing it with pi handler
 work on MP3 
-//ADD auto shutdown thread in the alarm monitor button sice it will have acces sto all the button class functions. ******  DONE need tottes
+add theme on web to change pictures
+add timer to shutdown the alarm automatically.
+
+
+
 
 //tests
-Test new therad for alarm auto shutdown with radio and buzzer.
-test settings on connect and refresh -- SwingUtilities.invokeLater
-volume muted text
+Alarm radio / buzzer - Added load of radio in alarm.java to load the track for the alarm. 
+test wifi modification on web - finish implementing it with pi handler - Test  ------> 1st add password
+only load registered themes in xml. If not found, use the sunny background theme = test
+test when no radio station is present.
 
-/DONE test
+
+
+//DONE test
+have mp3 and radio contold the volume.. TEST
+Test new therad for alarm auto shutdown with radio and buzzer.
+ADD auto shutdown thread in the alarm monitor button sice it will have acces sto all the button class functions. ******  DONE need tottes
 test radio   -- SwingUtilities.invokeLater
 add muted option  -- TEST .. add theme.xml and icons
 re-create table for alarm to add radio int and mp3 int
 test radio alarm buzzer option. And radio wake up alarm
+test settings on connect and refresh -- SwingUtilities.invokeLater
+volume muted text
+Last selected value for the Radio checkbox.. check if javascript is populated / also check the html div.
 	
 	
 	mpc play 1   --> play 1st track

@@ -24,7 +24,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.RadioEntity;
+import net.piclock.db.sql.AlarmSql;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
@@ -47,12 +49,19 @@ public class BuzzerOptionDialog extends JDialog {
 
 	private JComboBox<RadioEntity> radioCmb;
 	private int radioSelectedId = -1;
+	
+	private boolean mp3ScrInit = true;//TODO
+	private boolean radioScrInit = true; //used to prevent trigger of the combobox when opening the dialog
 
 	/**
 	 * Create the dialog.
 	 */
-	public BuzzerOptionDialog() {
+	public BuzzerOptionDialog(AlarmEntity alarmEnt) {
 
+		if (alarmEnt != null && alarmEnt.getRadioId() > 0) {
+			radioSelectedId = alarmEnt.getRadioId();
+		}
+		
 		radioCmb = new JComboBox<>();
 		radioCmb.setVisible(false);
 
@@ -106,16 +115,22 @@ public class BuzzerOptionDialog extends JDialog {
 					AbstractButton button = (AbstractButton)e.getSource();
 					boolean selected = button.getModel().isSelected();
 
-					radioSelectedId = -1;
+					logger.log(Level.CONFIG, "Btn radio clicked: Selected - " +selected);
 					
-					if (selected) {
-						radioCmb.setVisible(true);
-						loadRadioList();
-						if(radioCmb.getSelectedIndex() > -1) {
-							radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
+
+					if (selected ) { //if the button is selected and radios exist
+						if ( loadRadioList()) {
+							radioCmb.setVisible(true);
+							if(radioCmb.getSelectedIndex() > -1) {
+								radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
+							}
+						}else {
+							radioSelectedId = -1;
+							JOptionPane.showMessageDialog(BuzzerOptionDialog.this, "No radio station avalaible", "No radio", JOptionPane.INFORMATION_MESSAGE);
 						}
 					}else {
 						radioCmb.setVisible(false);
+						radioSelectedId = -1;
 					}
 				}catch(Exception ex) {
 					logger.log(Level.SEVERE, "Error loading", ex);
@@ -127,8 +142,9 @@ public class BuzzerOptionDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (radioCmb != null && radioCmb.getSelectedItem() != null && !radioScrInit) {
 				radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
-
+				}
 			}
 		});
 		btnMp3 = new JToggleButton("Mp3");
@@ -139,8 +155,6 @@ public class BuzzerOptionDialog extends JDialog {
 			}
 		});
 
-
-
 		btnMp3.setEnabled(false); //TODO re-enable when function is working.
 		contentPanel.add(btnMp3, "cell 1 4,growx");
 
@@ -148,8 +162,6 @@ public class BuzzerOptionDialog extends JDialog {
 		buttonGroup.add(btnRadio);
 		buttonGroup.add(btnMp3);		
 
-		//			JLabel lblSelection = new JLabel("FM channel 106.9 selected");
-		//			lblSelection.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		contentPanel.add(radioCmb, "cell 0 5 3 1,alignx center");
 
 		{
@@ -170,6 +182,9 @@ public class BuzzerOptionDialog extends JDialog {
 								close = true;
 							}else if(btnRadio.isSelected()){
 								currBuzzer = Buzzer.RADIO;
+								if (radioCmb != null && radioCmb.getSelectedItem() != null) {
+									radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
+								}
 								close = true;
 							}else if(btnMp3.isSelected()){
 								currBuzzer = Buzzer.MP3;
@@ -206,29 +221,65 @@ public class BuzzerOptionDialog extends JDialog {
 			}
 		}
 	}
-	public void setBuzzerType(Buzzer buzzer) {
+	public void setBuzzerType() throws ClassNotFoundException, SQLException {
 
-		if (buzzer == Buzzer.BUZZER){
+		radioCmb.setVisible(false);
+
+		AlarmEntity alarm = new AlarmSql().loadActiveAlarm();
+		Buzzer buzzer = Buzzer.BUZZER;
+
+		if (alarm != null) {
+			buzzer = Buzzer.valueOf(alarm.getAlarmSound());
+			if (buzzer == Buzzer.BUZZER){
+				tglbtnBuzzer.doClick();
+			}
+			if (buzzer == Buzzer.RADIO){
+				radioSelectedId = alarm.getRadioId();
+				btnRadio.doClick();
+				
+
+			}
+			if (buzzer == Buzzer.MP3){
+				btnMp3.doClick();
+			}
+		}
+		else {
 			tglbtnBuzzer.doClick();
 		}
-		if (buzzer == Buzzer.RADIO){
-			radioCmb.setVisible(true);
-			btnRadio.doClick();
-		}
-		if (buzzer == Buzzer.MP3){
-			btnMp3.doClick();
-		}
+		radioScrInit = false;
+		mp3ScrInit = false;
 	}
-	public void loadRadioList() throws ClassNotFoundException, SQLException {
+	private boolean loadRadioList() throws ClassNotFoundException, SQLException {
 		RadioSql sql = new RadioSql();
 		List<RadioEntity> radioList = sql.loadAllRadios();
 
-		radioCmb.removeAllItems();
-		for(RadioEntity r : radioList) {
-			radioCmb.addItem(r);
+		if (radioList.size() > 0) {
+			RadioEntity toSel = null;
+			radioCmb.removeAllItems();
+			for(RadioEntity r : radioList) {
+				
+				radioCmb.addItem(r);
+				if (r.getId() == radioSelectedId) {
+					logger.log(Level.CONFIG, "radioSelectedId:  --------------->  " + radioSelectedId);
+					toSel = r;
+				}
+			}
+			
+			if (toSel != null) {
+				radioCmb.setSelectedItem(toSel);
+			}
+			
+			radioCmb.setVisible(true);
+			btnRadio.setEnabled(true);
+			
+			return true;
+		}else {
+			radioCmb.setVisible(false);
+			btnRadio.setEnabled(false);
+
 		}
 
-
+		return false;
 	}
 	public int getRadioSelectedId() {
 		return radioSelectedId;

@@ -2,6 +2,7 @@ package net.piclock.theme;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,9 @@ public class ThemeHandler {
 	private static final Logger logger = Logger.getLogger( ThemeHandler.class.getName() );
 	
 	private Map<ThemeEnum, List<BackgroundTheme>> themesMap;
+	
 	private ThemeEnum currentTheme;
+	private List<BackgroundEnum> currentThemeBackgrounds; //list of all availaible background for the theme
 	private BackgroundTheme currBackground;
 
 	private SwingContext ct = SwingContext.getInstance();
@@ -45,21 +48,24 @@ public class ThemeHandler {
 	public void loadTheme(ThemeEnum theme){
 
 		currentTheme = theme;
-		
+				
 		List<BackgroundTheme> back = themesMap.get(currentTheme);
+		currentThemeBackgrounds = new ArrayList<BackgroundEnum>();
 		for(BackgroundTheme bt : back){
 			if (bt.getName() == BackgroundEnum.SUNNY){
-				currBackground = bt;
-				break;
+				currBackground = bt;				
 			}
+			currentThemeBackgrounds.add(bt.getName());
 		}		
 	}
 
 	public void loadRainBackdrop(){		
 		logger.log(Level.CONFIG, "loadRainBackdrop(). Current: " + currBackground.getName());
 		
+		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.RAIN);
+		
 		//load only when it's not the same
-		if (currBackground.getName() != BackgroundEnum.RAIN){
+		if (currBackground.getName() != BackgroundEnum.RAIN && backGroundIncluded){
 
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
@@ -76,6 +82,9 @@ public class ThemeHandler {
 					break;
 				}
 			}
+		}else if (!backGroundIncluded) {
+			logger.log(Level.CONFIG, "loadRainBackdrop(). Loading sunny since Rain is not included into the theme");
+			loadSunnyBackdrop();
 		}
 	}
 	public void loadSunnyBackdrop(){
@@ -106,8 +115,10 @@ public class ThemeHandler {
 	public void loadThunderBackdrop(){
 		logger.log(Level.CONFIG, "loadThunderBackdrop(). Current: " + currBackground.getName());
 		
+		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.THUNDER);
+		
 		//load only when it's not the same
-		if (currBackground.getName() != BackgroundEnum.THUNDER){
+		if (currBackground.getName() != BackgroundEnum.THUNDER && backGroundIncluded){
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
 			for(BackgroundTheme bt : back){
@@ -123,13 +134,18 @@ public class ThemeHandler {
 					break;
 				}
 			}
+		}else if (!backGroundIncluded) {
+			logger.log(Level.CONFIG, "loadThunderBackdrop(). Loading sunny since Thunder is not included into the theme");
+			loadSunnyBackdrop();
 		}
 	}
 	public void loadSnowBackdrop(){
 		logger.log(Level.CONFIG, "loadSnowBackdrop(). Current: " + currBackground.getName());
 
+		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.SNOW);
+		
 		//load only when it's not the same
-		if (currBackground.getName() != BackgroundEnum.SNOW){
+		if (currBackground.getName() != BackgroundEnum.SNOW && backGroundIncluded){
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
 			for(BackgroundTheme bt : back){
@@ -145,6 +161,9 @@ public class ThemeHandler {
 					break;
 				}
 			}
+		}else if (!backGroundIncluded) {
+			logger.log(Level.CONFIG, "loadSnowBackdrop(). Loading sunny since Snow is not included into the theme");
+			loadSunnyBackdrop();
 		}
 	}
 	public void fireNightCycle(){		
@@ -234,6 +253,17 @@ public class ThemeHandler {
 
 	public synchronized void setRegisteredIcon(Map<IconEnum, Object> registeredIcon) {
 		this.registeredIcon = registeredIcon;
+	}
+	
+	//when loading a background, verify if it is included in the themes, if not , default to the sunny theme.
+	private boolean isBackgroundIncludedInTheme(BackgroundEnum backEnum) {
+		
+		if (currentThemeBackgrounds.contains(backEnum)) {
+			return true;
+		}
+		
+		
+		return false;
 	}
 
 }

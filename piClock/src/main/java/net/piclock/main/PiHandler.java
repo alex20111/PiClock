@@ -184,14 +184,16 @@ public class PiHandler {
 	 * @throws IOException 
 	 * @throws ExecuteException 
 	 * @throws InterruptedException **/
-	public void turnOnAlarm(Buzzer buzzerType) throws   ExecuteException, IOException, InterruptedException{
-		logger.log(Level.CONFIG,"Turning on: " + buzzerType.getName());
+	public void turnOnAlarm(Buzzer alarm, int track) throws   ExecuteException, IOException, InterruptedException{
+		logger.log(Level.CONFIG,"Turning on: " + alarm.getName());
 
-		if (buzzerType == Buzzer.BUZZER){
+		
+		
+		if (alarm == Buzzer.BUZZER){
 			buzzer(true);
-		}else if (buzzerType == Buzzer.RADIO){
-			playRadio(true, 1);//TODO get track number
-		}else if (buzzerType == Buzzer.MP3){
+		}else if (alarm == Buzzer.RADIO){
+			playRadio(true, track);//TODO get track number
+		}else if (alarm == Buzzer.MP3){
 			playMp3(true);
 		}
 	}

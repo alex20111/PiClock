@@ -31,6 +31,7 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import net.piclock.arduino.ArduinoCmd;
 import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
+import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
@@ -75,6 +76,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private AlarmDayMouseSelector thursday;
 	private AlarmDayMouseSelector friday;
 	private AlarmDayMouseSelector saturday;
+	
+	
 	/**
 	 * Create the panel.
 	 * @throws IOException 
@@ -442,17 +445,14 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(lblMinutes_1);
 		theme.registerLabelTextColor(lblMinutes_1, LabelEnums.ALARM_HOUR_TXT);
 		
-		wakeUpAlarmOptions = new BuzzerOptionDialog();
+		wakeUpAlarmOptions = new BuzzerOptionDialog(alarmEnt);
 		btnBuzzer = new JButton(Buzzer.BUZZER.name());
 		btnBuzzer.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		btnBuzzer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
-					wakeUpAlarmOptions.setBuzzerType(Buzzer.valueOf(btnBuzzer.getText()));
-					if (Buzzer.valueOf(btnBuzzer.getText()) == Buzzer.RADIO) {
-						wakeUpAlarmOptions.loadRadioList();
-					}
+					wakeUpAlarmOptions.setBuzzerType();
 
 					wakeUpAlarmOptions.setVisible(true);
 					alarmToggled = true;

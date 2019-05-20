@@ -32,6 +32,7 @@ import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.ImageUtils;
+import net.piclock.util.VolumeIndicator;
 
 public class RadioStationsView extends JPanel implements PropertyChangeListener {
 
@@ -153,7 +154,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 					try {
 
 						lblRadioIcon.setVisible(true);
-						ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, true);
+						
 
 
 						RadioEntity re = (RadioEntity)radioStations.getSelectedItem();
@@ -166,7 +167,11 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 							handler.playRadio(true, re.getTrackNbr());
 //							exec.run();
 
-							btnStop.setEnabled(true);
+							btnStop.setEnabled(true);						
+							
+							fireVolumeIconChange(true);
+							
+														
 						} catch (IOException e1) {
 							logger.log(Level.SEVERE, "Error executing music", e1);
 						}	
@@ -194,6 +199,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 					try {
 						handler.playRadio(false, -1);
 						btnStop.setEnabled(false);
+						
+						fireVolumeIconChange(false);
 					} catch (IOException e1) {
 						logger.log(Level.SEVERE, "Error stopping music", e1);
 					}	
@@ -248,6 +255,24 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 		}
 
 	}
+	
+	private void fireVolumeIconChange(boolean displayOn) {
+		VolumeIndicator vi = (VolumeIndicator)ct.getSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER);			
+		
+		if (vi == null) {
+			vi =  new VolumeIndicator();
+			vi.setRadioPlaying(displayOn);
+			ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, vi);
+		}else {
+			
+			VolumeIndicator viNew = new VolumeIndicator();
+			viNew.setMp3Playing(vi.isMp3Playing());
+			viNew.setRadioPlaying(displayOn);
+			ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, viNew);
+			
+		}
+	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){

@@ -78,7 +78,6 @@ public class RadioSql {
 					.setParameter(RadioEntity.TRACK_NBR, radio.getTrackNbr())
 					.setParameter(RadioEntity.RADIO_LAST_SELECTION, radio.isLastSelection())
 					.addUpdWhereClause("Where "+RadioEntity.ID+" = :idValue", radio.getId()).update();
-//					.update(RadioEntity.ID, radio.getId());//TODO
 
 			if (upd < 1) {
 				throw new SQLException("Error updating config. " + upd);

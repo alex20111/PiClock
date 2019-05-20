@@ -52,6 +52,7 @@ import net.piclock.thread.ThreadManager;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.LogConfig;
 import net.piclock.util.PreferencesHandler;
+import net.piclock.util.VolumeIndicator;
 import net.piclock.view.AlarmView;
 import net.piclock.view.ConfigView;
 import net.piclock.view.RadioStationsView;
@@ -564,7 +565,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
+	public synchronized void propertyChange(PropertyChangeEvent evt) {
 		logger.config("--propertyChange--: " + evt.getPropertyName());
 		if (evt.getPropertyName().equals(Constants.SENSOR_INFO)) {
 			WeatherBean wb = (WeatherBean)evt.getNewValue();			
@@ -655,8 +656,6 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			try{
 				CheckWifiStatus status = (CheckWifiStatus) evt.getNewValue();
 				
-//				String initValue = ((String)evt.getNewValue());
-//				String value = initValue.substring(4,initValue.length() );
 				logger.config("CHECK INTERNET : " + evt.getNewValue() + " - Value: " + status);
 
 				final ImageIcon wifiOn = themes.getIcon(IconEnum.WIFI_ON_ICON);
@@ -712,9 +711,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			}
 		}else if(evt.getPropertyName().equals(Constants.RADIO_VOLUME_ICON_TRIGGER) ||
 				evt.getPropertyName().equals(Constants.MP3_VOLUME_ICON_TRIGGER)){
-			boolean showVolume = (Boolean)evt.getNewValue();
-			//TODO add function for MP3 also.. when radio or mp3 is on, then the voluem is still on
-			btnVolume.setVisible(showVolume);
+			logger.log(Level.CONFIG, "Volume icon indicator");
+			VolumeIndicator vi = (VolumeIndicator)evt.getNewValue();
+			btnVolume.setVisible(vi.displayVolumeIcon());
 		}
 	}		
  

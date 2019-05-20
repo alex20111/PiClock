@@ -3,11 +3,12 @@ package net.piclock.server;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.nanohttpd.protocols.http.response.Response;
 
@@ -15,15 +16,20 @@ import home.miniHttp.HttpBase;
 import home.miniHttp.StaticPageHandler;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
+import net.piclock.main.PiHandler;
+import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
 
 public class WifiHandler extends HttpBase implements PropertyChangeListener{
+	
+	private static final Logger logger = Logger.getLogger( WifiHandler.class.getName() );
 	
 	private final String CONNECTED = "connected";
 	private final String PING = "ping";
 	private final String ERROR = "error";
 	
 	private SwingContext ct;
+	private PiHandler piHandler;
 	
 	private String pageName = "wifiView";
 	private String wifiName = "";
@@ -38,14 +44,18 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	public WifiHandler() {
 		ct = SwingContext.getInstance();
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
+		piHandler = PiHandler.getInstance();
 	}
 	
 	@Override
 	public Response handleRequest() {
-	//\\TODO connect to PIHANDLER	
+		
 		String webPage = "Error";
 		try{
-			currWifi = "ppout"; //TODO
+			if (piHandler.isWifiConnected()) {
+				Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+				currWifi = p.getWifi();
+			}						
 			
 			String message = "";
 			
@@ -53,18 +63,16 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 				return Response.newFixedLengthResponse(checkIfConnected());
 			}
 			else if (wifiName != null && !wifiName.equals("Select") && wifiPassword != null && wifiPassword.length() > 0){
+				//connect to wifi
+				piHandler.connectToWifi(wifiName, wifiPassword);
 				return Response.newFixedLengthResponse(checkIfConnected());//message = generateSuccessMessage("Success, Connected");
 			}
 
 			List<File> webPageFiles = getWebPageOnDisk(pageName);
 
 			//load wifis
-			List<String> wifi = new ArrayList<String>();
-			wifi.add("Select");
-			wifi.add("DolMat");
-			wifi.add("ppout");
-			wifi.add("bob");
-
+			List<String> wifi = piHandler.fetchWifiList();
+			
 			Map<String, String> values = new HashMap<String, String>();
 			values.put("wifilist", buildSelect(wifi)); //key in the html page is : %-valuel-%
 			values.put("message1",message);
@@ -72,7 +80,8 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 			webPage =	StaticPageHandler.processPage(webPageFiles, values);
 
 		}catch (Exception ex){
-			ex.printStackTrace();
+			logger.log(Level.SEVERE, "error in WiFiHandler", ex);
+			
 		}
 
 		return Response.newFixedLengthResponse(webPage);

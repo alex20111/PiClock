@@ -2,10 +2,11 @@
 
 $(document).ready(function(){
 	 
-		var lastval = 0; 
+		var lastval = $('#lastRadioSelId').text();
 		var check = false;
 		 
-		$('.selChkbox').change(function(){ 
+		$('.selChkbox').change(function(){			
+		 
 			if($('input.selChkbox').filter(':checked').length == 1) {  
 				lastval=$('input.selChkbox').filter(':checked').val();
 				 check = true;
