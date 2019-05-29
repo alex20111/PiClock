@@ -29,6 +29,7 @@ $(document).ready(function(){
 				data: {wifiName : wifiN, wifiPassword : pass },
 				cache: false,
 				success: function(result){
+				console.log(result);
 					if (result === 'ping'){
 						$('#connectingId').html('Verifying');
 						$('#connectBtnId').attr('disabled', true);
@@ -53,6 +54,8 @@ $(document).ready(function(){
 				data: {check : 'check' },
 				cache: false,
 				success: function(result){
+				console.log('2');
+				console.log(result);
 					if (result === 'ping'){
 						$('#connectingId').html('Verifying');
 					}else if(result === 'connected'){

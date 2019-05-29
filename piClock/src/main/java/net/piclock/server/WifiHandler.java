@@ -38,8 +38,9 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	private Optional<String> check = Optional.empty();
 	
 	String currWifi = "";
+	String passw = "";
 
-	private CheckWifiStatus connStatus;
+	private CheckWifiStatus connStatus = CheckWifiStatus.STARTING;
 
 	public WifiHandler() {
 		ct = SwingContext.getInstance();
@@ -51,21 +52,24 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	public Response handleRequest() {
 		
 		String webPage = "Error";
-		try{
-			if (piHandler.isWifiConnected()) {
-				Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
-				currWifi = p.getWifi();
-			}						
+		try{									
 			
 			String message = "";
+			
+			System.out.println("values !!!!!!!!!!! > " + wifiName + " pa: " + wifiPassword + " check: " + check + " connstat: " + connStatus);
+			
 			
 			if (check.isPresent() && check.get().equalsIgnoreCase("check")) {
 				return Response.newFixedLengthResponse(checkIfConnected());
 			}
 			else if (wifiName != null && !wifiName.equals("Select") && wifiPassword != null && wifiPassword.length() > 0){
 				//connect to wifi
-				piHandler.connectToWifi(wifiName, wifiPassword);
+				piHandler.connectToWifi(wifiName, wifiPassword); //TODO when 1st starting connect, send a ping instated of disconnect. then let the normal flow.
 				return Response.newFixedLengthResponse(checkIfConnected());//message = generateSuccessMessage("Success, Connected");
+			}else if (piHandler.isWifiConnected()) {
+				Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+				currWifi = p.getWifi();
+				passw = p.getWifiPass();
 			}
 
 			List<File> webPageFiles = getWebPageOnDisk(pageName);
@@ -76,19 +80,18 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 			Map<String, String> values = new HashMap<String, String>();
 			values.put("wifilist", buildSelect(wifi)); //key in the html page is : %-valuel-%
 			values.put("message1",message);
+			values.put("wifiPass", passw);
 
 			webPage =	StaticPageHandler.processPage(webPageFiles, values);
 
 		}catch (Exception ex){
-			logger.log(Level.SEVERE, "error in WiFiHandler", ex);
-			
+			logger.log(Level.SEVERE, "error in WiFiHandler", ex);			
 		}
 
 		return Response.newFixedLengthResponse(webPage);
 	}
 
 	public String buildSelect(List<String> wifiNames){
-
 		
 		StringBuilder wifi = new StringBuilder();
 		for(String s : wifiNames){
@@ -132,7 +135,6 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		
-		connStatus = (CheckWifiStatus)evt.getSource();
-		
+		connStatus = (CheckWifiStatus)evt.getNewValue();
 	}
 }

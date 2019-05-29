@@ -10,7 +10,8 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import net.piclock.arduino.ArduinoCmd;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
-import net.piclock.enums.Buzzer;
+import net.piclock.swing.component.Message;
+import net.piclock.swing.component.SwingContext;
 import net.piclock.thread.Alarm;
 
 public class AlarmBtnHandler  implements ButtonChangeListener{
@@ -36,8 +37,6 @@ public class AlarmBtnHandler  implements ButtonChangeListener{
 			logger.log(Level.SEVERE, "Error in button handler" , e);
 			
 		}
-
-
 	}
 
 	public void autoAlarmShutOff( boolean startThread) {
@@ -70,10 +69,12 @@ public class AlarmBtnHandler  implements ButtonChangeListener{
 	}
 	
 	private void shutDownAlarm() throws InterruptedException, UnsupportedBusNumberException, IOException {
-		System.out.println("Turning off alarm");
-		Alarm.turnOffAlarmSound();
-		deactivateListener();
+		logger.log(Level.CONFIG, "Turning off alarm");
 		
+		Message msg = new Message("off - Btn Handler");
+		SwingContext.getInstance().sendMessage(msg);
+		
+		deactivateListener();		
 		
 		ArduinoCmd cm = ArduinoCmd.getInstance();
 		cm.stopBtnMonitor();

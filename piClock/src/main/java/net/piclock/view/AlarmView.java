@@ -31,7 +31,6 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import net.piclock.arduino.ArduinoCmd;
 import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
-import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
@@ -39,6 +38,9 @@ import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.AlarmDayMouseSelector;
+import net.piclock.swing.component.BuzzerSelection;
+import net.piclock.swing.component.Message;
+import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ThreadManager;
@@ -67,6 +69,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private AlarmSql sql;
 	
 	private  boolean alarmToggled = false;
+	private BuzzerSelection buzzerSelection;
 	
 	//days of the week label
 	private AlarmDayMouseSelector sunday;
@@ -115,13 +118,18 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 		if (alarmEnt != null) {
 			hours = Integer.parseInt(alarmEnt.getHour());
-			minutes = Integer.parseInt(alarmEnt.getMinutes());	
+			minutes = Integer.parseInt(alarmEnt.getMinutes());
+			buzzerSelection = new BuzzerSelection(alarmEnt);
+			
 		}else {
 			//if no alarm .. look if theere is any and loaf the 1st one
 			List<AlarmEntity> ala = sql.loadAllAlarms();
 			if (ala.size() > 0) {
 				hours = Integer.parseInt(ala.get(0).getHour());
 				minutes = Integer.parseInt(ala.get(0).getMinutes());
+				//also set the days 
+				alarmEnt = ala.get(0);
+				buzzerSelection = new BuzzerSelection(alarmEnt);
 			}
 		}
 				
@@ -343,7 +351,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 				try{
 
-					System.out.println("Alarm toggeled: " + alarmToggled);
+					logger.log(Level.CONFIG,"Alarm toggeled: " + alarmToggled);
 
 					if (alarmToggled) {
 						ThreadManager tm = ThreadManager.getInstance();
@@ -352,8 +360,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 						List<AlarmEntity> aes = sql.loadAllAlarms();
 
-						if (tglbtnOnOff.isSelected()){
-							lblAlarm.setVisible(true);							
+//						if (tglbtnOnOff.isSelected()){
+
 							AlarmEntity ae = null;
 
 							boolean add = false;
@@ -368,15 +376,15 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 							ae.setHour(String.valueOf(hours));
 							ae.setMinutes(String.valueOf(minutes));
 							ae.setAlarmSound(btnBuzzer.getText());
-							ae.setActive(true);
+
 							if (Buzzer.valueOf(btnBuzzer.getText()) == Buzzer.RADIO) {
-								ae.setRadioId(wakeUpAlarmOptions.getRadioSelectedId());
+								ae.setRadioId(buzzerSelection.getRadioId());
 							}else {
 								ae.setRadioId(-1);
 							}
-
+							//TODO mp3
 							List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
-							
+
 							if (sunday.isSelected()) {
 								rp.add(AlarmRepeat.SUNDAY);
 							}
@@ -398,8 +406,16 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 							if (saturday.isSelected()) {
 								rp.add(AlarmRepeat.SATURDAY);
 							}
-											
+
 							ae.setAlarmRepeat(rp);
+							if (tglbtnOnOff.isSelected()){
+								lblAlarm.setVisible(true);
+								ae.setActive(true);
+								tm.startAlarm(ae);
+							}else {
+								ae.setActive(false);
+								lblAlarm.setVisible(false);
+							}
 
 							if (add) {
 								sql.add(ae);
@@ -407,15 +423,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 								sql.update(ae);
 							}
 
-							tm.startAlarm(ae);
-							logger.log(Level.INFO, "Alarm added: " + ae);
-						}else{
-							lblAlarm.setVisible(false);
-							AlarmEntity ae = aes.get(0);
-							ae.setActive(false);
-							sql.update(ae);
-							logger.log(Level.INFO, "Alarm updated: " + ae);
-						}
+							
+							logger.log(Level.INFO, "Alarm : " + ae);
 						
 					}
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
@@ -477,7 +486,12 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		
-		btnBuzzer.setText(((Buzzer)evt.getNewValue()).name());
+		
+		buzzerSelection = (BuzzerSelection)evt.getNewValue();
+		
+		logger.log(Level.CONFIG, "PropChange: " + buzzerSelection);
+		
+		btnBuzzer.setText(buzzerSelection.getBuzzer().name());
 		
 	}
 	private void dayDaysToSelect(AlarmEntity alarm, ThemeHandler theme) {	
@@ -559,4 +573,5 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(lblDaySat);
 		
 	}
+
 }

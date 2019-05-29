@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.main.Preferences;
+import net.piclock.swing.component.Message;
+import net.piclock.swing.component.SwingContext;
 
  
 //add code to main code.. 
@@ -75,7 +77,7 @@ public class ThreadManager {
 			System.out.println("startStopTimer::alarmThread Done? " + alarmThread.isDone());			
 
 			if (Alarm.isAlarmTriggered()){
-				Alarm.turnOffAlarmSound();
+				SwingContext.getInstance().sendMessage(new Message("turn off"));
 			}
 			alarmThread.cancel(true);	
 			//wait for timer to stop

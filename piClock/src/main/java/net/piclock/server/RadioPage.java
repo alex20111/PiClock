@@ -66,7 +66,16 @@ public class RadioPage extends HttpBase {
 					RadioEntity rad = new RadioEntity();
 					rad.setRadioName(radioName.get());
 					rad.setRadioLink(radioLink.get());
-					sql.add(rad);					
+					sql.add(rad);
+					
+//					//add it to mpc also, but verify if it exist 1st
+//					if(!linkExist(radioLink.get())) {
+//						Exec exec = new Exec();
+//						exec.addCommand("mpc").addCommand("add").addCommand(radioLink.get()).timeout(10000);
+//
+//						 exec.run();
+//					}
+					
 
 				}else{
 					errorMessages = generateErrorMessage("Please add a valid link that starts with http:// or https:// ");
@@ -178,26 +187,29 @@ public class RadioPage extends HttpBase {
 		}
 		return false;
 	}
-//	private String generateCustomJsScript(){
-//		StringBuilder sb = new StringBuilder();
-//		sb.append("<script> ");
-//		sb.append("var lastval = "+lastSelectedValue+"; \n");
-//		sb.append("var check = false; \n");
-//		sb.append("$('.selChkbox').change(function(){ ");
-//		sb.append("if($('input.selChkbox').filter(':checked').length == 1) {  lastval=$('input.selChkbox').filter(':checked').val();  check = true;");
-//		sb.append(" $('input.selChkbox:not(:checked)').attr('disabled', 'disabled');  ");
-//		sb.append("}else{ ");
-//		sb.append("$('input.selChkbox').removeAttr('disabled');  check = false; } \n");
-//		sb.append("\n");//ajax call
-//		sb.append("$.ajax({");
-//		sb.append("method: 'GET',");
-//		sb.append("url: '/radio?',");
-//		sb.append("data: { selrad: lastval, selradChecked: check },");
-//		sb.append("cache: false");
-//		sb.append("});");
-//		sb.append("}); ");
-//		sb.append("</script> ");
-//		
-//		return sb.toString();
+//	private boolean linkExist(String link) throws ExecuteException, IOException {
+//		Exec exec = new Exec();
+//		exec.addCommand("mpc").addCommand("playlist").timeout(10000);
+//
+//		int ex = exec.run();
+//
+//		if(ex == 0) {
+//			String out = exec.getOutput();
+//			if (out.length() > 0) {
+//				String outSplit[] = out.split("\n");
+//
+//				for(int i = 0 ; i <  outSplit.length ; i ++) {
+//
+//					String play = outSplit[i];
+//
+//					if (play.trim().equalsIgnoreCase(link)) {
+//						return true;						
+//					}					
+//				}
+//			}
+//
+//		}
+//		return false;
 //	}
+
 }

@@ -1,6 +1,7 @@
 package net.piclock.thread;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Date;
@@ -13,6 +14,7 @@ import net.piclock.arduino.ArduinoCmd;
 import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.RadioEntity;
+import net.piclock.db.sql.AlarmSql;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
@@ -20,9 +22,11 @@ import net.piclock.enums.Light;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
+import net.piclock.swing.component.Message;
+import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 
-public class Alarm implements Runnable{
+public class Alarm implements Runnable, MessageListener{
 	
 	private static final Logger logger = Logger.getLogger( Alarm.class.getName() );
 
@@ -34,8 +38,11 @@ public class Alarm implements Runnable{
 	private static boolean buzzerDefaultUsed = false; //if a problem occured , the default buzzer will be used 
 	
 	public Alarm(AlarmEntity alarmEnt){
+		logger.log(Level.INFO, "Alarm class created for:  " + alarm);
 		alarm = alarmEnt;
 		ct = SwingContext.getInstance();
+		
+		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
 		
 	}
 	@Override
@@ -52,12 +59,15 @@ public class Alarm implements Runnable{
 				break;
 			}
 		}		
+//		ct.removeMessageListener(Constants.TURN_OFF_ALARM, this);
+		logger.log(Level.INFO, "Alarm class exited");
+		
 	}
 	
 	public static boolean isAlarmTriggered(){
 		return alarmTriggered;
 	}
-	public static void turnOffAlarmSound(){
+	public void turnOffAlarmSound(){
 		logger.log(Level.CONFIG, "Turning off alarm");
 		alarmTriggered = false;
 		try {
@@ -65,9 +75,11 @@ public class Alarm implements Runnable{
 			if (buzzerDefaultUsed) {
 				buzzer = Buzzer.BUZZER;
 				buzzerDefaultUsed = false;
+				alarm.setAlarmSound(Buzzer.BUZZER.name());
+				new AlarmSql().update(alarm);
 			}
 			handler.turnOffAlarm(buzzer);
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException | InterruptedException | SQLException | ClassNotFoundException e) {
 			logger.log(Level.SEVERE, "error turning off the alarm", e);
 		}
 	}	
@@ -94,15 +106,12 @@ public class Alarm implements Runnable{
 			ArduinoCmd cm = ArduinoCmd.getInstance();
 			cm.startBtnMonitoring();			
 
-			Date end = new Date();
-			long timeRemaining = 60000 - (end.getTime() - start.getTime());
-
-			int track = -1;
+			String track = "";
 			
 			if (buzzer == Buzzer.RADIO && alarm.getRadioId() > -1) { //TODO test
 				RadioEntity rad = new RadioSql().loadRadioById(alarm.getRadioId());
 				if (rad != null) {
-					track = rad.getTrackNbr();
+					track = rad.getRadioLink();
 				}else {
 					buzzer = Buzzer.BUZZER;
 					buzzerDefaultUsed = true;
@@ -113,13 +122,14 @@ public class Alarm implements Runnable{
 				buzzer = Buzzer.BUZZER;  //load default value if errors in others.
 			}
 			
-			
-			//pause for 1 min before triggering the alarm.
+			Date end = new Date();
+			long timeRemaining = 60000 - (end.getTime() - start.getTime());
+			//pause for approx 1 min before triggering the alarm.
 			try {
-				Thread.sleep(timeRemaining);// sleep 1 min then turn buzzer on.
+				Thread.sleep(timeRemaining);
 				alarmTriggered = true;
 				
-				btnH.autoAlarmShutOff(true);
+				btnH.autoAlarmShutOff(true); //start alarm auto shutdown
 
 				if (!handler.isScreenOn()){						
 					handler.turnOnScreen(false, Light.VERY_BRIGHT);
@@ -138,5 +148,20 @@ public class Alarm implements Runnable{
 			logger.log(Level.SEVERE,"Error in setting off timer" , e); 	
 
 		}				
+	}
+//	@Override
+//	public synchronized void propertyChange(PropertyChangeEvent evt) {
+//		if (evt.getPropertyName().equals(Constants.TURN_OFF_ALARM)) {
+//			turnOffAlarmSound();
+//		}
+//		
+//	}
+	@Override
+	public synchronized void message(Message message) {
+		logger.log(Level.CONFIG, "Recieved message: " + message.getPropertyName());
+		if (Constants.TURN_OFF_ALARM.equals(message.getPropertyName())) {
+			turnOffAlarmSound();
+		}
+
 	}
 }

@@ -32,13 +32,17 @@ public class Constants {
 	
 	public static final String THEMES_HANDLER = "themesHandler";
 	public static final String THEMES_BACKGROUND_IMG_UPDATE = "themesBackgroundImgChange";
-	public static final String DAY_NIGHT_CYCLE = "dayNightCycle"; 
-	public static final String BUZZER_CHANGED = "AlarmTypeChanged";
+	public static final String DAY_NIGHT_CYCLE = "dayNightCycle";	
 	
 	public static final String CHECK_INTERNET = "CheckingNetConnection";
 	
+	//volume
 	public static final String RADIO_VOLUME_ICON_TRIGGER = "radioVolTrigger";
 	public static final String MP3_VOLUME_ICON_TRIGGER = "mp3VolTrigger";
+	
+	//alarm
+	public static final String BUZZER_CHANGED = "AlarmTypeChanged";
+	public static final String TURN_OFF_ALARM = "TurnOffAlarm";
 	
 	public static final String NA_ICON = "cloudNa.png";
 	

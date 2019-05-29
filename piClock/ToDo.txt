@@ -27,6 +27,7 @@ Create folder PiClock.
 /home/pi/piClock/mp3
 		
 audio radio setup.:
+use omxplayer !!! not MPC
 https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 
@@ -45,20 +46,23 @@ when auto screen off is disabled. Add background for night.. Use LDR to see if i
 darksky - complete icons and correct forecast (some of the previous forecast is there)
 work on MP3 
 add theme on web to change pictures
-add timer to shutdown the alarm automatically.
-
-
+RADIO - update to process..!!!!!! see radioview - exception
+outside temp is empty when refreshing weather.. shou
+WIFI -- when starting we recieve a END_DISCONNECT when we are expecting a starting.. this throws off the java script and generate error.  See TODO
 
 
 //tests
-Alarm radio / buzzer - Added load of radio in alarm.java to load the track for the alarm. 
 test wifi modification on web - finish implementing it with pi handler - Test  ------> 1st add password
 only load registered themes in xml. If not found, use the sunny background theme = test
-test when no radio station is present.
+
+
 
 
 
 //DONE test
+test message change listener when turn off alarm for multiple alarms. !!!!!!!!!!!!! todo , to test add an other listener in an other class to see if it will be fired also, you just want the class registered with the property to fire. !!!!!!!!!!
+test when no radio station is present.
+Alarm radio / buzzer - Added load of radio in alarm.java to load the track for the alarm. 
 have mp3 and radio contold the volume.. TEST
 Test new therad for alarm auto shutdown with radio and buzzer.
 ADD auto shutdown thread in the alarm monitor button sice it will have acces sto all the button class functions. ******  DONE need tottes
@@ -69,6 +73,7 @@ test radio alarm buzzer option. And radio wake up alarm
 test settings on connect and refresh -- SwingUtilities.invokeLater
 volume muted text
 Last selected value for the Radio checkbox.. check if javascript is populated / also check the html div.
+add timer to shutdown the alarm automatically.
 	
 	
 	mpc play 1   --> play 1st track

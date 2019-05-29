@@ -3,7 +3,9 @@ package net.piclock.swing.component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SwingContext {
@@ -12,6 +14,9 @@ public class SwingContext {
 	private static SwingContext swingContext = new SwingContext();
 	/** PropertyChangeSupport */
 	private PropertyChangeSupport propertyChangeSupport = 	new PropertyChangeSupport(this);
+	
+	private List<MessageListener> msgListeners = new ArrayList<>();
+	private Map<String,MessageListener> msgListenersMap = new HashMap<>();
 
 	@SuppressWarnings("rawtypes")
 	private Map shareableDataMap = null;
@@ -64,4 +69,32 @@ public class SwingContext {
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
 		propertyChangeSupport.removePropertyChangeListener(propertyName, l);
 	}
+	
+	public void addMessageChangeListener(String propertyName, MessageListener l) {		
+		msgListenersMap.put(propertyName,l);
+	}
+	public void addMessageChangeListener(MessageListener l) {
+		msgListeners.add(l);
+	}
+	
+	public void removeMessageListener(String propertyName , MessageListener l) {
+		msgListenersMap.remove(propertyName);
+	}
+	public void removeMessageListener(MessageListener l) {		
+		msgListeners.remove(l);	
+	}
+	public void sendMessage(Message message){
+		for(MessageListener m : msgListeners) {			
+			m.message(message);
+		}
+		
+		msgListenersMap.forEach((p, m) -> {
+			message.setPropertyName(p);
+			m.message(message); 
+		} );
+	}
+
+	
+	
+	
 }

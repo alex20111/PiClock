@@ -31,6 +31,7 @@ import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
+import net.piclock.swing.component.BuzzerSelection;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.PreferencesHandler;
 
@@ -61,6 +62,7 @@ public class BuzzerOptionDialog extends JDialog {
 		if (alarmEnt != null && alarmEnt.getRadioId() > 0) {
 			radioSelectedId = alarmEnt.getRadioId();
 		}
+		//TODO if mp3
 		
 		radioCmb = new JComboBox<>();
 		radioCmb.setVisible(false);
@@ -126,6 +128,7 @@ public class BuzzerOptionDialog extends JDialog {
 							}
 						}else {
 							radioSelectedId = -1;
+							tglbtnBuzzer.doClick();
 							JOptionPane.showMessageDialog(BuzzerOptionDialog.this, "No radio station avalaible", "No radio", JOptionPane.INFORMATION_MESSAGE);
 						}
 					}else {
@@ -174,26 +177,26 @@ public class BuzzerOptionDialog extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						try{
 							boolean close = false;
-							Buzzer currBuzzer = null;
-
-
+//							Buzzer currBuzzer = null;
+							
 							if (tglbtnBuzzer.isSelected()){
-								currBuzzer = Buzzer.BUZZER;
+								BuzzerSelection bs = new BuzzerSelection(Buzzer.BUZZER);
+								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								close = true;
 							}else if(btnRadio.isSelected()){
-								currBuzzer = Buzzer.RADIO;
 								if (radioCmb != null && radioCmb.getSelectedItem() != null) {
-									radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
+									BuzzerSelection bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId() );
+									ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								}
 								close = true;
 							}else if(btnMp3.isSelected()){
-								currBuzzer = Buzzer.MP3;
+								BuzzerSelection bs = new BuzzerSelection(Buzzer.MP3, -1);//TODO
+								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								close = true;
 							}
 							PreferencesHandler.save(pref);
 
 							if (close){
-								ct.putSharedObject(Constants.BUZZER_CHANGED,currBuzzer);
 								setVisible(false);
 							}
 						}catch (Exception ex){

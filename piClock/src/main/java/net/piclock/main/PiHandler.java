@@ -1,7 +1,6 @@
 package net.piclock.main;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -31,9 +30,8 @@ import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
 import net.piclock.enums.Light;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.RadioStreaming;
 
-//https://computers.tutsplus.com/articles/using-a-usb-audio-device-with-a-raspberry-pi--mac-55876
-//https://die-antwort.eu/techblog/2017-12-raspberry-pi-usb-audio-interface-command-line/
 public class PiHandler {
 	
 	public static boolean localTest = false;
@@ -52,8 +50,7 @@ public class PiHandler {
 	
 	private  Thread wifiShutDown;
 	private  Thread screenAutoShutDown;
-	private  Thread checkConnection; 	
-	
+	private  Thread checkConnection; 		
 	
 	//commands to ard
 	private  String BUZZER = "buzzer";
@@ -62,6 +59,8 @@ public class PiHandler {
 	private  String TIME_OFF = "timeOff";
 	
 	private ButtonChangeListener monitorBtnHandler;
+	
+	private RadioStreaming streaming;
 	
 	private PiHandler() {
 		Gpio.wiringPiSetup();
@@ -137,7 +136,6 @@ public class PiHandler {
 
 		int ext = e.run();
 
-
 		wifiList = FileUtils.readFileToArray("/home/pi/piClock/scripts/essid.txt");
 
 		logger.log(Level.INFO, "fetchWifiList ext return: " + ext +  "  out: " + e.getOutput());
@@ -169,8 +167,7 @@ public class PiHandler {
 			refreshWifi();
 			
 			checkInternetConnection();
-		}		
-		
+		}				
 	}
 	public Light getLDRstatus(){
 
@@ -184,15 +181,13 @@ public class PiHandler {
 	 * @throws IOException 
 	 * @throws ExecuteException 
 	 * @throws InterruptedException **/
-	public void turnOnAlarm(Buzzer alarm, int track) throws   ExecuteException, IOException, InterruptedException{
-		logger.log(Level.CONFIG,"Turning on: " + alarm.getName());
-
-		
+	public void turnOnAlarm(Buzzer alarm, String text) throws   ExecuteException, IOException, InterruptedException{
+		logger.log(Level.CONFIG,"Turning on: " + alarm.getName());		
 		
 		if (alarm == Buzzer.BUZZER){
 			buzzer(true);
 		}else if (alarm == Buzzer.RADIO){
-			playRadio(true, track);//TODO get track number
+			playRadio(true, text);//TODO get track number
 		}else if (alarm == Buzzer.MP3){
 			playMp3(true);
 		}
@@ -203,7 +198,7 @@ public class PiHandler {
 		if (buzzerType == Buzzer.BUZZER){
 			buzzer(false);
 		}else if (buzzerType == Buzzer.RADIO){
-			playRadio(false, -1);
+			playRadio(false, "");
 		}else if (buzzerType == Buzzer.MP3){
 			playMp3(false);
 		}
@@ -413,9 +408,7 @@ public class PiHandler {
 
 		logger.log(Level.INFO, "getIpAddress(), error in return exec:  " + ext +". Output: " + exec.getOutput());
 		return exec.getOutput();
-	}
-	
-	
+	}	
 	private void cancelScreenAutoShutdown() throws InterruptedException{
 		logger.log(Level.CONFIG, "cancelScreenAutoShutdown");
 		if (screenAutoShutDown != null && screenAutoShutDown.isAlive()){
@@ -473,25 +466,28 @@ public class PiHandler {
 	 * @throws IOException 
 	 * @throws ExecuteException 
 	 * @throws InterruptedException **/
-	public void playRadio(boolean on, int trackNbr) throws ExecuteException, IOException, InterruptedException{
+	public void playRadio(boolean on, String link) throws ExecuteException, IOException, InterruptedException{
 		logger.log(Level.CONFIG, "playAlarmRadio() : " + on);
-		int retCd = 0;
-		Exec exec = null;
-		if (on){
+		
+		if (on) {
+			if (streaming != null) {
+				logger.log(Level.CONFIG, "Already streaming, closing stream");
+				streaming.writeCommand("q");
+				Thread.sleep(100);
+				streaming.stop();
+			}
 			
-			cmd.turnSpeakerOn();
+			streaming = new RadioStreaming(link);
+			streaming.play();
+		}else {
+			streaming.writeCommand("q");
+			Thread.sleep(100);
+			streaming.stop();
 			
-			exec = new Exec();
-			exec.addCommand("mpc").addCommand("play").addCommand(String.valueOf(trackNbr)).timeout(10000);
-			retCd = exec.run();
-		}else{
-			cmd.turnSpeakerOff();
-			
-			exec = new Exec();
-			exec.addCommand("mpc").addCommand("stop").timeout(10000);
-			retCd = exec.run();
+			streaming = null;
 		}
-		logger.log(Level.CONFIG, "playAlarmRadio() , return code: " + retCd + " output: " + exec.getOutput());
+
+		logger.log(Level.CONFIG, "playAlarmRadio() , end method");
 
 	}		
 	private void wifiOff(){
@@ -500,13 +496,11 @@ public class PiHandler {
 
 			Exec e = new Exec();
 			e.addCommand("sudo").addCommand("ifconfig").addCommand("wlan0").addCommand("down");
-
 			e.timeout(10000);
 
 			try {
 				int ext = e.run();
-
-
+				
 				wifiOn = false;	
 				setWifiConnected(false);
 				wifiInternetConnected = false;
@@ -514,8 +508,6 @@ public class PiHandler {
 				context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_WIFI_OFF);
 
 				logger.log(Level.INFO, "Exit code : " + ext + " OUtput: " + e.getOutput());
-
-
 			} catch (IOException e1) {
 				logger.log(Level.SEVERE, "wifiOff() : Error shutting wifi : " , e1);
 			}
@@ -524,9 +516,6 @@ public class PiHandler {
 	/**
 	 * Check if the computer has an ip address.
 	 * @return
-	 * @throws IOException 
-	 * @throws ExecuteException 
-	 * @throws SocketException
 	 */
 	private boolean checkIfIpPresent() throws ExecuteException, IOException {
 		logger.log(Level.CONFIG, "checkIfIpPresent() ");
@@ -586,7 +575,6 @@ public class PiHandler {
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
-
 				}
 			});
 			wifiShutDown.start();

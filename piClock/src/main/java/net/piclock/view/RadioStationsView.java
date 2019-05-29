@@ -23,7 +23,6 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.exec.ExecuteException;
 
-import home.misc.Exec;
 import net.miginfocom.swing.MigLayout;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
@@ -48,6 +47,10 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 	private JLabel lblRadioIcon;
 
 	private PiHandler handler;
+	
+	Thread playingThread;
+	
+	Process process;
 	
 	/**
 	 * Create the panel.
@@ -163,18 +166,22 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 //						Exec exec = new Exec();
 //						exec.addCommand("mpc").addCommand("play").addCommand(String.valueOf(re.getTrackNbr())).timeout(10000);
 
-						try {
-							handler.playRadio(true, re.getTrackNbr());
+//						try {
+							handler.playRadio(true, re.getRadioLink());
 //							exec.run();
-
+//							playOmx(re.getRadioLink());
+//							playingThread.start();
+							
+//						 process = Runtime.getRuntime().exec( "omxplayer "+ re.getRadioLink() + " -o alsa:hw:1,0 " );
+						
 							btnStop.setEnabled(true);						
 							
 							fireVolumeIconChange(true);
 							
 														
-						} catch (IOException e1) {
-							logger.log(Level.SEVERE, "Error executing music", e1);
-						}	
+//						} catch (IOException e1) {
+//							logger.log(Level.SEVERE, "Error executing music", e1);
+//						}	
 					}catch(Exception ex) {
 						logger.log(Level.SEVERE, "Error communicating with arduino", ex);
 					}
@@ -194,18 +201,33 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 				try {
 
 					lblRadioIcon.setVisible(false);
-					ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, false);
+//					ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, false);
 
-					try {
-						handler.playRadio(false, -1);
+//					try {
+						handler.playRadio(false, "");
+//						playingThread.interrupt();
+					
+//					OutputStream stdin = process.getOutputStream();
+					//
+									           
+//					
+//									       
+//									        String line = "q";
+//								            stdin.write( line.getBytes() );
+//								            stdin.flush();
+//					
+//					stdin.close();
+					
+					
+					
 						btnStop.setEnabled(false);
 						
 						fireVolumeIconChange(false);
-					} catch (IOException e1) {
-						logger.log(Level.SEVERE, "Error stopping music", e1);
-					}	
+//					} catch (IOException e1) {
+//						logger.log(Level.SEVERE, "Error stopping music", e1);
+//					}	
 				}catch(Exception ex) {
-					logger.log(Level.SEVERE, "Error communicating with arduino", ex);
+					logger.log(Level.SEVERE, "Error trying to play stream", ex);
 				}
 			}
 		});
@@ -226,33 +248,33 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 		}
 
 		//match radio station to mpc play list
-		Exec exec = new Exec();
-		exec.addCommand("mpc").addCommand("playlist").timeout(10000);
+//		Exec exec = new Exec();
+//		exec.addCommand("mpc").addCommand("playlist").timeout(10000);
+//
+//		int ex = exec.run();
+//
+//		if(ex == 0) {
+//			String out = exec.getOutput();
+//			if (out.length() > 0) {
+//				String outSplit[] = out.split("\n");
+//
+//				for(int i = 0 ; i <  outSplit.length ; i ++) {
+//
+//					String play = outSplit[i];
+//					for(RadioEntity r : radios) {
+//						if (play.trim().equals(r.getRadioLink())) {
+//							r.setTrackNbr(i+1);
+//
+//							sql.update(r);;
+//							break;
+//						}
+//					}
+//				}
+//			}
 
-		int ex = exec.run();
-
-		if(ex == 0) {
-			String out = exec.getOutput();
-			if (out.length() > 0) {
-				String outSplit[] = out.split("\n");
-
-				for(int i = 0 ; i <  outSplit.length ; i ++) {
-
-					String play = outSplit[i];
-					for(RadioEntity r : radios) {
-						if (play.trim().equals(r.getRadioLink())) {
-							r.setTrackNbr(i+1);
-
-							sql.update(r);;
-							break;
-						}
-					}
-				}
-			}
-
-		}else {
-			logger.log(Level.SEVERE, "Error greater than 0");
-		}
+//		}else {
+//			logger.log(Level.SEVERE, "Error greater than 0");
+//		}
 
 	}
 	
@@ -286,5 +308,56 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 			}
 		}
 	}
+	
+//	private void playOmx(String link) {
+//		logger.log(Level.CONFIG, "Starting omx");
+//		
+//		playingThread = new Thread(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				Exec exec = new Exec();
+//				exec.addCommand("omxplayer").addCommand(link).addCommand("-o").addCommand("alsa:hw:1,0");
+//				
+//				try {
+//					int t = exec.run();
+					
+				
+//				        Process process = Runtime.getRuntime().exec( "omxplayer "+ link + " -o alsa:hw:1,0 " );
+
+//				        OutputStream stdin = process.getOutputStream();
+//
+//				        Thread.sleep(4000);      
+//
+//				        while()
+//				        String line = "q";
+//			            stdin.write( line.getBytes() );
+//			            stdin.flush();
+			            
+				    
+					
+					
+					
+					
+					
+					
+					
+					
+//					logger.log(Level.CONFIG, "exit return code," );
+					
+//				} catch (IOException  e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				logger.log(Level.CONFIG, "Stopping omx");
+//				
+//			}
+//			
+//		});
+//		
+//	}
 
 }
