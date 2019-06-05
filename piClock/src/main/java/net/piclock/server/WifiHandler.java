@@ -19,6 +19,7 @@ import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.PreferencesHandler;
 
 public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	
@@ -26,6 +27,7 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	
 	private final String CONNECTED = "connected";
 	private final String PING = "ping";
+	private final String DISCONNECT = "disconnect";
 	private final String ERROR = "error";
 	
 	private SwingContext ct;
@@ -34,7 +36,8 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	private String pageName = "wifiView";
 	private String wifiName = "";
 	private String wifiPassword = "";
-	
+	private Optional<String> btnDisconnect = Optional.empty(); 
+ 	
 	private Optional<String> check = Optional.empty();
 	
 	String currWifi = "";
@@ -50,22 +53,27 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	
 	@Override
 	public Response handleRequest() {
-		
+
 		String webPage = "Error";
 		try{									
-			
+
 			String message = "";
-			
+
 			System.out.println("values !!!!!!!!!!! > " + wifiName + " pa: " + wifiPassword + " check: " + check + " connstat: " + connStatus);
-			
-			
-			if (check.isPresent() && check.get().equalsIgnoreCase("check")) {
+			if(btnDisconnect.isPresent()) {
+				wifiDisconnect();
+				message = generateSuccessMessage("Successfully disconnecte.\n You won't be able to reconnect since you are disconnected from the WIFI");
+				
+			}
+			else if (check.isPresent() && check.get().equalsIgnoreCase("check")) {
 				return Response.newFixedLengthResponse(checkIfConnected());
 			}
 			else if (wifiName != null && !wifiName.equals("Select") && wifiPassword != null && wifiPassword.length() > 0){
 				//connect to wifi
 				piHandler.connectToWifi(wifiName, wifiPassword); //TODO when 1st starting connect, send a ping instated of disconnect. then let the normal flow.
-				return Response.newFixedLengthResponse(checkIfConnected());//message = generateSuccessMessage("Success, Connected");
+				String conn = checkIfConnected();
+				logger.log(Level.CONFIG, "---------------------------------- returning: " + conn);
+				return Response.newFixedLengthResponse(conn);//message = generateSuccessMessage("Success, Connected");
 			}else if (piHandler.isWifiConnected()) {
 				Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 				currWifi = p.getWifi();
@@ -76,7 +84,7 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 
 			//load wifis
 			List<String> wifi = piHandler.fetchWifiList();
-			
+
 			Map<String, String> values = new HashMap<String, String>();
 			values.put("wifilist", buildSelect(wifi)); //key in the html page is : %-valuel-%
 			values.put("message1",message);
@@ -94,6 +102,7 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	public String buildSelect(List<String> wifiNames){
 		
 		StringBuilder wifi = new StringBuilder();
+		wifi.append("<option value=\"Select\">Select</option> ");
 		for(String s : wifiNames){
 			wifi.append("<option" + (s.equalsIgnoreCase(currWifi) ? " selected " : " ") + " value=\"" + s + "\">" + s + "</option>");
 		}
@@ -111,7 +120,10 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 		wifiName = "";
 		wifiPassword = "";
 		check = Optional.empty();
+		btnDisconnect = Optional.empty();
 
+		System.out.println("params: " + params);
+		
 		if (params.get("wifiName") != null && params.get("wifiName").size() > 0){
 			wifiName = params.get("wifiName").get(0);
 		}
@@ -121,6 +133,9 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 		if (params.get("check") != null && params.get("check").size() > 0){
 			check = Optional.ofNullable(params.get("check").get(0));
 		}
+		if (params.get("btnDisconnect") != null && params.get("btnDisconnect").size() > 0){
+			btnDisconnect = Optional.ofNullable(params.get("btnDisconnect").get(0));
+		}
 	}
 
 	private String checkIfConnected() {
@@ -128,6 +143,8 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 			return PING;
 		}else if(connStatus.isConnected()) {
 			return CONNECTED;
+		}else if(connStatus == CheckWifiStatus.END_DISCONNECT) {
+			return DISCONNECT;
 		}else {
 			return ERROR;
 		}
@@ -136,5 +153,22 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 	public void propertyChange(PropertyChangeEvent evt) {
 		
 		connStatus = (CheckWifiStatus)evt.getNewValue();
+//		System.out.println("values ------->>>>>> " + connStatus);
+	}
+	
+	private void wifiDisconnect() {
+		//start a new thread to be able to send a message before disconnecting.
+		new Thread(() ->  {
+			try {
+				Thread.sleep(3000);
+				piHandler.disconnectWifi();
+				Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+				p.setWifiPass("");
+				PreferencesHandler.save(p);
+				logger.log(Level.CONFIG, "WIFI disconnected");
+			}catch(Exception ex) {
+				logger.log(Level.SEVERE, "Could not disconnect", ex);
+			}
+		}).start();
 	}
 }

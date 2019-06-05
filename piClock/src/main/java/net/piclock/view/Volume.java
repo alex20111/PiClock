@@ -72,8 +72,8 @@ public class Volume extends JDialog {
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
 		slider.setMinorTickSpacing(1);
-        slider.setMajorTickSpacing(10);
-
+        slider.setMajorTickSpacing(10);        
+        
 		volumePanel.add(slider);
 		
 		JLabel lblVolume = new JLabel("Vol");

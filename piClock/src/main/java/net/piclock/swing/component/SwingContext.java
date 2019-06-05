@@ -5,8 +5,10 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SwingContext {
 
@@ -16,7 +18,7 @@ public class SwingContext {
 	private PropertyChangeSupport propertyChangeSupport = 	new PropertyChangeSupport(this);
 	
 	private List<MessageListener> msgListeners = new ArrayList<>();
-	private Map<String,MessageListener> msgListenersMap = new HashMap<>();
+	private Map<String,Set<MessageListener>> msgListenersMap = new HashMap<>();
 
 	@SuppressWarnings("rawtypes")
 	private Map shareableDataMap = null;
@@ -70,8 +72,16 @@ public class SwingContext {
 		propertyChangeSupport.removePropertyChangeListener(propertyName, l);
 	}
 	
-	public void addMessageChangeListener(String propertyName, MessageListener l) {		
-		msgListenersMap.put(propertyName,l);
+	public void addMessageChangeListener(String propertyName, MessageListener l) {	
+		Set<MessageListener> msg = msgListenersMap.get(propertyName);
+		if (msg != null) {
+			msg.add(l);
+		}else {
+			msg = new HashSet<>();
+			msg.add(l);
+		}
+		
+		msgListenersMap.put(propertyName,msg);
 	}
 	public void addMessageChangeListener(MessageListener l) {
 		msgListeners.add(l);
@@ -88,10 +98,24 @@ public class SwingContext {
 			m.message(message);
 		}
 		
-		msgListenersMap.forEach((p, m) -> {
-			message.setPropertyName(p);
-			m.message(message); 
-		} );
+//		msgListenersMap.forEach((p, m) -> {
+//			message.setPropertyName(p);
+//			m.message(message); 
+//		} );
+	}
+	public void sendMessage(String propertyName, Message message){
+		Set<MessageListener> m = msgListenersMap.get(propertyName);
+		
+		if (m != null) {
+			
+			m.stream().forEach(a -> {
+				message.setPropertyName(propertyName);
+				a.message(message);}
+			);
+			
+//			message.setPropertyName(propertyName);
+//			m.message(message);
+		}
 	}
 
 	

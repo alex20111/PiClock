@@ -39,8 +39,6 @@ import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.AlarmDayMouseSelector;
 import net.piclock.swing.component.BuzzerSelection;
-import net.piclock.swing.component.Message;
-import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ThreadManager;
@@ -424,7 +422,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 							}
 
 							
-							logger.log(Level.INFO, "Alarm : " + ae);
+							logger.log(Level.INFO, "Alarm SAVED : " + ae);
 						
 					}
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
@@ -464,7 +462,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 					wakeUpAlarmOptions.setBuzzerType();
 
 					wakeUpAlarmOptions.setVisible(true);
-					alarmToggled = true;
+					
 				}catch(Exception ex) {
 					logger.log(Level.SEVERE, "Error while choosing the buzzer option", ex);
 				}
@@ -492,6 +490,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		logger.log(Level.CONFIG, "PropChange: " + buzzerSelection);
 		
 		btnBuzzer.setText(buzzerSelection.getBuzzer().name());
+		alarmToggled = true;
 		
 	}
 	private void dayDaysToSelect(AlarmEntity alarm, ThemeHandler theme) {	

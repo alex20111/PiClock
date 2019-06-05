@@ -9,6 +9,10 @@ import java.io.OutputStreamWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.piclock.main.Constants;
+import net.piclock.swing.component.Message;
+import net.piclock.swing.component.SwingContext;
+
 public class RadioStreaming {
 	
 	private static final Logger logger = Logger.getLogger( RadioStreaming.class.getName() );
@@ -18,15 +22,19 @@ public class RadioStreaming {
 	private BufferedWriter out;
 	
 	private StringBuilder output;
+	private boolean processFinished = false;
+	private SwingContext ct;
 	
 	public RadioStreaming(String link) {
+		processFinished = false;
 		httpLink = link;
+		ct = SwingContext.getInstance();
 	}
 	
 	public void play() throws IOException {
 		logger.log(Level.CONFIG, "PLAY - Http link: " + httpLink);
 		final ProcessBuilder processBuilder = new ProcessBuilder();
-		processBuilder.command("omxplayer", httpLink, "-o","alsa:hw:1,0");
+		processBuilder.command("omxplayer", httpLink,"--vol","-1000", "-o","alsa:hw:1,0");
 		process = processBuilder.start();
 		
 		out = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));		
@@ -40,36 +48,61 @@ public class RadioStreaming {
 			BufferedReader br = new BufferedReader(isr);
 			try{				
 				while((line = br.readLine()) != null) {
-					System.out.println("---------->>>> " +line);
-					output.append(line);
+					output.append(line);					
+					if (line != null && line.contains("have a nice day")) {
+						ct.sendMessage(Constants.RADIO_STREAM_ERROR, new Message("Radio Stream not found"));
+						break;
+					}
 				}
 			} catch (IOException e) {
-				logger.log(Level.INFO, "error in output", e);
+				logger.log(Level.INFO, "error in output - can be normal", e);
 			}finally {
 				try {
-					
-
 					br.close();
 
 				}catch (IOException i) {
 					i.printStackTrace();
 				}
 			}
+			processFinished = true;
 			logger.log(Level.CONFIG, "ENDING process builder output thread");
 		}).start();
 	}
 
-	public void stop() throws IOException {
+	public void stop()  {
 		logger.log(Level.CONFIG, "STOP");
-		out.close();
+		int count = 0;
+		try {
+			out.close();
+		} catch (IOException e) {
+			logger.log(Level.INFO, "Already closed", e);
+		}
 		process.destroyForcibly();
-	
+		
+		while(!processFinished) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				break;
+			}
+			if (count > 20) {
+				break;
+			}
+			count++;
+		}
+		logger.log(Level.CONFIG, "RADIO STOP BREAK, COUNT:"+ count);
 	}
 	
-	public void writeCommand(String command) throws IOException {
+	public void writeCommand(String command)  {
 		logger.log(Level.CONFIG, "Write COmmand: " + command);
-		out.write(command);
-		out.flush();
+		try {
+			out.write(command);
+			out.flush();
+		} catch (IOException e) {
+			logger.log(Level.INFO, "error writing, closing process", e);
+			process.destroyForcibly();
+			
+		}
 	}
 	
 	public String getOutput() {

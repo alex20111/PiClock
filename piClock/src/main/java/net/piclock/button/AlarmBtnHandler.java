@@ -10,6 +10,7 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import net.piclock.arduino.ArduinoCmd;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
+import net.piclock.main.Constants;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.thread.Alarm;
@@ -72,7 +73,7 @@ public class AlarmBtnHandler  implements ButtonChangeListener{
 		logger.log(Level.CONFIG, "Turning off alarm");
 		
 		Message msg = new Message("off - Btn Handler");
-		SwingContext.getInstance().sendMessage(msg);
+		SwingContext.getInstance().sendMessage(Constants.TURN_OFF_ALARM, msg);
 		
 		deactivateListener();		
 		

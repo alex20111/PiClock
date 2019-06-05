@@ -232,6 +232,17 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		lblWebserverIcon.setVisible(false);
 		timePanel.add(lblWebserverIcon, "cell 0 5");
 		lblWebserverIcon.setBorder(new EmptyBorder(10,10,0,0));
+		lblWebserverIcon.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				try{
+					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
+					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+					cardLayout.show(cardsPanel, Constants.WEB_SERVER_VIEW);
+				}catch (Exception ex){
+					logger.log(Level.SEVERE, "Error in mouse clicked", ex);
+				}
+			}
+		});		
 		themes.registerIconColor(lblWebserverIcon, IconEnum.WEB_SERVER);
 		
 		btnPanel = new JPanel();
@@ -362,6 +373,19 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		lblRadioIcon.setVisible(false);
 		lblRadioIcon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
 		themes.registerIconColor(lblRadioIcon, IconEnum.RADIO_ICON);
+		lblRadioIcon.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				try{
+					keepAliveIfScreenShutdown();
+					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+					cardLayout.show(cardsPanel, Constants.RADIO_STATION_VIEW);
+
+				}catch (Exception ex){
+					logger.log(Level.SEVERE, "Error in mouse listener radio", ex);
+				}
+			}
+		});
+		
 		alertIconsPanel.add(lblRadioIcon);
 		
 		lblMp3Icon = new JLabel();
@@ -424,7 +448,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			
 		//check if we have wifi credentials.
 		if (prefs.isWifiCredentialProvided()){
-			handler.checkInternetConnection();		
+			handler.checkInternetConnection(true);		
 		}
 		
 		//ADD shutdown hook
@@ -580,28 +604,24 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 				WeatherGenericModel wgm = (WeatherGenericModel)evt.getNewValue();
 				
 				WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
-				System.out.println(" wcm.getIconName() : " +  wcm.getIconName());
-				ImageIcon icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + wcm.getIconName(), 48, 48);
+				ImageIcon icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + wcm.getIconName(), 48, 48);				
+					
+				Date dt = null;
+				try {
+					dt = parseToDateEnv.parse(wcm.getObservationTime()); //env cadada format	
+				}catch (ParseException px) {
+					dt = parseToDateDsky.parse(wcm.getObservationTime()); //darksky format
+				}
 				
-								
-				if (sensorActive){
-
-					Date dt = null;
-					try {
-						dt = parseToDateEnv.parse(wcm.getObservationTime()); //env cadada format	
-					}catch (ParseException px) {
-						dt = parseToDateDsky.parse(wcm.getObservationTime()); //darksky format
-					}
+				if (sensorActive){		
 
 					addCurrentWeather(wcm.getSummary().trim(),icon,dt );
-				}else{
-					
-					Date dt = null;
-					try {
-						dt = parseToDateEnv.parse(wcm.getObservationTime());
-					}catch (ParseException px) {
-						dt = parseToDateDsky.parse(wcm.getObservationTime());
+					WeatherBean wb = (WeatherBean)ct.getSharedObject(Constants.SENSOR_INFO);
+					if (wb != null) {
+						addCurrentTemp(Constants.numberFormat.format(wb.getTempSun().getTempC()),
+						Constants.numberFormat.format(wb.getTempShade().getTempC()));
 					}
+				}else{			
 												
 					addCurrentWeather(wcm.getSummary().trim(),icon , dt);
 					addCurrentTemp(String.valueOf(wcm.getCurrTemp()), "--");
@@ -694,6 +714,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 					if (blinkingWifiTimer != null){
 						blinkingWifiTimer.stop();
 					}
+					//when wifi problems, radio off
+					
+					
 				}else if (status == CheckWifiStatus.END_NO_INET){
 					lblWiFiIcon.setVisible(true);
 					lblWiFiIcon.setIcon(themes.getIcon(IconEnum.WIFI_ON_NO_INET));

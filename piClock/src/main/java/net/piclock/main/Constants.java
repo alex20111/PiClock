@@ -38,6 +38,7 @@ public class Constants {
 	
 	//volume
 	public static final String RADIO_VOLUME_ICON_TRIGGER = "radioVolTrigger";
+	public static final String RADIO_STREAM_ERROR  = "RadioStreamError";
 	public static final String MP3_VOLUME_ICON_TRIGGER = "mp3VolTrigger";
 	
 	//alarm

@@ -11,7 +11,7 @@
 			<h4> WIFI configuration </h4>
 			
 			%-message1-%
-		  <form method="get">
+		  <form method="POST">
 			
 			
 			<div class="mb-3">
@@ -31,13 +31,14 @@
 			  </div>
 			</div>
 			
-			<div class="mb-3 spinner-border text-primary" id="connectSpinnerId" style="display:none"></div>
-			<span class=mb-3" id="connectingId" style="display:none"> </span>
+			<div class="mb-3 spinner-border text-primary" id="connectSpinnerId" ></div>
+			<span class="mb-3" id="connectingMessage" style="display:none"> </span>
 			
 			<br/>
 			
 			
 			<button type="button" id="connectBtnId" class="btn btn-primary"> Connect </button>
+			<input type="submit" id="disconnectBtnId" value="Disconnect" name="btnDisconnect" class="btn btn-danger"/>
 		  </form>
      </div>
 	 </div>

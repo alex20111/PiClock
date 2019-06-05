@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -29,11 +30,13 @@ import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
+import net.piclock.swing.component.Message;
+import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.VolumeIndicator;
 
-public class RadioStationsView extends JPanel implements PropertyChangeListener {
+public class RadioStationsView extends JPanel implements PropertyChangeListener, MessageListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,6 +45,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 	private JButton btnReload;
 	private JButton btnPlay;
 	private JButton btnStop;
+	private JLabel lblNowPlaying;
+	private String nowPlayingText = "Now playing: ";
 
 	private SwingContext ct;	
 	private JLabel lblRadioIcon;
@@ -66,6 +71,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 		ct = SwingContext.getInstance();
 
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
+		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
+		ct.addMessageChangeListener(Constants.RADIO_STREAM_ERROR , this);
 		this.lblRadioIcon = radioIcon;
 		setLayout(new BorderLayout(0, 0));
 
@@ -120,7 +127,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 					@Override
 					public void run() {
 						try {
-
+							lblNowPlaying.setVisible(false);
 							loadAllRadioStations();
 
 						} catch (ClassNotFoundException | SQLException | IOException e1) {		
@@ -135,6 +142,10 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 		btnReload.setPreferredSize(new Dimension(65, 30));
 		btnReload.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		bodyPanel.add(btnReload, "cell 6 1");
+		
+		lblNowPlaying = new JLabel("");
+		lblNowPlaying.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		bodyPanel.add(lblNowPlaying, "cell 3 2 4 1");
 
 		JPanel btnPanel = new JPanel();
 		btnPanel.setOpaque(false);
@@ -157,32 +168,24 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 					try {
 
 						lblRadioIcon.setVisible(true);
-						
-
+						lblNowPlaying.setText("");
+						lblNowPlaying.setVisible(true);
 
 						RadioEntity re = (RadioEntity)radioStations.getSelectedItem();
 						logger.log(Level.CONFIG, "Playing : " + re.getRadioName() + " TRACK: " + re.getTrackNbr());
-
-//						Exec exec = new Exec();
-//						exec.addCommand("mpc").addCommand("play").addCommand(String.valueOf(re.getTrackNbr())).timeout(10000);
-
-//						try {
-							handler.playRadio(true, re.getRadioLink());
-//							exec.run();
-//							playOmx(re.getRadioLink());
-//							playingThread.start();
-							
-//						 process = Runtime.getRuntime().exec( "omxplayer "+ re.getRadioLink() + " -o alsa:hw:1,0 " );
 						
-							btnStop.setEnabled(true);						
-							
-							fireVolumeIconChange(true);
-							
-														
-//						} catch (IOException e1) {
-//							logger.log(Level.SEVERE, "Error executing music", e1);
-//						}	
+						handler.playRadio(true, re.getRadioLink());
+
+						btnStop.setEnabled(true);						
+
+						fireVolumeIconChange(true);
+						
+						lblNowPlaying.setText(nowPlayingText + re.getRadioName());
+
 					}catch(Exception ex) {
+						lblRadioIcon.setVisible(false);
+						btnStop.setEnabled(false);
+						fireVolumeIconChange(false);
 						logger.log(Level.SEVERE, "Error communicating with arduino", ex);
 					}
 				}
@@ -200,32 +203,15 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 			public void actionPerformed(ActionEvent e) {
 				try {
 
-					lblRadioIcon.setVisible(false);
-//					ct.putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, false);
+					lblRadioIcon.setVisible(false);					
+					lblNowPlaying.setVisible(false);
+					
+					btnStop.setEnabled(false);
 
-//					try {
-						handler.playRadio(false, "");
-//						playingThread.interrupt();
+					fireVolumeIconChange(false);
 					
-//					OutputStream stdin = process.getOutputStream();
-					//
-									           
-//					
-//									       
-//									        String line = "q";
-//								            stdin.write( line.getBytes() );
-//								            stdin.flush();
-//					
-//					stdin.close();
-					
-					
-					
-						btnStop.setEnabled(false);
-						
-						fireVolumeIconChange(false);
-//					} catch (IOException e1) {
-//						logger.log(Level.SEVERE, "Error stopping music", e1);
-//					}	
+					handler.playRadio(false, "");
+
 				}catch(Exception ex) {
 					logger.log(Level.SEVERE, "Error trying to play stream", ex);
 				}
@@ -247,35 +233,6 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 			radioStations.addItem(radio);
 		}
 
-		//match radio station to mpc play list
-//		Exec exec = new Exec();
-//		exec.addCommand("mpc").addCommand("playlist").timeout(10000);
-//
-//		int ex = exec.run();
-//
-//		if(ex == 0) {
-//			String out = exec.getOutput();
-//			if (out.length() > 0) {
-//				String outSplit[] = out.split("\n");
-//
-//				for(int i = 0 ; i <  outSplit.length ; i ++) {
-//
-//					String play = outSplit[i];
-//					for(RadioEntity r : radios) {
-//						if (play.trim().equals(r.getRadioLink())) {
-//							r.setTrackNbr(i+1);
-//
-//							sql.update(r);;
-//							break;
-//						}
-//					}
-//				}
-//			}
-
-//		}else {
-//			logger.log(Level.SEVERE, "Error greater than 0");
-//		}
-
 	}
 	
 	private void fireVolumeIconChange(boolean displayOn) {
@@ -295,69 +252,53 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener 
 		}
 	}
 	
+	private void autoChange(boolean wifiProblem) {
+		logger.log(Level.CONFIG, "Property change RADIO VIEWWWWW !!!!!!!!!!");
+		if (wifiProblem) {
+			btnPlay.setEnabled(false);
+		}
+		btnStop.setEnabled(false);
+		VolumeIndicator vi = (VolumeIndicator) ct.getSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER);
+		if(vi != null && vi.isRadioPlaying()) {
+			try {
+				handler.playRadio(false, "");
+			} catch (Exception e) {
+				logger.log(Level.CONFIG, "Error in property change", e);
+			}
+			fireVolumeIconChange(false);
+			lblRadioIcon.setVisible(false);	
+			lblNowPlaying.setVisible(false);
+		}
+	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
+		logger.log(Level.CONFIG, "RADio VIew property change, " + evt.getPropertyName());
 		if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){
 			CheckWifiStatus status = (CheckWifiStatus)evt.getNewValue();
 			
 			if (status == CheckWifiStatus.SUCCESS){
 				btnPlay.setEnabled(true);
-			}else if (status == CheckWifiStatus.END_WIFI_OFF) {
-				btnPlay.setEnabled(false);
-				btnStop.setEnabled(false);			
+			}else if (!status.isConnected()) {
+
+				autoChange(true);
 			}
 		}
 	}
+	@Override
+	public void message(Message message) {
+		logger.log(Level.CONFIG, "Recieved message RADIO VIEW!!: " + message.getPropertyName());
+		if (Constants.TURN_OFF_ALARM.equals(message.getPropertyName())) {
+			autoChange(false);
+		}else if(Constants.RADIO_STREAM_ERROR.equals(message.getPropertyName())) {
+			if (isVisible()) {
+				JOptionPane.showMessageDialog(this, "Cannot play Radio stream, verify stream", "Error in stream", JOptionPane.ERROR_MESSAGE);
+			}
+			autoChange(false);
+		}
+		
+	}
 	
-//	private void playOmx(String link) {
-//		logger.log(Level.CONFIG, "Starting omx");
-//		
-//		playingThread = new Thread(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				Exec exec = new Exec();
-//				exec.addCommand("omxplayer").addCommand(link).addCommand("-o").addCommand("alsa:hw:1,0");
-//				
-//				try {
-//					int t = exec.run();
-					
-				
-//				        Process process = Runtime.getRuntime().exec( "omxplayer "+ link + " -o alsa:hw:1,0 " );
 
-//				        OutputStream stdin = process.getOutputStream();
-//
-//				        Thread.sleep(4000);      
-//
-//				        while()
-//				        String line = "q";
-//			            stdin.write( line.getBytes() );
-//			            stdin.flush();
-			            
-				    
-					
-					
-					
-					
-					
-					
-					
-					
-//					logger.log(Level.CONFIG, "exit return code," );
-					
-//				} catch (IOException  e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				logger.log(Level.CONFIG, "Stopping omx");
-//				
-//			}
-//			
-//		});
-//		
-//	}
 
 }

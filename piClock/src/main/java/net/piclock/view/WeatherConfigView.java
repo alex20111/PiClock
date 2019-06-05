@@ -403,13 +403,12 @@ public class WeatherConfigView extends JPanel {
 	private boolean verifyIfFieldHasChanged(Preferences prefs){
 		boolean changed = false;
 		
-		System.out.println(prefs.isWeatherActivated() + " chk: " + chckbxActivate.isSelected());
+		logger.log(Level.CONFIG, prefs.isWeatherActivated() + " chk: " + chckbxActivate.isSelected());
 		
 		if (prefs.isWeatherActivated() != chckbxActivate.isSelected()){
 			changed = true;
 		}
 		if (chckbxActivate.isSelected()){ //only check when weather is active.
-			System.out.println("Active");
 			if (prefs.getWeatherCity() != null && cmbCity.getSelectedIndex() != -1 &&
 					((City)cmbCity.getSelectedItem()).getNameEn().length() > 0 &&
 					!prefs.getWeatherCity().equalsIgnoreCase(((City)cmbCity.getSelectedItem()).getNameEn())){
@@ -417,6 +416,10 @@ public class WeatherConfigView extends JPanel {
 			}
 			if (prefs.getWeatherRefresh() != (int)refreshInMinutes.getValue()){
 				changed = true;
+			}
+			Host host = (Host) cmbProvider.getSelectedItem();
+			if (prefs.getWeatherProvider() != null && host != null && prefs.getWeatherProvider() != host.name()) {
+				changed= true;
 			}
 		}
 		logger.config("return val of verifyIfFieldHasChanged: " + changed );

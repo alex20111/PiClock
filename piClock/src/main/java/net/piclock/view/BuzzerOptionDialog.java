@@ -177,20 +177,20 @@ public class BuzzerOptionDialog extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						try{
 							boolean close = false;
-//							Buzzer currBuzzer = null;
+							BuzzerSelection bs;
 							
 							if (tglbtnBuzzer.isSelected()){
-								BuzzerSelection bs = new BuzzerSelection(Buzzer.BUZZER);
+								bs = new BuzzerSelection(Buzzer.BUZZER);
 								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								close = true;
 							}else if(btnRadio.isSelected()){
 								if (radioCmb != null && radioCmb.getSelectedItem() != null) {
-									BuzzerSelection bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId() );
+									bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId() );
 									ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								}
 								close = true;
 							}else if(btnMp3.isSelected()){
-								BuzzerSelection bs = new BuzzerSelection(Buzzer.MP3, -1);//TODO
+								bs = new BuzzerSelection(Buzzer.MP3, -1);//TODO
 								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								close = true;
 							}
@@ -226,10 +226,14 @@ public class BuzzerOptionDialog extends JDialog {
 	}
 	public void setBuzzerType() throws ClassNotFoundException, SQLException {
 
+		radioScrInit = true;
+		mp3ScrInit = true;
 		radioCmb.setVisible(false);
 
 		AlarmEntity alarm = new AlarmSql().loadActiveAlarm();
 		Buzzer buzzer = Buzzer.BUZZER;
+		
+//		logger.log(Level.CONFIG, "setBuzzerType: " + alarm);
 
 		if (alarm != null) {
 			buzzer = Buzzer.valueOf(alarm.getAlarmSound());
@@ -239,8 +243,6 @@ public class BuzzerOptionDialog extends JDialog {
 			if (buzzer == Buzzer.RADIO){
 				radioSelectedId = alarm.getRadioId();
 				btnRadio.doClick();
-				
-
 			}
 			if (buzzer == Buzzer.MP3){
 				btnMp3.doClick();
@@ -269,6 +271,7 @@ public class BuzzerOptionDialog extends JDialog {
 			}
 			
 			if (toSel != null) {
+				System.out.println("Radio -!-!-!-!-! : " + toSel);
 				radioCmb.setSelectedItem(toSel);
 			}
 			

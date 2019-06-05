@@ -1,41 +1,3 @@
-ON PI:
-
-Disable blank screen on pi:
-	sudo apt-get install xscreensaver
-	Once this has been installed, you can find the screensaver application under the Preferences option on the main desktop menu
-	
-toolbar on PI..
-	Configure in properties to hide at 0 pixel
-	
-Create folder PiClock.
-	Copy whole structure from Eclipse into /home/pi/piClock:
-		/PiClock
-		/piClock/img
-		/piClock/themes.xml 
-		/piClock/dependency-jar
-		/piClock/piClock-0.0.1-SNAPSHOT.jar
-		/piClock/user_prf.cfg
-		/piClock/scripts/scanssid.sh   after chmod 755 scanssid.sh to make it execuatable
-		/piClock/PiClock.mv.db
-
-//in piClock folder , add web structure
-/home/pi/piClock/webapp
-/home/pi/piClock/webapp/css
-/home/pi/piClock/webapp/js
-/home/pi/piClock/webapp/webpages
-/home/pi/piClock/temp
-/home/pi/piClock/mp3
-		
-audio radio setup.:
-use omxplayer !!! not MPC
-https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-config
-https://www.raspberrypi.org/forums/viewtopic.php?t=150038
-
-//RASPI-config
-Enable boot to desktop
-enable splash screen.
-
-
 
 
 TODO:
@@ -46,20 +8,24 @@ when auto screen off is disabled. Add background for night.. Use LDR to see if i
 darksky - complete icons and correct forecast (some of the previous forecast is there)
 work on MP3 
 add theme on web to change pictures
-RADIO - update to process..!!!!!! see radioview - exception
-outside temp is empty when refreshing weather.. shou
-WIFI -- when starting we recieve a END_DISCONNECT when we are expecting a starting.. this throws off the java script and generate error.  See TODO
+when refreshing wifi web password,add wait icon (Spinning)
+to not always save in buzzer option when pressing ok.. if nothing has changed.
+add option for buzzer(radio, mp3, buzzer) auto shutdown timer in alarm (in UI)
+add percent for volume (UI).
+add ping every 5 minute to see if intenet is working (MAYBE)!!
+add text on the Radio View UI to say that's it's playing (like: now playing !!!)
 
-
-//tests
-test wifi modification on web - finish implementing it with pi handler - Test  ------> 1st add password
+//TESTS
 only load registered themes in xml. If not found, use the sunny background theme = test
-
-
-
-
+test network retry functionality.
 
 //DONE test
+When changing provider , refresh weather..
+test when radio is playing and the network shut down.. shut down radio and turn off icons (volume radio).. shut shown radio also.
+test also that if radio is playing and alarm shut down raadio.. remove icons and resetr
+outside temp is empty when refreshing weather.. FIXED
+test wifi modification on web - finish implementing it with pi handler - Test  ------> 1st add password
+RADIO - update to process..!!!!!! see radioview - exception - just swallow it :)
 test message change listener when turn off alarm for multiple alarms. !!!!!!!!!!!!! todo , to test add an other listener in an other class to see if it will be fired also, you just want the class registered with the property to fire. !!!!!!!!!!
 test when no radio station is present.
 Alarm radio / buzzer - Added load of radio in alarm.java to load the track for the alarm. 
@@ -74,7 +40,7 @@ test settings on connect and refresh -- SwingUtilities.invokeLater
 volume muted text
 Last selected value for the Radio checkbox.. check if javascript is populated / also check the html div.
 add timer to shutdown the alarm automatically.
-	
+WIFI -- when starting we recieve a END_DISCONNECT when we are expecting a starting.. this throws off the java script and generate error.  See TODO  -- TEST -- when we are disconnected, we can't ping the server anymore
 	
 	mpc play 1   --> play 1st track
 	mpc del 1    ---> del 1st track

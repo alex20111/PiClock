@@ -41,6 +41,7 @@ public class Alarm implements Runnable, MessageListener{
 		logger.log(Level.INFO, "Alarm class created for:  " + alarm);
 		alarm = alarmEnt;
 		ct = SwingContext.getInstance();
+		buzzerDefaultUsed = false;
 		
 		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
 		
@@ -74,11 +75,14 @@ public class Alarm implements Runnable, MessageListener{
 			Buzzer buzzer = Buzzer.valueOf(alarm.getAlarmSound());
 			if (buzzerDefaultUsed) {
 				buzzer = Buzzer.BUZZER;
+				handler.turnOffAlarm(buzzer);				
 				buzzerDefaultUsed = false;
 				alarm.setAlarmSound(Buzzer.BUZZER.name());
 				new AlarmSql().update(alarm);
+			}else {
+				handler.turnOffAlarm(buzzer);
 			}
-			handler.turnOffAlarm(buzzer);
+			
 		} catch (IOException | InterruptedException | SQLException | ClassNotFoundException e) {
 			logger.log(Level.SEVERE, "error turning off the alarm", e);
 		}
@@ -94,12 +98,31 @@ public class Alarm implements Runnable, MessageListener{
 
 				if (!handler.isWifiConnected() && pref.isWifiCredentialProvided()){
 					handler.turnWifiOn();
+					boolean waiting = true;
+					int count = 0;
+					//wait unti wifi connect if no wifi connected
+					while(waiting) {
+
+						if (handler.isWifiConnected()) {
+							break;
+						}else if(count > 20) {
+							waiting = false;
+							break;
+						}
+						try {
+							Thread.sleep(200);
+						}catch(InterruptedException i) {break;}
+						count ++;
+					}
+					if (waiting) {
+						logger.log(Level.INFO, "Could not connect to the internet in ALARM");
+					}
 				}else{
 					int triggerForecast = new Random().nextInt(999999);
 					ct.putSharedObject(Constants.FETCH_FORECAST, triggerForecast);
 				}
 			}
-
+			
 			//start button
 			AlarmBtnHandler btnH = (AlarmBtnHandler)ct.getSharedObject(Constants.ALARM_BTN_HANDLER);
 			btnH.setListenerActive();
@@ -108,10 +131,15 @@ public class Alarm implements Runnable, MessageListener{
 
 			String track = "";
 			
-			if (buzzer == Buzzer.RADIO && alarm.getRadioId() > -1) { //TODO test
-				RadioEntity rad = new RadioSql().loadRadioById(alarm.getRadioId());
-				if (rad != null) {
-					track = rad.getRadioLink();
+			if (buzzer == Buzzer.RADIO && alarm.getRadioId() > -1 ) {
+				if (handler.isWifiInternetConnected()) {
+					RadioEntity rad = new RadioSql().loadRadioById(alarm.getRadioId());
+					if (rad != null) {
+						track = rad.getRadioLink();
+					}else {
+						buzzer = Buzzer.BUZZER;
+						buzzerDefaultUsed = true;
+					}
 				}else {
 					buzzer = Buzzer.BUZZER;
 					buzzerDefaultUsed = true;

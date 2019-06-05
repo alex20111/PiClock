@@ -52,7 +52,6 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 	
 	private JButton back;
 	//rows
-//	private String rowSpaces = "200px";
 	private String lableForecastSize = "420px";
 	
 	private SwingContext ct = SwingContext.getInstance(); 	
@@ -78,11 +77,6 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 		scrollPane.setViewportView(panel);
 		scrollPane.getViewport().setOpaque(false);
 		panel.setOpaque(false);
-		
-//		StringBuilder layoutSize = new StringBuilder();
-//		for(int s = 0 ; s < totalOcc ; s++){
-//			layoutSize.append("["+rowSpaces+"][]");
-//		}
 		
 		MigLayout layout = new MigLayout("hidemode 3", "[40px,center][70px][grow]", "[15px,center]");
 		

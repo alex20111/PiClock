@@ -166,7 +166,7 @@ public class PiHandler {
 			
 			refreshWifi();
 			
-			checkInternetConnection();
+			checkInternetConnection(false);
 		}				
 	}
 	public Light getLDRstatus(){
@@ -242,7 +242,7 @@ public class PiHandler {
 	}
 	/**check if connected to the internet
 	 * @throws InterruptedException **/
-	public void checkInternetConnection() throws InterruptedException{
+	public void checkInternetConnection(boolean retry) throws InterruptedException{
 	
 		if (checkConnection != null && checkConnection.isAlive()){
 			checkConnection.interrupt();
@@ -255,6 +255,7 @@ public class PiHandler {
 		checkConnection = new Thread(new Runnable() {
 			boolean keepRunning = true;
 			int count = 0;
+			int maxCnt = 15;
 			@Override
 			public void run() {
 				SwingContext context = SwingContext.getInstance();	
@@ -263,6 +264,7 @@ public class PiHandler {
 					context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.STARTING);					
 					boolean hasInternet = false;
 					boolean hasIp = false;
+					boolean retryOnce = retry;
 					
 					while(keepRunning){
 						
@@ -270,10 +272,19 @@ public class PiHandler {
 							hasIp = checkIfIpPresent();
 						}
 						
-						if (count == 15 && !hasIp && !hasInternet){
-							context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_TIMEOUT);
-							keepRunning = false;
-						}else if (count == 10 && hasIp && !hasInternet){
+						if (count == maxCnt && !hasIp && !hasInternet){
+							//1st check if we do a retry
+							if (retryOnce) {
+								logger.log(Level.CONFIG, "Retrying to connect to WIFI!");
+								retryOnce = false;
+								refreshWifi();
+								count = 0;
+								
+							}else {
+								context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_TIMEOUT);
+								keepRunning = false;
+							}
+						}else if (count == maxCnt && hasIp && !hasInternet){
 							setWifiConnected(true);							
 							wifiInternetConnected = false;
 							context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_NO_INET);
@@ -347,7 +358,7 @@ public class PiHandler {
 
 			if (p.getWifi() != null && p.getWifi().length() > 0 
 					&& p.getWifiPass() != null && p.getWifiPass().length() > 0){				
-				checkInternetConnection(); //chekc if internet connection is still working
+				checkInternetConnection(true); //chekc if internet connection is still working
 			}
 
 			logger.log(Level.CONFIG, "turning wifi up. Exit : " + ext + ".  output: " + e.getOutput() );
@@ -480,14 +491,16 @@ public class PiHandler {
 			streaming = new RadioStreaming(link);
 			streaming.play();
 		}else {
-			streaming.writeCommand("q");
-			Thread.sleep(100);
-			streaming.stop();
-			
+			if (streaming != null) {
+				streaming.writeCommand("q");
+				Thread.sleep(100);
+				streaming.stop();
+			}
+
 			streaming = null;
 		}
 
-		logger.log(Level.CONFIG, "playAlarmRadio() , end method");
+		logger.log(Level.CONFIG, "playAlarmRadio() , end method. " );
 
 	}		
 	private void wifiOff(){
