@@ -43,7 +43,7 @@ public class KeyBoard extends JDialog implements ActionListener {
 		getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 		
 		passTxt = new JFormattedTextField();
-		passTxt.setColumns(10);
+		passTxt.setColumns(15);
 		bottomPanel.add(passTxt);
 		
 		JButton btnOk = new JButton("Ok");
@@ -55,7 +55,20 @@ public class KeyBoard extends JDialog implements ActionListener {
 				
 			}
 		});
-		bottomPanel.add(btnOk);
+		
+		JButton btnBckSpace = new JButton("<");
+		btnBckSpace.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//back up 1 space
+				String pass = passTxt.getText().trim();
+				if (pass.length() > 0) {
+					pass = pass.substring(0, pass.length() - 1);
+					passTxt.setText(pass);
+				}
+				
+			}
+		});
+		bottomPanel.add(btnBckSpace);
 		
 		JButton btnClear = new JButton("Clear");
 		btnClear.addActionListener(new ActionListener() {
@@ -65,6 +78,7 @@ public class KeyBoard extends JDialog implements ActionListener {
 			}			
 		});
 		bottomPanel.add(btnClear);
+		bottomPanel.add(btnOk);
 		
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {

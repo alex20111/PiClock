@@ -60,20 +60,24 @@ public class WeatherWorker implements Runnable {
 				ct.putSharedObject(Constants.WEATHER_LST_UPD, new Date());//to prevent too many refresh.
 
 				ct.putSharedObject(Constants.FORECAST_RESULT, wgm);
+				
+				//Environment canada
 
 				WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
 				if (host == Host.envCanada) {
-					if (wcm.getSummary().toLowerCase().contains("rain")){
-						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+					logger.log(Level.CONFIG, "Current Weather NAME: " + wcm.getSummary());
+					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+					if (wcm.getSummary().toLowerCase().contains("rain")){						
 						theme.loadRainBackdrop();
-					}else if (wcm.getSummary().toLowerCase().contains("thunder")){
-						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+					}else if (wcm.getSummary().toLowerCase().contains("thunder")){						
 						theme.loadThunderBackdrop();
-					}else if (wcm.getSummary().toLowerCase().contains("snow")){
-						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+					}else if (wcm.getSummary().toLowerCase().contains("snow")){						
 						theme.loadSnowBackdrop();
-					}else {//default sunny
-						ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+					}else if (wcm.getSummary().toLowerCase().contains("cloud")) {					
+						theme.loadCloudyBackdrop();
+					}else if (wcm.getSummary().toLowerCase().contains("fog")){					
+						theme.loadFogBackdrop();
+					}else {//default sunny						
 						theme.loadSunnyBackdrop();
 					}
 				}else if (host == Host.DARKSKY) {

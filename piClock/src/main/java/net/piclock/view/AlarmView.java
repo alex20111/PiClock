@@ -78,6 +78,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private AlarmDayMouseSelector friday;
 	private AlarmDayMouseSelector saturday;
 	
+	private ThreadManager tm;
+	
 	
 	/**
 	 * Create the panel.
@@ -88,6 +90,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	 */
 	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException, UnsupportedBusNumberException {		
 		logger.config("Starting alarmView");
+		
+		tm = ThreadManager.getInstance();
 		
 		sql = new AlarmSql();
 		sql.CreateAlarmTable();
@@ -119,6 +123,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			minutes = Integer.parseInt(alarmEnt.getMinutes());
 			buzzerSelection = new BuzzerSelection(alarmEnt);
 			
+			tm.startAlarm(alarmEnt);
+			
 		}else {
 			//if no alarm .. look if theere is any and loaf the 1st one
 			List<AlarmEntity> ala = sql.loadAllAlarms();
@@ -128,6 +134,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				//also set the days 
 				alarmEnt = ala.get(0);
 				buzzerSelection = new BuzzerSelection(alarmEnt);
+				
+				if (ala.get(0).isActive()) {
+					tm.startAlarm(alarmEnt);
+				}
 			}
 		}
 				
@@ -352,7 +362,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 					logger.log(Level.CONFIG,"Alarm toggeled: " + alarmToggled);
 
 					if (alarmToggled) {
-						ThreadManager tm = ThreadManager.getInstance();
+						
 
 						tm.stopAlarm();
 

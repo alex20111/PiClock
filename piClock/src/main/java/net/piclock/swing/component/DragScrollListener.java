@@ -69,6 +69,7 @@ public class DragScrollListener implements MouseListener, MouseMotionListener{
 	private java.util.List<Point.Double> dragSpeeds = new ArrayList<Point2D.Double>();
 
 		public DragScrollListener(Component c){
+			System.out.println("STARRRRTTTTTTTTTTTTTTTTTTTT!");
 
 		draggableComponent = c;
 		defaultCursor = draggableComponent.getCursor();
@@ -148,12 +149,14 @@ public class DragScrollListener implements MouseListener, MouseMotionListener{
 	 * Mouse pressed implementation
 	 */
 	public void mousePressed(MouseEvent e){	
+		System.out.println("mouse pressed".toUpperCase());
 		if ( animationTimer != null && animationTimer.isRunning() ){
 			animationTimer.stop();
 		}
 
 		dragSpeeds.clear();
 		lastDragPoint = e.getPoint();
+		System.out.println("Last dragged point: " + lastDragPoint);
 	}
 	/**
 	 * Mouse released implementation. This determines if further animation
@@ -161,6 +164,7 @@ public class DragScrollListener implements MouseListener, MouseMotionListener{
 	 */
 
 	public void mouseReleased(MouseEvent e){
+		System.out.println("mouse released. lastDragTime: "+lastDragTime);
 		draggableComponent.setCursor(defaultCursor);
 		if ( scroller == null ){
 			return;
@@ -168,6 +172,8 @@ public class DragScrollListener implements MouseListener, MouseMotionListener{
 
 		//make sure the mouse ended in a dragging event
 		long durationSinceLastDrag = System.currentTimeMillis() - lastDragTime;
+		
+		System.out.println("durationSinceLastDrag: "+durationSinceLastDrag);
 
 		if ( durationSinceLastDrag > 20 ){
 			return;

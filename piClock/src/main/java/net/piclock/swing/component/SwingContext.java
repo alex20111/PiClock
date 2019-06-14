@@ -4,13 +4,18 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class SwingContext {
+	
+	private static final Logger logger = Logger.getLogger( SwingContext.class.getName() );
 
 	/** Singleton instance of context */
 	private static SwingContext swingContext = new SwingContext();
@@ -18,13 +23,13 @@ public class SwingContext {
 	private PropertyChangeSupport propertyChangeSupport = 	new PropertyChangeSupport(this);
 	
 	private List<MessageListener> msgListeners = new ArrayList<>();
-	private Map<String,Set<MessageListener>> msgListenersMap = new HashMap<>();
+	private Map<String,Set<MessageListener>> msgListenersMap = new WeakHashMap<>();
 
 	@SuppressWarnings("rawtypes")
 	private Map shareableDataMap = null;
 
 	public SwingContext(){
-		shareableDataMap = new HashMap();
+		shareableDataMap = new WeakHashMap();
 	}
 
 	public static SwingContext getInstance() {
@@ -72,23 +77,31 @@ public class SwingContext {
 		propertyChangeSupport.removePropertyChangeListener(propertyName, l);
 	}
 	
-	public void addMessageChangeListener(String propertyName, MessageListener l) {	
+	public void addMessageChangeListener(String propertyName, MessageListener l) {		
 		Set<MessageListener> msg = msgListenersMap.get(propertyName);
+		
 		if (msg != null) {
 			msg.add(l);
 		}else {
 			msg = new HashSet<>();
 			msg.add(l);
 		}
-		
+		logger.log(Level.CONFIG,"SWING CONTEXT -  PROPERTY: " + propertyName +  " size: " + msg.size() + " l: " + l  );
 		msgListenersMap.put(propertyName,msg);
+		
+		logger.log(Level.CONFIG,"END - SWING CONTEXT -  PROPERTY: " + propertyName +  " size: " + msg.size() + " l: " + l  );
 	}
 	public void addMessageChangeListener(MessageListener l) {
 		msgListeners.add(l);
 	}
 	
 	public void removeMessageListener(String propertyName , MessageListener l) {
-		msgListenersMap.remove(propertyName);
+		logger.log(Level.CONFIG, "remove property: " + propertyName + "   l: " + l);
+		Set<MessageListener> msg = msgListenersMap.get(propertyName);
+		if (msg != null) {
+			msg.remove(l);
+		}
+		
 	}
 	public void removeMessageListener(MessageListener l) {		
 		msgListeners.remove(l);	
@@ -97,28 +110,21 @@ public class SwingContext {
 		for(MessageListener m : msgListeners) {			
 			m.message(message);
 		}
-		
-//		msgListenersMap.forEach((p, m) -> {
-//			message.setPropertyName(p);
-//			m.message(message); 
-//		} );
 	}
 	public void sendMessage(String propertyName, Message message){
-		Set<MessageListener> m = msgListenersMap.get(propertyName);
+		Set<MessageListener> m = msgListenersMap.get(propertyName);		
+		
+		logger.log(Level.CONFIG, "Message: " + propertyName + "  Message size: " + m.size() );
 		
 		if (m != null) {
-			
-			m.stream().forEach(a -> {
+		
+			logger.log(Level.CONFIG,"sendMessage: " + m.size());
+			for(MessageListener mfor : m) {
+				logger.log(Level.CONFIG,"MESSAGE !!: " + mfor);
 				message.setPropertyName(propertyName);
-				a.message(message);}
-			);
-			
-//			message.setPropertyName(propertyName);
-//			m.message(message);
+				mfor.message(message);
+			}
 		}
 	}
-
-	
-	
 	
 }

@@ -166,6 +166,60 @@ public class ThemeHandler {
 			loadSunnyBackdrop();
 		}
 	}
+	public void loadCloudyBackdrop(){
+		logger.log(Level.CONFIG, "loadCloudyBackdrop(). Current: " + currBackground.getName());
+
+		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.CLOUDY);
+		
+		//load only when it's not the same
+		if (currBackground.getName() != BackgroundEnum.CLOUDY && backGroundIncluded){
+			List<BackgroundTheme> back = themesMap.get(currentTheme);		
+
+			for(BackgroundTheme bt : back){
+				if (bt.getName() == BackgroundEnum.CLOUDY){				
+					DayNightCycle cycle = (DayNightCycle)ct.getSharedObject(Constants.DAY_NIGHT_CYCLE);
+					if (cycle == null){
+						cycle = DayNightCycle.DAY;
+					}
+					bt.setCycle(cycle);
+					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg());
+					currBackground = bt;
+					refreshTheme();
+					break;
+				}
+			}
+		}else if (!backGroundIncluded) {
+			logger.log(Level.CONFIG, "loadCloudyBackdrop(). Loading sunny since Cloudy is not included into the theme");
+			loadSunnyBackdrop();
+		}
+	}
+	public void loadFogBackdrop(){
+		logger.log(Level.CONFIG, "loadFogBackdrop(). Current: " + currBackground.getName());
+
+		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.FOG);
+		
+		//load only when it's not the same
+		if (currBackground.getName() != BackgroundEnum.FOG && backGroundIncluded){
+			List<BackgroundTheme> back = themesMap.get(currentTheme);		
+
+			for(BackgroundTheme bt : back){
+				if (bt.getName() == BackgroundEnum.FOG){				
+					DayNightCycle cycle = (DayNightCycle)ct.getSharedObject(Constants.DAY_NIGHT_CYCLE);
+					if (cycle == null){
+						cycle = DayNightCycle.DAY;
+					}
+					bt.setCycle(cycle);
+					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg());
+					currBackground = bt;
+					refreshTheme();
+					break;
+				}
+			}
+		}else if (!backGroundIncluded) {
+			logger.log(Level.CONFIG, "loadFogBackdrop(). Loading sunny since FOG is not included into the theme");
+			loadSunnyBackdrop();
+		}
+	}
 	public void fireNightCycle(){		
 
 		currBackground.setCycle(DayNightCycle.NIGHT);

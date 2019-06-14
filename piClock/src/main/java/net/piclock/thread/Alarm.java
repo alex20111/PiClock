@@ -42,9 +42,7 @@ public class Alarm implements Runnable, MessageListener{
 		alarm = alarmEnt;
 		ct = SwingContext.getInstance();
 		buzzerDefaultUsed = false;
-		
-		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
-		
+	
 	}
 	@Override
 	public void run() {
@@ -60,7 +58,7 @@ public class Alarm implements Runnable, MessageListener{
 				break;
 			}
 		}		
-//		ct.removeMessageListener(Constants.TURN_OFF_ALARM, this);
+
 		logger.log(Level.INFO, "Alarm class exited");
 		
 	}
@@ -89,7 +87,13 @@ public class Alarm implements Runnable, MessageListener{
 	}	
 	private void triggerAlarm(){	
 		Date start = new Date();
+		
+		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
+		ct.addMessageChangeListener(Constants.RADIO_STREAM_ERROR , this);
 
+		AlarmBtnHandler btnH = null;
+		ArduinoCmd cm = null;
+		
 		try {
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 			Buzzer buzzer = Buzzer.valueOf(alarm.getAlarmSound());			
@@ -104,19 +108,22 @@ public class Alarm implements Runnable, MessageListener{
 					while(waiting) {
 
 						if (handler.isWifiConnected()) {
+							logger.log(Level.CONFIG, "Wifi aquired in Alarm");
 							break;
-						}else if(count > 20) {
+						}else if(count > 100) {
 							waiting = false;
+							logger.log(Level.INFO, "Could not connect to the internet in ALARM");
 							break;
 						}
 						try {
 							Thread.sleep(200);
-						}catch(InterruptedException i) {break;}
+						}catch(InterruptedException i) {
+							logger.log(Level.INFO, "wifi aquisition in alarm interrupted");
+							break;}
 						count ++;
 					}
-					if (waiting) {
-						logger.log(Level.INFO, "Could not connect to the internet in ALARM");
-					}
+					
+					
 				}else{
 					int triggerForecast = new Random().nextInt(999999);
 					ct.putSharedObject(Constants.FETCH_FORECAST, triggerForecast);
@@ -124,9 +131,9 @@ public class Alarm implements Runnable, MessageListener{
 			}
 			
 			//start button
-			AlarmBtnHandler btnH = (AlarmBtnHandler)ct.getSharedObject(Constants.ALARM_BTN_HANDLER);
+			btnH = (AlarmBtnHandler)ct.getSharedObject(Constants.ALARM_BTN_HANDLER);
 			btnH.setListenerActive();
-			ArduinoCmd cm = ArduinoCmd.getInstance();
+			cm = ArduinoCmd.getInstance();
 			cm.startBtnMonitoring();			
 
 			String track = "";
@@ -173,23 +180,34 @@ public class Alarm implements Runnable, MessageListener{
 				Thread.currentThread().interrupt();
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,"Error in setting off timer" , e); 	
-
+			logger.log(Level.SEVERE,"Error in setting off timer" , e);
+			btnH.deactivateListener();
+			try {
+				cm.stopBtnMonitor();
+			} catch (InterruptedException e1) {}
+			
 		}				
 	}
-//	@Override
-//	public synchronized void propertyChange(PropertyChangeEvent evt) {
-//		if (evt.getPropertyName().equals(Constants.TURN_OFF_ALARM)) {
-//			turnOffAlarmSound();
-//		}
-//		
-//	}
+
 	@Override
 	public synchronized void message(Message message) {
 		logger.log(Level.CONFIG, "Recieved message: " + message.getPropertyName());
 		if (Constants.TURN_OFF_ALARM.equals(message.getPropertyName())) {
+			ct.removeMessageListener(Constants.TURN_OFF_ALARM, this);
+			ct.removeMessageListener(Constants.RADIO_STREAM_ERROR, this);
 			turnOffAlarmSound();
+		}else if (Constants.RADIO_STREAM_ERROR.equals(message.getPropertyName()) && alarmTriggered) {
+			logger.log(Level.INFO, "Radio stream error in wake up alarm, using default. Message: " + message.getMessage() + "  Date registered: " + message.getDateTime());
+			buzzerDefaultUsed = true;
+			try {
+				handler.turnOnAlarm(Buzzer.BUZZER, "");
+				handler.playRadio(false, "");//force turn off radio
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Error in Radio stream error message", e);
+			}
 		}
+		
 
 	}
+
 }

@@ -11,15 +11,23 @@ add theme on web to change pictures
 when refreshing wifi web password,add wait icon (Spinning)
 to not always save in buzzer option when pressing ok.. if nothing has changed.
 add option for buzzer(radio, mp3, buzzer) auto shutdown timer in alarm (in UI)
-add percent for volume (UI).
+add percent for volume (UI).(new popup slider?)
 add ping every 5 minute to see if intenet is working (MAYBE)!!
-add text on the Radio View UI to say that's it's playing (like: now playing !!!)
+Scrolling in the weather view does not work very well with touch but works well with mouse !!!>>>?????
+
+
 
 //TESTS
 only load registered themes in xml. If not found, use the sunny background theme = test
 test network retry functionality.
+add start of alarm thread on startup if an alarm is active. Test if alarm start up on boot.
+
 
 //DONE test
+When turning on alarm with radio, verify that it's working by testing the happy message response. done
+bug --- test why send message is firying 3 times when only registered 2 times.. GOOD
+add backspace to keyboard. Test
+add text on the Radio View UI to say that's it's playing (like: now playing !!!
 When changing provider , refresh weather..
 test when radio is playing and the network shut down.. shut down radio and turn off icons (volume radio).. shut shown radio also.
 test also that if radio is playing and alarm shut down raadio.. remove icons and resetr

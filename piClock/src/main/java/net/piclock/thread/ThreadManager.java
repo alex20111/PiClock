@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 
 import net.piclock.db.entity.AlarmEntity;
+import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
@@ -66,7 +67,7 @@ public class ThreadManager {
 		//remove 1 min to allow system to perform something before triggering the alarm		
 		long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime) - 60000;
 		
-		System.out.println("Delay starting: " + initDelay + " " + new Date(new Date().getTime() + initDelay));
+		logger.log(Level.CONFIG, "Alarm Delay starting: " + initDelay + " " + new Date(new Date().getTime() + initDelay));
 		
 		alarmThread = scheduler.scheduleAtFixedRate(new Alarm(alarm), initDelay, 86400000, TimeUnit.MILLISECONDS);
 	}
@@ -74,10 +75,10 @@ public class ThreadManager {
 		logger.log(Level.CONFIG, "stopAlarm");
 		if (alarmThread != null && !alarmThread.isDone()){
 
-			System.out.println("startStopTimer::alarmThread Done? " + alarmThread.isDone());			
+			logger.log(Level.CONFIG,"startStopTimer::alarmThread Done? " + alarmThread.isDone());			
 
 			if (Alarm.isAlarmTriggered()){
-				SwingContext.getInstance().sendMessage(new Message("turn off"));
+				SwingContext.getInstance().sendMessage(Constants.TURN_OFF_ALARM, new Message("Thread Manager turning off alarm"));
 			}
 			alarmThread.cancel(true);	
 			//wait for timer to stop

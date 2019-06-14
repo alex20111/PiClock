@@ -2,5 +2,5 @@ package net.piclock.enums;
 
 public enum BackgroundEnum {
 
-	SUNNY, SNOW, RAIN, THUNDER, CLOUDY;
+	SUNNY, SNOW, RAIN, THUNDER, CLOUDY, FOG;
 }

@@ -47,10 +47,12 @@ public class RadioStreaming {
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
 			try{				
+				
 				while((line = br.readLine()) != null) {
 					output.append(line);					
 					if (line != null && line.contains("have a nice day")) {
-						ct.sendMessage(Constants.RADIO_STREAM_ERROR, new Message("Radio Stream not found"));
+						logger.log(Level.CONFIG, "Throwing error message: " + line);
+						ct.sendMessage(Constants.RADIO_STREAM_ERROR, new Message("Radio Stream not found. Message: " + line));
 						break;
 					}
 				}

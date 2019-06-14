@@ -490,13 +490,15 @@ public class PiHandler {
 			
 			streaming = new RadioStreaming(link);
 			streaming.play();
+			
+			cmd.turnSpeakerOn();
 		}else {
 			if (streaming != null) {
 				streaming.writeCommand("q");
 				Thread.sleep(100);
 				streaming.stop();
 			}
-
+			cmd.turnSpeakerOff();
 			streaming = null;
 		}
 
