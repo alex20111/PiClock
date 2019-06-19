@@ -21,6 +21,7 @@ import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.LoadThemesFromXml;
+import net.piclock.view.WeatherForecastView;
 
 public class ThemeHandler {
 	private static final Logger logger = Logger.getLogger( ThemeHandler.class.getName() );
@@ -34,7 +35,7 @@ public class ThemeHandler {
 	private SwingContext ct = SwingContext.getInstance();
 	
 	//registered labels
-	private Map<LabelEnums, JLabel> registeredLabels = new HashMap<LabelEnums, JLabel>();
+	private Map<LabelEnums, Object> registeredLabels = new HashMap<LabelEnums, Object>();
 	private Map<IconEnum, Object> registeredIcon = new HashMap<IconEnum, Object>();
 	
 	private boolean init = true;
@@ -76,7 +77,7 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg());
+					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -103,7 +104,7 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg());
+					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
 					currBackground = bt;				
 
 					refreshTheme();
@@ -128,7 +129,7 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg());
+					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -155,7 +156,7 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg());
+					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -182,7 +183,7 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg());
+					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -209,7 +210,7 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg());
+					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -225,7 +226,7 @@ public class ThemeHandler {
 		currBackground.setCycle(DayNightCycle.NIGHT);
 
 		refreshTheme();
-		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE,  currBackground.fullPathBackImg());		
+		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE,  currBackground.fullPathBackImg(DayNightCycle.NIGHT));		
 	}
 	
 	public void fireDayCycle(){
@@ -233,11 +234,11 @@ public class ThemeHandler {
 		currBackground.setCycle(DayNightCycle.DAY);
 		
 		refreshTheme();
-		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, currBackground.fullPathBackImg());
+		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, currBackground.fullPathBackImg(DayNightCycle.DAY));
 		
 	}
 	/** Register a label and it's associated enum from XML**/
-	public void registerLabelTextColor(JLabel label, LabelEnums lblEnum){
+	public void registerLabelTextColor(Object label, LabelEnums lblEnum){
 		registeredLabels.put(lblEnum, label);	
 		
 	}
@@ -269,12 +270,18 @@ public class ThemeHandler {
 					//do labels color 1st
 					Map<LabelEnums, LabelTheme> lblMap = currBackground.getLabels();
 
-					for(Map.Entry<LabelEnums, JLabel> label : registeredLabels.entrySet()){
+					for(Map.Entry<LabelEnums, Object> label : registeredLabels.entrySet()){
 						LabelTheme lblTheme = lblMap.get(label.getKey());
 						//COLOR
 						Color color = currBackground.getCycle() == DayNightCycle.DAY ? lblTheme.getTextDayColor() :
 							lblTheme.getTextNightColor();
-						label.getValue().setForeground(color);										
+						
+						Object o = label.getValue();
+						if (o instanceof JLabel) {
+							((JLabel)o).setForeground(color);
+						}else if (o instanceof WeatherForecastView && label.getKey() == LabelEnums.WEATHER_FORECAST_VIEW) {
+							((WeatherForecastView)o).colorComponent(color);
+						}
 					}
 
 					//do label icons 

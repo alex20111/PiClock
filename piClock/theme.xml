@@ -1,7 +1,7 @@
 <!--Using JAVA Color names . Color.WHITE, Color.BLUE, Color.Black -->
 <base>
 	<theme name="defaultTheme" >
-		<background name="SUNNY" image="sunny-day-background.jpg" imageNight="" imageFolder="img">
+		<background name="SUNNY" image="sunny-day-background.jpg" imageNight="clear-sky-night.jpg" imageFolder="img">
 			<label name="labels">
 				<labelTheme name="CLOCK" 			colorDay="#000000" colorNight="#ffffff"></labelTheme>
 				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
@@ -33,6 +33,8 @@
 				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				
 			
 			</label>
 			<labelIcon name="icons">
@@ -50,7 +52,7 @@
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-24-black.png" 		iconNight="volume-mute-24-black.png"></IconTheme>	
 			</labelIcon>
 		</background>
-	<background name="RAIN" image="rain-orig-480.jpg" imageFolder="img" imageNight="">
+	<background name="RAIN" image="rain-orig-480.jpg" imageFolder="img" imageNight="clear-sky-night.jpg">
 			<label name="labels">
 				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
@@ -82,6 +84,56 @@
 				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+			
+			</label>
+			<labelIcon name="icons">
+				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-32-black.png" 	iconNight="alarm-clock-32-black.png"></IconTheme>
+				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-24.png" 			iconNight="cog-black-24.png"></IconTheme>	
+				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-32.png" 		iconNight="radio-black-32.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-24.png" 			iconNight="mp3-black-24.png"></IconTheme>	
+				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
+				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
+				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-32-black.png" 	iconNight="wifi-off-32-black.png"></IconTheme>
+				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-32-black.png" 		iconNight="wifi-32-black.png"></IconTheme>
+				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet.png" 		iconNight="wifi_on_no_inet.png"></IconTheme>	
+				<IconTheme name="WEB_SERVER"	    iconDay="web-server-32.png" 			iconNight="web-server-32.png"></IconTheme>	
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-24-black.png" 		iconNight="volume-24-black.png"></IconTheme>
+				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-24-black.png" 		iconNight="volume-mute-24-black.png"></IconTheme>			
+			</labelIcon>
+		</background><background name="CLOUDY" image="clouds.jpg" imageFolder="img" imageNight="cloudy-night.jpg">
+			<label name="labels">
+				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SUN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SHADE" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="DAY_OF_WEEK" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WTH_LST_UPD_TIME"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR_TXT"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_TITILE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ACTIVATE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_PROVIDER" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_CITY" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_REFRESH" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_MIN" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TITLE" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TEXT" 	colorDay="ORANGE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_WED" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -99,5 +151,6 @@
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-24-black.png" 		iconNight="volume-mute-24-black.png"></IconTheme>			
 			</labelIcon>
 		</background>
+		
 	</theme>	
 </base>

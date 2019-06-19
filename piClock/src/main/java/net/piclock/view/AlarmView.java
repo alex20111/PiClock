@@ -66,7 +66,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	
 	private AlarmSql sql;
 	
-	private  boolean alarmToggled = false;
+	private  boolean alarmInfoChanged = false;
 	private BuzzerSelection buzzerSelection;
 	
 	//days of the week label
@@ -148,7 +148,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			public void mousePressed(MouseEvent e) {
 					
 				keepRunning = true;
-				alarmToggled = true;
+				alarmInfoChanged = true;
 				
 				timeCounter = new Thread(new Runnable(){
 
@@ -183,7 +183,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
-				alarmToggled = true;
+				alarmInfoChanged = true;
 				
 			
 				timeCounter = new Thread(new Runnable(){
@@ -238,7 +238,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
-				alarmToggled = true;
+				alarmInfoChanged = true;
 				
 				timeCounter = new Thread(new Runnable(){
 
@@ -277,7 +277,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				keepRunning = true;
-				alarmToggled = true;
+				alarmInfoChanged = true;
 			
 				timeCounter = new Thread(new Runnable(){
 
@@ -330,7 +330,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				// to the selection or deselection  of the button 
 				boolean selected = abstractButton.getModel().isSelected();				
 				
-				alarmToggled = true;
+				alarmInfoChanged = true;
 				if (!selected){
 					tglbtnOnOff.setText("Alarm OFF");
 					tglbtnOnOff.setBackground(Color.RED);
@@ -359,9 +359,9 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 				try{
 
-					logger.log(Level.CONFIG,"Alarm toggeled: " + alarmToggled);
+					logger.log(Level.CONFIG,"Alarm alarmInfoChanged: " + alarmInfoChanged);
 
-					if (alarmToggled) {
+					if (alarmInfoChanged) {
 						
 
 						tm.stopAlarm();
@@ -489,7 +489,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	}
 	
 	public void setAlarmNotToggled() {
-		this.alarmToggled = false;
+		this.alarmInfoChanged = false;
 	}
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -500,7 +500,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		logger.log(Level.CONFIG, "PropChange: " + buzzerSelection);
 		
 		btnBuzzer.setText(buzzerSelection.getBuzzer().name());
-		alarmToggled = true;
+		alarmInfoChanged = true;
 		
 	}
 	private void dayDaysToSelect(AlarmEntity alarm, ThemeHandler theme) {	

@@ -191,7 +191,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		lblRadioIcon = new JLabel();		
 		
 		weatherConfig = new WeatherConfigView();
-		forecastView = new WeatherForecastView(cardsPanel);
+		forecastView = new WeatherForecastView();
 		weatherAlertView = new WeatherAlertView();	
 		radioStationsView = new RadioStationsView(lblRadioIcon);
 		

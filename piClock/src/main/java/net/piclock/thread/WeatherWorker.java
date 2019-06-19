@@ -75,7 +75,7 @@ public class WeatherWorker implements Runnable {
 						theme.loadSnowBackdrop();
 					}else if (wcm.getSummary().toLowerCase().contains("cloud")) {					
 						theme.loadCloudyBackdrop();
-					}else if (wcm.getSummary().toLowerCase().contains("fog")){					
+					}else if (wcm.getSummary().toLowerCase().contains("fog") || wcm.getSummary().toLowerCase().contains("mist")){					
 						theme.loadFogBackdrop();
 					}else {//default sunny						
 						theme.loadSunnyBackdrop();

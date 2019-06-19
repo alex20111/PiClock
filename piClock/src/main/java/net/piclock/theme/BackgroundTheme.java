@@ -12,6 +12,7 @@ public class BackgroundTheme {
 	
 	private BackgroundEnum  name;
 	private String backgroundImage = "";
+	private String backgroundImageNight = "";
 	private DayNightCycle cycle = DayNightCycle.DAY;
 	private Map<LabelEnums, LabelTheme> labels;
 	private Map<IconEnum, IconTheme> labelIconMap;
@@ -19,9 +20,10 @@ public class BackgroundTheme {
 	private String imageFolder = "";
 	
 	public BackgroundTheme(){}
-	public BackgroundTheme(BackgroundEnum name, String image, String folder){
+	public BackgroundTheme(BackgroundEnum name, String imageDay, String imageNight, String folder){
 		this.name = name;
-		this.backgroundImage = image;
+		this.backgroundImage = imageDay;
+		this.backgroundImageNight = imageNight;
 		this.imageFolder = folder;
 	}
 	
@@ -50,6 +52,12 @@ public class BackgroundTheme {
 	public void setBackgroundImage(String backgroundImage) {
 		this.backgroundImage = backgroundImage;
 	}
+	public String getBackgroundImageNight() {
+		return backgroundImageNight;
+	}
+	public void setBackgroundImageNight(String backgroundImageNight) {
+		this.backgroundImageNight = backgroundImageNight;
+	}
 	public DayNightCycle getCycle() {
 		return cycle;
 	}
@@ -64,8 +72,8 @@ public class BackgroundTheme {
 	}
 
 	/**Return the full path for the background image. **/
-	public String fullPathBackImg(){
-		return imageFolder + File.separatorChar + backgroundImage;
+	public String fullPathBackImg(DayNightCycle cycle){
+		return imageFolder + File.separatorChar + (cycle == DayNightCycle.DAY ? backgroundImage : backgroundImageNight);
 	}
 	@Override
 	public String toString() {

@@ -1,12 +1,11 @@
 package net.piclock.view;
 
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -24,101 +23,129 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
-import net.piclock.swing.component.DragScrollListener;
+import net.piclock.swing.component.Scroll;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ScreenAutoClose;
 import net.piclock.util.ImageUtils;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherForecastModel;
 import net.weather.bean.WeatherGenericModel;
 import net.weather.utils.MessageHandl;
-import java.awt.Dimension;
 
+	
 public class WeatherForecastView extends JPanel implements PropertyChangeListener {
+
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger logger = Logger.getLogger( WeatherForecastView.class.getName() );
 	
-	private JLabel lblWeatheralert;
-	private int totalOcc = 14;
-	private JLabel daysLbl[] = new JLabel[totalOcc];
-	private JLabel iconsLbl[] = new JLabel[totalOcc];
-	private JLabel forecastLbl[] = new JLabel[totalOcc];
-	private JSeparator separator[] = new JSeparator[totalOcc];
+	private JPanel parent = new JPanel();
 	
-	private JButton back;
-	//rows
 	private String lableForecastSize = "420px";
 	
-	private SwingContext ct = SwingContext.getInstance(); 	
-	
-	/**
-	 * Create the frame.
-	 */
-	public WeatherForecastView(final JPanel cardsPanel) {
+	private JLabel lblAlert;
+	private SwingContext ct = SwingContext.getInstance(); 
+
+	int indx = 0;
+	boolean notFirst = false;
+
+	public WeatherForecastView() {
 		
 		ct.addPropertyChangeListener(Constants.FORECAST_RESULT, this);
-		ct.addPropertyChangeListener(Constants.FORECAST_DISPLAY_ERROR, this);		
+		ct.addPropertyChangeListener(Constants.FORECAST_DISPLAY_ERROR, this);
+
+		parent.setAutoscrolls(true);
+
+		setLayout(new BorderLayout());
+
+		parent.setLayout(new MigLayout("", "[40px,center][70px][grow]"));//"");
 		
-		setLayout(new BorderLayout(0, 0));
+		ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		theme.registerLabelTextColor(this, LabelEnums.WEATHER_FORECAST_VIEW);
+
+//		JButton b = new JButton("clear");
+//		b.addActionListener(l -> {
+//			clear();
+//		});
+
+//		JButton add = new JButton("Add");
+//		add.addActionListener(l -> {
+//			System.out.println("Indx: " + indx);
+//			if(indx > 9){
+//				displayLoading();
+//			}
+//			else if (indx > 1 && indx < 10){
+//				
+//				addFPanel("Wednesday night", "Sunny. Becoming a mix of sun and cloud this afternoon. Wind northwest 20 km/h. High 24. Humidex 26. UV index 8 or very high. Tonight Partly cloudy. Wind northwest 20 km/h becoming light this evening. Low 12. Becoming a mix of sun and cloud this afternoon. Wind northwest 20 km/h. High 24. Humidex 26. UV index 8 or very high. Tonight Partly cloudy. Wind northwest 20 km/h becoming light this evening. Low 12.", new ImageIcon("c:\\temp\\32.gif"));
+//				colorComponent(Color.BLUE);
+//			}else{
+//				
+//				addFPanel("Monday night", "Sunny. Becoming a mix of sun and cloud this afternoon. Wind northwest 20 km/h. High 24. Humidex 26. UV index 8 or very high. Tonight Partly cloudy. Wind northwest 20 km/h becoming light this evening. Low 12.", new ImageIcon("c:\\temp\\32.gif"));
+//				colorComponent(Color.WHITE);
+//			}
+//		});
+//		
+//		JPanel btnPanel = new JPanel();
+//		btnPanel.setLayout(new FlowLayout());
+//		btnPanel.add(b);
+//		btnPanel.add(add);
+//		add(btnPanel, BorderLayout.SOUTH);
+
+		JScrollPane scrollPane = new JScrollPane(parent);
+		
 		scrollPane.setBorder(null);
 		scrollPane.setOpaque(false);
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		add(scrollPane, BorderLayout.CENTER);
-		
-		JPanel panel = new JPanel();
-		scrollPane.setViewportView(panel);
 		scrollPane.getViewport().setOpaque(false);
-		panel.setOpaque(false);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);		
 		
-		MigLayout layout = new MigLayout("hidemode 3", "[40px,center][70px][grow]", "[15px,center]");
+		add(scrollPane);
 		
-		panel.setLayout(layout);
+		Scroll scroll = new Scroll(parent);
+
+		parent.addMouseListener(scroll);
+		parent.addMouseMotionListener(scroll);
 		
-		DragScrollListener dl = new DragScrollListener(panel);
-		back =  new JButton("<");	
-		back.setAlignmentX(Component.CENTER_ALIGNMENT);
-		back.setFont(new Font("Tahoma", Font.BOLD, 18));
-		back.setPreferredSize(new Dimension(20, 25));
+		//alert
+		JPanel alertPanel = new JPanel();
+		alertPanel.setOpaque(false);
+		parent.add(alertPanel, BorderLayout.NORTH);
+		alertPanel.setLayout(new MigLayout("", "[89px][grow][89px]", "[23px]"));
 		
-//		back.setSize(40, 25);
-		back.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
+		JButton backBtn = new JButton("<");
+		backBtn.setFont(new Font("Tahoma", Font.BOLD, 18));
+		alertPanel.add(backBtn, "cell 0 0,alignx left,aligny top");
+		
+		backBtn.addActionListener(l -> {						
 				try {
 					ScreenAutoClose.stop();
 				} catch (InterruptedException e1) {
 					logger.log(Level.SEVERE,"Error while trying to stop auto close screen", e1);
 				}
 				
-				CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
-				cardLayout.show(cardsPanel, Constants.MAIN_VIEW);		
+				JPanel cardsPanel = (JPanel) ct.getSharedObject(Constants.CARD_PANEL);
 				
-			}
-		});
-		panel.add(back, "hidemode 3,cell 0 0,alignx left,aligny top");
+				CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+				cardLayout.show(cardsPanel, Constants.MAIN_VIEW);				
+		});		
 		
-		lblWeatheralert = new JLabel("   !! Weather Alert !!");
-		lblWeatheralert.setHorizontalAlignment(SwingConstants.LEFT);
-		lblWeatheralert.setForeground(Color.RED);
-		lblWeatheralert.setFont(new Font("Tahoma", Font.BOLD, 18));
-		panel.add(lblWeatheralert, "cell 2 0");
+		lblAlert = new JLabel("!! Weather Alert !!");
+		lblAlert.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblAlert.setForeground(Color.RED);
+		alertPanel.add(lblAlert, "cell 1 0,alignx center");
+		lblAlert.setVisible(false);
 		
-		lblWeatheralert.setVisible(false);
-		
-		lblWeatheralert.addMouseListener(new MouseAdapter(){
+		lblAlert.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				
-				try {
+				JPanel cardsPanel = (JPanel) ct.getSharedObject(Constants.CARD_PANEL);
+				try {					
 					ScreenAutoClose.stop();
 					ScreenAutoClose.start(cardsPanel, 45, TimeUnit.SECONDS);
 				} catch (InterruptedException e1) {
@@ -131,84 +158,103 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 				cardLayout.show(cardsPanel, Constants.WEATHER_ALERT_VIEW);
 			}		
 		});
-	
-		boolean addForecastRow= true;
-		int index = -1;
-		for(int i = 1;i< (totalOcc * 2) + 1 ;i++){		
-			
-			if (addForecastRow){
-				
-				index ++;
-				
-				daysLbl[index]= new JLabel();
-				daysLbl[index].setFont(new Font("Tahoma", Font.BOLD, 20));
-				
-				iconsLbl[index] = new JLabel();						
-				forecastLbl[index] = new JLabel();
-				forecastLbl[index].setAlignmentX(Component.CENTER_ALIGNMENT);
-				forecastLbl[index].setFont(new Font("Tahoma", Font.BOLD, 20));
-				
-				panel.add(daysLbl[index], "hidemode 3,cell 0 "+i+",alignx left,aligny center");
-				panel.add(iconsLbl[index], "hidemode 3,cell 1  "+i+",alignx center");
-				panel.add(forecastLbl[index], "hidemode 3,cell 2  "+i+",grow");
-				
-				forecastLbl[index].addMouseListener(dl);
-				forecastLbl[index].addMouseMotionListener(dl);
-				
-				daysLbl[index].setVisible(false);
-				iconsLbl[index].setVisible(false);
-				forecastLbl[index].setVisible(false);	
-				
-				addForecastRow = false;
-			}else{
-				//add seperator
-				separator[index] = new JSeparator();
-				panel.add(separator[index], "cell 0 "+i+" 3 1,grow");
-				separator[index].setVisible(false);
-				 addForecastRow = true;
-			}
-		}				 
-		panel.addMouseListener(dl);
-		panel.addMouseMotionListener(dl);
-		
-		setOpaque(false);		
+
+		setOpaque(false);
+		parent.setOpaque(false);		
 	}
+
+//	@Override
+//	public Dimension getPreferredSize() {
+//		return new Dimension(800, 480);
+//	}
 	
-	public void updateForecast(int pos, String forecast, ImageIcon icon, String dayOfWeek){
-		daysLbl[pos].setText("<html><div style='width: 35px;word-wrap: break-word;'>"+dayOfWeek+"</html>");
-		daysLbl[pos].setVisible(true);
-		forecastLbl[pos].setText("<html><div style='width: "+ lableForecastSize + ";word-wrap: break-word;'>"+forecast+"</html>");
-		forecastLbl[pos].setVisible(true);
-		iconsLbl[pos].setIcon(icon);
-		iconsLbl[pos].setVisible(true);
-		separator[pos].setVisible(true);		
-	}	
+	private void addFPanel(String day, String f , ImageIcon ic){
+		
+		JLabel daysLbl = new JLabel();
+		JLabel icLbl = new JLabel();
+		JLabel fLbl = new JLabel();
+		JSeparator separator;	
+		daysLbl.setOpaque(false);
+		if(notFirst){
+			//add seperator
+			 separator = new JSeparator();
+			 parent.add(separator, "cell 0 "+indx+" 3 1, grow" );
+			 indx ++;			
+		}else{
+			notFirst = true;
+		}		
+
+		daysLbl = new JLabel();
+		daysLbl.setText("<html><div style='width: 35px;word-wrap: break-word;'>"+day+"</html>");
+		daysLbl.setFont(new Font("Tahoma", Font.BOLD, 20));
+
+		icLbl = new JLabel(ic);
+		
+		fLbl = new JLabel();
+		fLbl.setFont(new Font("Tahoma", Font.BOLD, 20));
+		fLbl.setText("<html><div style='width: "+ lableForecastSize + ";word-wrap: break-word;'>"+f+"</html>");
+		fLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+  
+		parent.add(daysLbl, "cell 0 "+indx+",alignx left,aligny center" );
+		parent.add(icLbl , "cell 1 "+indx+",alignx center");
+		parent.add(fLbl, "cell 2 "+indx+",grow");		
+		
+		parent.revalidate();
+		parent.repaint();
+		indx++;
+	}
 	
 	public void displayLoading(){
-		hideLabels();
-		daysLbl[0].setText("");
-		daysLbl[0].setVisible(true);
-		forecastLbl[0].setText("LOADIND Forecast..");
-		forecastLbl[0].setVisible(true);
-		iconsLbl[0].setIcon(ImageUtils.getInstance().getWeatherLoader());
-		iconsLbl[0].setVisible(true);
+		clear();
+		addFPanel("", "LOADING Forecast...", ImageUtils.getInstance().getWeatherLoader()); 
 	}
 	
-	private void hideLabels(){
-		for(int i = 1;i< totalOcc ;i++){	
-			daysLbl[i].setVisible(false);
-			forecastLbl[i].setVisible(false);
-			daysLbl[i].setVisible(false);
-			separator[i].setVisible(false);
-			iconsLbl[i].setVisible(false);
+	private void clear(){
+		Component[] componentList = parent.getComponents();
+		//Loop through the components
+		for(Component c : componentList){
+
+		    //Find the components you want to remove
+		    if(c instanceof JLabel){
+		        //Remove it
+		        parent.remove(c);
+		    }else if(c instanceof JSeparator){
+		        //Remove it
+		        parent.remove(c);
+		    }
 		}
+		//IMPORTANT
+		parent.revalidate();
+		parent.repaint();
+		indx = 0;
+		notFirst = false;
 	}
+	
+	public void colorComponent(Color color){
+		Component[] componentList = parent.getComponents();
+		//Loop through the components
+		for(Component c : componentList){
+
+		    //Find the components you want to remove
+		    if(c instanceof JLabel){		      
+		        ((JLabel)c).setForeground(color);
+		    }else if(c instanceof JSeparator){		       
+		    	((JSeparator)c).setForeground(color);
+		    }
+		}
+		//IMPORTANT
+		parent.revalidate();
+		parent.repaint();
+
+	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		logger.config("event reciecved: " + evt.getPropertyName());
+		logger.config("event received: " + evt.getPropertyName());
 
 		if(evt.getPropertyName().equals(Constants.FORECAST_RESULT)){
 
+			clear();
 			WeatherGenericModel wgm = (WeatherGenericModel)evt.getNewValue();
 			
 			if (wgm.getWForecastModel() != null && wgm.getWForecastModel().size() > 0){
@@ -217,17 +263,19 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 					WeatherForecastModel wfm = wgm.getWForecastModel().get(i);
 					try {
 					
-						updateForecast(i, wfm.getForecast(), img.getImage("weather" + File.separatorChar + wfm.getIconName()), wfm.getDayOfWeek());
+						addFPanel(wfm.getDayOfWeek(),  wfm.getForecast(), img.getImage("weather" + File.separatorChar + wfm.getIconName()));
 					} catch (IOException e) {
-						updateForecast(i, wfm.getForecast(),img.getWeatherNA(), wfm.getDayOfWeek());
+						addFPanel( wfm.getForecast(), wfm.getDayOfWeek(), img.getWeatherNA());
 						logger.log(Level.SEVERE, "WeatherIcon", e);
 					}
 				}
 			}
 			
 			if (wgm.getWeatherAlert() != null){
-				lblWeatheralert.setVisible(true);
-			}			
+				lblAlert.setVisible(true);
+			}else {
+				lblAlert.setVisible(false);
+			}
 		}else if(evt.getPropertyName().equals(Constants.FORECAST_DISPLAY_ERROR)){
 			WeatherGenericModel wgm = (WeatherGenericModel)evt.getNewValue();
 			
@@ -235,13 +283,9 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 			
 			Message m = msg.getAllMessages().get( msg.getAllMessages().size() - 1);			
 			
-			hideLabels();
-			daysLbl[0].setText("");
-			daysLbl[0].setVisible(true);
-			forecastLbl[0].setText(m.getTitle());
-			forecastLbl[0].setVisible(true);
-			iconsLbl[0].setIcon(ImageUtils.getInstance().getWeatherNA());
-			iconsLbl[0].setVisible(true);
+			clear();
+		addFPanel("", m.getTitle(), ImageUtils.getInstance().getWeatherNA());
+
 		}
-	}	
+	}
 }

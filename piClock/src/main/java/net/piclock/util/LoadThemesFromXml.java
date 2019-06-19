@@ -70,7 +70,7 @@ public class LoadThemesFromXml {
 							String imageFolder = domNode.getAttribute("imageFolder");
 							//background							
 							BackgroundTheme backTheme = new BackgroundTheme(BackgroundEnum.valueOf(domNode.getAttribute("name")), 
-									domNode.getAttribute("image"), imageFolder);
+									domNode.getAttribute("image"),domNode.getAttribute("imageNight"),  imageFolder);
 
 							Map<LabelEnums, LabelTheme> labelMap = new HashMap<LabelEnums, LabelTheme>();
 							Map<IconEnum, IconTheme> labelIconMap = new HashMap<IconEnum, IconTheme>();

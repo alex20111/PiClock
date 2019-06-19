@@ -20,7 +20,7 @@ public class LDRStatusWorker implements Runnable{
 	private static final Logger logger = Logger.getLogger( LDRStatusWorker.class.getName() );
 	
 	private SwingContext ct = SwingContext.getInstance();
-	private DayNightCycle lastStatus = DayNightCycle.NONE;
+	private DayNightCycle lastCycleStatus = DayNightCycle.NONE;
 	private DayNightCycle cycle = DayNightCycle.NONE;
 	
 	private Light lastLightStatus = Light.VERY_BRIGHT;
@@ -43,8 +43,8 @@ public class LDRStatusWorker implements Runnable{
 
 			Light lightStatus = handler.getLDRstatus();
 
-			logger.log(Level.CONFIG, "LDR Init: " + cycle + " LastStatus: " + lastStatus + 
-					" Light: "+ lightStatus + " LastLight: " + lastLightStatus +" AutoOffScreen Option: " + p.isAutoOffScreen());
+			logger.log(Level.CONFIG, "LDR cycle: " + cycle + " lastCycleStatus: " + lastCycleStatus + 
+					" lightStatus: "+ lightStatus + " lastLightStatus: " + lastLightStatus +" AutoOffScreen Option: " + p.isAutoOffScreen());
 
 			if (lastLightStatus != lightStatus && lightStatus != Light.GREY_ZONE) {
 
@@ -56,6 +56,7 @@ public class LDRStatusWorker implements Runnable{
 					//adjust LCD based on the LDR.					
 					lastLightStatus = lightStatus;
 					if (lightStatus == Light.DARK) {
+						handler.setBrightness(Light.DIM);
 						cycle = DayNightCycle.NIGHT;
 					}else {
 						handler.setBrightness(lightStatus);
@@ -72,7 +73,7 @@ public class LDRStatusWorker implements Runnable{
 				}
 			}
 
-			if (cycle == DayNightCycle.NIGHT && cycle != lastStatus){
+			if (cycle == DayNightCycle.NIGHT && cycle != lastCycleStatus){
 				//turn off screeen if screen is on.
 				if(p.isAutoOffScreen()){
 					handler.turnOffScreen();
@@ -81,9 +82,9 @@ public class LDRStatusWorker implements Runnable{
 				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.NIGHT);
 				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 				themes.fireNightCycle();
-				lastStatus = DayNightCycle.valueOf(cycle.name());
+				lastCycleStatus = DayNightCycle.valueOf(cycle.name());
 
-			}else if (cycle == DayNightCycle.DAY && cycle != lastStatus){
+			}else if (cycle == DayNightCycle.DAY && cycle != lastCycleStatus){
 				if(p.isAutoOffScreen()){
 					handler.turnOnScreen(true, lightStatus);
 					handler.turnOffTM1637Time();
@@ -91,7 +92,7 @@ public class LDRStatusWorker implements Runnable{
 				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.DAY);
 				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 				themes.fireDayCycle();
-				lastStatus = DayNightCycle.valueOf(cycle.name());
+				lastCycleStatus = DayNightCycle.valueOf(cycle.name());
 
 			}
 
