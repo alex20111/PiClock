@@ -39,6 +39,7 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.CheckWifiStatus;
@@ -61,6 +62,7 @@ import net.piclock.view.WeatherAlertView;
 import net.piclock.view.WeatherConfigView;
 import net.piclock.view.WeatherForecastView;
 import net.piclock.view.WebServerView;
+import net.piclock.weather.Temperature;
 import net.piclock.weather.WeatherBean;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherCurrentModel;
@@ -118,6 +120,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	private ThreadManager tm ;
 	private JPanel btnPanel;
 	private JButton btnVolume;
+	private JLabel lblWarningIcon;
 	/**
 	 * Launch the application.
 	 */
@@ -147,7 +150,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	public MainApp() throws Exception {
 		logger.info("Start Program");	
 		
-		tm = ThreadManager.getInstance();		
+		tm = ThreadManager.getInstance();
+		
+		ct.putSharedObject(Constants.ERRORS, new ErrorHandler());
 		
 		ImageIO.setUseCache(true);
 		
@@ -230,7 +235,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		timePanel.add(weekDateLable, "cell 2 3,alignx center,aligny top");
 		lblWebserverIcon = new JLabel();
 		lblWebserverIcon.setVisible(false);
-		timePanel.add(lblWebserverIcon, "cell 0 5");
+//		timePanel.add(lblWebserverIcon, "cell 0 5");
 		lblWebserverIcon.setBorder(new EmptyBorder(10,10,0,0));
 		lblWebserverIcon.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -251,6 +256,12 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		btnPanel.setOpaque(false);
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		timePanel.add(btnPanel, "cell 3 5,grow");
+		
+		JPanel leftIcons = new JPanel();
+		leftIcons.setOpaque(false);
+		timePanel.add(leftIcons, "cell 0 5 2 1,alignx left,growy");
+		
+		leftIcons.add(lblWebserverIcon);  
 		
 		btnVolume = new JButton("");
 		btnVolume.setFocusPainted(false);
@@ -417,6 +428,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
 		webServerView = new WebServerView(lblWebserverIcon);
+		
+		lblWarningIcon = new JLabel(ImageUtils.getInstance().getWarningIcon());
+		leftIcons.add(lblWarningIcon);
 		
 		cardsPanel.add(av, Constants.ALARM_VIEW);
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
@@ -592,10 +606,16 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	public synchronized void propertyChange(PropertyChangeEvent evt) {
 		logger.config("--propertyChange--: " + evt.getPropertyName());
 		if (evt.getPropertyName().equals(Constants.SENSOR_INFO)) {
-			WeatherBean wb = (WeatherBean)evt.getNewValue();			
+			WeatherBean wb = (WeatherBean)evt.getNewValue();	
 			
-			addCurrentTemp(Constants.numberFormat.format(wb.getTempSun().getTempC()),
-					Constants.numberFormat.format(wb.getTempShade().getTempC()));
+			Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
+			Temperature shade = wb.getTempSun().orElse(new Temperature(new Float(-999)));
+			
+			addCurrentTemp(Constants.numberFormat.format(sun.getTempC()),
+					Constants.numberFormat.format(shade.getTempC()));
+			
+//			addCurrentTemp(Constants.numberFormat.format(wb.getTempSun().getTempC()),//TODO handle nulls for sensor data
+//					Constants.numberFormat.format(wb.getTempShade().getTempC()));
 		}
 		else if (evt.getPropertyName().equals(Constants.FORECAST_RESULT)){
 			try {
@@ -617,9 +637,14 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 
 					addCurrentWeather(wcm.getSummary().trim(),icon,dt );
 					WeatherBean wb = (WeatherBean)ct.getSharedObject(Constants.SENSOR_INFO);
-					if (wb != null) {
-						addCurrentTemp(Constants.numberFormat.format(wb.getTempSun().getTempC()),
-						Constants.numberFormat.format(wb.getTempShade().getTempC()));
+					if (wb != null) { //TODO test and verify
+						Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
+						Temperature shade = wb.getTempSun().orElse(new Temperature(new Float(-999)));
+						
+						addCurrentTemp(Constants.numberFormat.format(sun.getTempC()),
+								Constants.numberFormat.format(shade.getTempC()));
+						
+						
 					}
 				}else{			
 												
@@ -666,7 +691,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 					weatherNaIcon , null);
 			addCurrentTemp("--", "--");
 			lblWeatherAlert.setVisible(false);
-			tm.stopWeatherThread();
+//			tm.stopWeatherThread(); TODO add function to not restart it if too much errors.
 		}else  if(evt.getPropertyName().equals(Constants.THEMES_BACKGROUND_IMG_UPDATE)){
 			String image = (String)evt.getNewValue();
 			logger.config("Image background update. Image: " + image);

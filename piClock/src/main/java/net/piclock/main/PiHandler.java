@@ -21,7 +21,7 @@ import com.pi4j.wiringpi.SoftPwm;
 
 import home.fileutils.FileUtils;
 import home.misc.Exec;
-import net.piclock.arduino.ArduinoCmd;
+import net.piclock.arduino.ArduinoSerialCmd;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ListenerNotFoundException;
 import net.piclock.button.MonitorButtonHandler;
@@ -40,7 +40,7 @@ public class PiHandler {
 
 	private static PiHandler piHandler;
 	
-	private ArduinoCmd cmd;
+	private ArduinoSerialCmd cmd;
 	
 	private  boolean screenOn = true;
 	private  boolean wifiConnected = false; //if connected to the WIFI.
@@ -68,7 +68,7 @@ public class PiHandler {
 		
 		monitorBtnHandler = new MonitorButtonHandler();
 		try {
-			cmd = ArduinoCmd.getInstance();
+			cmd = ArduinoSerialCmd.getInstance();
 			cmd.addButtonListener(monitorBtnHandler);
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "Error in PiHandler", ex);
@@ -95,11 +95,11 @@ public class PiHandler {
 		setScreenOn(false);
 		setBrightness(Light.DARK);
 
-		monitorBtnHandler.setListenerActive();
-		if (!cmd.isBtnMonitorRunning()) {
-			cmd.startBtnMonitoring();
-		}
-		logger.log(Level.CONFIG,"end turnOffScreen(). is btn mon active: " + cmd.isBtnMonitorRunning());
+//		monitorBtnHandler.setListenerActive();
+//		if (!cmd.isBtnMonitorRunning()) {
+//			cmd.startBtnMonitoring();
+//		}
+		logger.log(Level.CONFIG,"end turnOffScreen(). ");
 
 
 	}
@@ -107,11 +107,11 @@ public class PiHandler {
 	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.INFO,"Turning on screen. Wifi on option: " + withWifiOn);
 
-		monitorBtnHandler.deactivateListener();
-
-		if (cmd.isBtnMonitorRunning()) {
-			cmd.stopBtnMonitor();
-		}
+//		monitorBtnHandler.deactivateListener();
+//
+//		if (cmd.isBtnMonitorRunning()) {
+//			cmd.stopBtnMonitor();
+//		}
 
 		autoWifiShutDown(false);
 
@@ -437,7 +437,7 @@ public class PiHandler {
 			if (command.equals(TIME)){
 				cmd.writeTime(value);
 			}else if(command.equals(LDR)) {
-				retCd = cmd.readLDR();
+				retCd = cmd.readLdr();
 			}else if(command.equals(TIME_OFF)) {
 				cmd.timeOff();
 			}else if(command.equals(BUZZER)) {

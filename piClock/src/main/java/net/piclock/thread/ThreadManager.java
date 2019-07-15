@@ -11,8 +11,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.lang.model.type.ErrorType;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
+import net.piclock.bean.ErrorHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
@@ -31,6 +34,8 @@ public class ThreadManager {
 	private ScheduledFuture<TempSensorWorker> sensorThread;
 	
 	private static ThreadManager threadManager;
+	
+	public int wthErrorCount = 0;
 	
 	private ThreadManager(){
 		scheduler = Executors.newScheduledThreadPool(5);
@@ -95,7 +100,19 @@ public class ThreadManager {
 	public void startWeatherThread(int initDelay, Preferences pref) {
 		logger.config("startWeatherThread");
 		
+		//verify if too much errors from the weather worker
+		ErrorHandler eh =(ErrorHandler) SwingContext.getInstance().getSharedObject(Constants.ERRORS);
+		
+		boolean start = true;
+		
+		if (eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER) != null && eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER).getErrorCount() > 30 ) {
+			start = false;
+			logger.log(Level.WARNING, "Too much error for the weather action, do not restart weather thread");
+		}
+		
+		if (start) {
 		weatherThread = (ScheduledFuture<WeatherWorker>) scheduler.scheduleAtFixedRate(new WeatherWorker(), initDelay, pref.getWeatherRefresh(), TimeUnit.MINUTES);
+		}
 		
 	}
 	public void stopWeatherThread() {

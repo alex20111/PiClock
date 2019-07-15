@@ -1,8 +1,16 @@
 ON PI:
 
+Install hyperpixel:
+https://github.com/pimoroni/hyperpixel4/tree/libinput
+
 Disable blank screen on pi:
 	sudo apt-get install xscreensaver
 	Once this has been installed, you can find the screensaver application under the Preferences option on the main desktop menu
+
+start sudo raspi-config
+	disable consol serial.
+	change time zone
+	change internationalization 
 	
 toolbar on PI..
 	Configure in properties to hide at 0 pixel

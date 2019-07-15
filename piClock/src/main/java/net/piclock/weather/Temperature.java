@@ -28,6 +28,10 @@ public class Temperature {
 	
 	public Temperature(){}
 	
+	public Temperature(Float temp){
+		tempC = temp;
+	}
+	
 		
 	public int getId() {
 		return id;

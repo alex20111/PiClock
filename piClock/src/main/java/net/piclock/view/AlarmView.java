@@ -26,9 +26,10 @@ import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
 
+import com.pi4j.io.gpio.exception.UnsupportedBoardType;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
-import net.piclock.arduino.ArduinoCmd;
+import net.piclock.arduino.ArduinoSerialCmd;
 import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
@@ -80,6 +81,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	
 	private ThreadManager tm;
 	
+	private int currentAlarmId = -1;
+	
 	
 	/**
 	 * Create the panel.
@@ -87,8 +90,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
 	 * @throws UnsupportedBusNumberException 
+	 * @throws InterruptedException 
+	 * @throws UnsupportedBoardType 
 	 */
-	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException, UnsupportedBusNumberException {		
+	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException, UnsupportedBusNumberException, UnsupportedBoardType, InterruptedException {		
 		logger.config("Starting alarmView");
 		
 		tm = ThreadManager.getInstance();
@@ -101,7 +106,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		//add listener for button
 		AlarmBtnHandler btnHandler = new AlarmBtnHandler();
 		ct.putSharedObject(Constants.ALARM_BTN_HANDLER, btnHandler);
-		ArduinoCmd cm = ArduinoCmd.getInstance();
+		ArduinoSerialCmd cm = ArduinoSerialCmd.getInstance();
 		cm.addButtonListener(btnHandler);
 		
 		setLayout(null);
@@ -125,8 +130,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			
 			tm.startAlarm(alarmEnt);
 			
+			currentAlarmId = alarmEnt.getId();
+			
 		}else {
-			//if no alarm .. look if theere is any and loaf the 1st one
+			//if no alarm .. look if there is any and load the 1st one
 			List<AlarmEntity> ala = sql.loadAllAlarms();
 			if (ala.size() > 0) {
 				hours = Integer.parseInt(ala.get(0).getHour());
@@ -138,6 +145,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				if (ala.get(0).isActive()) {
 					tm.startAlarm(alarmEnt);
 				}
+				currentAlarmId = alarmEnt.getId();
 			}
 		}
 				
@@ -366,21 +374,22 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 						tm.stopAlarm();
 
-						List<AlarmEntity> aes = sql.loadAllAlarms();
+//						List<AlarmEntity> aes = sql.loadAllAlarms();
 
 //						if (tglbtnOnOff.isSelected()){
 
 							AlarmEntity ae = null;
 
 							boolean add = false;
-							if (aes.size() > 0) {//update
-								ae = aes.get(0);
-
-							}else { //add
+							if (currentAlarmId > -1) {
+								//update
+								ae = new AlarmEntity();
+								ae.setId(currentAlarmId);
+							}else {
 								ae = new AlarmEntity();
 								add = true;
 							}
-
+							
 							ae.setHour(String.valueOf(hours));
 							ae.setMinutes(String.valueOf(minutes));
 							ae.setAlarmSound(btnBuzzer.getText());
@@ -426,8 +435,11 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 							}
 
 							if (add) {
-								sql.add(ae);
+								int id = sql.add(ae);
+								currentAlarmId = id;
+								logger.log(Level.CONFIG, "Added new Alarm. ID: " + currentAlarmId);
 							}else {
+								logger.log(Level.CONFIG, "UPDATED Alarm: " + currentAlarmId);
 								sql.update(ae);
 							}
 

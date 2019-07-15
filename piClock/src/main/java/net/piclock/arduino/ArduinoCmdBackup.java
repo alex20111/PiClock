@@ -13,10 +13,10 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
 
 
-public class ArduinoCmd {
-	private static final Logger logger = Logger.getLogger( ArduinoCmd.class.getName() );
+public class ArduinoCmdBackup {
+	private static final Logger logger = Logger.getLogger( ArduinoCmdBackup.class.getName() );
 	
-	private static ArduinoCmd arduinoCmd;
+	private static ArduinoCmdBackup arduinoCmd;
 	private I2CBus i2c;
 	private I2CDevice device;
 	
@@ -25,18 +25,18 @@ public class ArduinoCmd {
 	private List<ButtonChangeListener> btnListener = new ArrayList<ButtonChangeListener>();
 	private ButtonMonitor btnMon;
 	
-	public static ArduinoCmd getInstance() throws UnsupportedBusNumberException, IOException {
+	public static ArduinoCmdBackup getInstance() throws UnsupportedBusNumberException, IOException {
 		if (arduinoCmd == null) {
-			synchronized (ArduinoCmd.class) {
+			synchronized (ArduinoCmdBackup.class) {
 				if(arduinoCmd == null) {
-					arduinoCmd = new ArduinoCmd();
+					arduinoCmd = new ArduinoCmdBackup();
 				}
 			}
 		}
 		return arduinoCmd;
 	}
 	
-	private ArduinoCmd() throws UnsupportedBusNumberException, IOException {
+	private ArduinoCmdBackup() throws UnsupportedBusNumberException, IOException {
 		logger.log(Level.CONFIG,"Initi arduino");
 		 i2c = I2CFactory.getInstance(I2CBus.BUS_3);
 		device = i2c.getDevice(0x08);
@@ -115,12 +115,12 @@ public class ArduinoCmd {
 			throw new ListenerNotFoundException("Listener not found, add listener");
 		}		
 
-		if (btnMon != null && btnMon.isRunning()) {
-			logger.log(Level.CONFIG, "Btn monitor already started");
-		}else {
-			btnMon = new ButtonMonitor(btnListener, 200);
-			btnMon.start();
-		}
+//		if (btnMon != null && btnMon.isRunning()) {
+//			logger.log(Level.CONFIG, "Btn monitor already started");
+//		}else {
+//			btnMon = new ButtonMonitor(btnListener, 200);
+//			btnMon.start();
+//		}
 	}
 
 	public void addButtonListener(ButtonChangeListener bsl){
@@ -138,13 +138,14 @@ public class ArduinoCmd {
 			if (anyActiveBtnListener()) {
 				logger.log(Level.CONFIG, "There is still active listeners");
 			}else {
-				btnMon.stop();
+//				btnMon.stop();
 			}
 		}
 	}
 	
 	public boolean isBtnMonitorRunning() {
-		return btnMon != null && btnMon.isRunning();
+//		return btnMon != null && btnMon.isRunning();
+		return true;
 	}
 
 	private synchronized int sendCommand(Commands command) throws InterruptedException, IOException{
@@ -168,9 +169,9 @@ public class ArduinoCmd {
 	private boolean anyActiveBtnListener() {
 		if(this.btnListener.size() > 0) {
 			for(ButtonChangeListener l : btnListener) {
-				if(l.isActive()) {
+//				if(l.isActive()) {
 					return true;
-				}
+//				}
 			}
 		}
 			return false;

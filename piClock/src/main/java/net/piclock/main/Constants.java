@@ -52,6 +52,8 @@ public class Constants {
 	
 	public static DecimalFormat numberFormat = new DecimalFormat("#.#");
 	
+	public static String ERRORS = "errors";
+	
 	//DB
 	public static final String DB_URL = "./PiClock";
 	public static final String DB_USER = "PiClock";

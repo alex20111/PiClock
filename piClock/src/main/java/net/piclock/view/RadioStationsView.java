@@ -45,6 +45,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 	private JButton btnReload;
 	private JButton btnPlay;
 	private JButton btnStop;
+	private JButton btnVolume;
 	private JLabel lblNowPlaying;
 	private String nowPlayingText = "Now playing: ";
 
@@ -108,7 +109,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		JPanel bodyPanel = new JPanel();
 		bodyPanel.setOpaque(false);
 		add(bodyPanel, BorderLayout.CENTER);
-		bodyPanel.setLayout(new MigLayout("", "[][grow 50][][][grow][][][grow 50]", "[][][][100px][][]"));
+		bodyPanel.setLayout(new MigLayout("", "[][grow 50][][][grow][][][grow 50]", "[][][][100px][][][grow][]"));
 
 		JLabel lblSelectRadio = new JLabel("Select Radio:");
 		lblSelectRadio.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -181,6 +182,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 						fireVolumeIconChange(true);
 						
 						lblNowPlaying.setText(nowPlayingText + re.getRadioName());
+						
+						btnVolume.setVisible(true);
 
 					}catch(Exception ex) {
 						lblRadioIcon.setVisible(false);
@@ -218,6 +221,30 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 			}
 		});
 
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		bodyPanel.add(panel, "cell 6 7");
+		
+		 btnVolume = new JButton("");
+		btnVolume.setFocusPainted(false);
+		btnVolume.setOpaque(false);
+		btnVolume.setContentAreaFilled(false);
+		btnVolume.setBorderPainted(false);
+		btnVolume.setVisible(false);
+		btnVolume.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+							
+				Volume vol = new Volume(btnVolume);
+				vol.setVisible(true);
+				
+				btnVolume.setVisible(false);
+				
+			}
+		});;
+		panel.add(btnVolume);
+		
 		setOpaque(false);
 		loadAllRadioStations();
 

@@ -13,10 +13,8 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 
 	private static final Logger logger = Logger.getLogger( MonitorButtonHandler.class.getName() );
 	
-	private boolean active = false;
 	private PiHandler piHandler;
-	
-	
+		
 	@Override
 	public void stateChanged(ButtonState state) {
 		piHandler = PiHandler.getInstance();
@@ -39,23 +37,6 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 			logger.log(Level.SEVERE, "Problem with monitorbutton", ex);
 		} 
 
-	}
-
-	@Override
-	public boolean isActive() {
-		return active;
-	}
-
-	@Override
-	public void setListenerActive() {
-		this.active = true;
-		
-	}
-
-	@Override
-	public void deactivateListener() {
-		this.active = false;
-		
 	}
 
 }

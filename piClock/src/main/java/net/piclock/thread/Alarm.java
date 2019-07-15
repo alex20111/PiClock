@@ -10,8 +10,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.piclock.arduino.ArduinoCmd;
-import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.AlarmSql;
@@ -36,6 +34,8 @@ public class Alarm implements Runnable, MessageListener{
 	private static PiHandler handler = PiHandler.getInstance();	
 	
 	private static boolean buzzerDefaultUsed = false; //if a problem occured , the default buzzer will be used 
+	
+	private  Thread alarmAutoOff; 
 	
 	public Alarm(AlarmEntity alarmEnt){
 		logger.log(Level.INFO, "Alarm class created for:  " + alarm);
@@ -68,18 +68,21 @@ public class Alarm implements Runnable, MessageListener{
 	}
 	public void turnOffAlarmSound(){
 		logger.log(Level.CONFIG, "Turning off alarm");
-		alarmTriggered = false;
+		
 		try {
+
 			Buzzer buzzer = Buzzer.valueOf(alarm.getAlarmSound());
 			if (buzzerDefaultUsed) {
 				buzzer = Buzzer.BUZZER;
 				handler.turnOffAlarm(buzzer);				
-				buzzerDefaultUsed = false;
 				alarm.setAlarmSound(Buzzer.BUZZER.name());
 				new AlarmSql().update(alarm);
 			}else {
 				handler.turnOffAlarm(buzzer);
 			}
+			ct.removeMessageListener(Constants.TURN_OFF_ALARM, this);
+			ct.removeMessageListener(Constants.RADIO_STREAM_ERROR, this);			
+			resetVar();
 			
 		} catch (IOException | InterruptedException | SQLException | ClassNotFoundException e) {
 			logger.log(Level.SEVERE, "error turning off the alarm", e);
@@ -91,8 +94,8 @@ public class Alarm implements Runnable, MessageListener{
 		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
 		ct.addMessageChangeListener(Constants.RADIO_STREAM_ERROR , this);
 
-		AlarmBtnHandler btnH = null;
-		ArduinoCmd cm = null;
+//		AlarmBtnHandler btnH = null;
+//		ArduinoSerialCmd cm = null;
 		
 		try {
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
@@ -131,10 +134,10 @@ public class Alarm implements Runnable, MessageListener{
 			}
 			
 			//start button
-			btnH = (AlarmBtnHandler)ct.getSharedObject(Constants.ALARM_BTN_HANDLER);
-			btnH.setListenerActive();
-			cm = ArduinoCmd.getInstance();
-			cm.startBtnMonitoring();			
+//			btnH = (AlarmBtnHandler)ct.getSharedObject(Constants.ALARM_BTN_HANDLER);
+//			btnH.setListenerActive();
+//			cm = ArduinoCmd.getInstance();
+//			cm.startBtnMonitoring();			
 
 			String track = "";
 			
@@ -164,10 +167,10 @@ public class Alarm implements Runnable, MessageListener{
 				Thread.sleep(timeRemaining);
 				alarmTriggered = true;
 				
-				btnH.autoAlarmShutOff(true); //start alarm auto shutdown
+				autoAlarmShutOff(true); //start alarm auto shutdown
 
 				if (!handler.isScreenOn()){						
-					handler.turnOnScreen(false, Light.VERY_BRIGHT);
+					handler.turnOnScreen(false, Light.LIGHT);
 					handler.autoShutDownScreen();
 				}				
 			
@@ -175,17 +178,14 @@ public class Alarm implements Runnable, MessageListener{
 
 			}catch (InterruptedException ie) {					
 				logger.log(Level.CONFIG, "Current thread interrupted");
-				btnH.deactivateListener();
-				cm.stopBtnMonitor();
+//				btnH.deactivateListener();
+//				cm.stopBtnMonitor();
 				Thread.currentThread().interrupt();
+				resetVar();
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,"Error in setting off timer" , e);
-			btnH.deactivateListener();
-			try {
-				cm.stopBtnMonitor();
-			} catch (InterruptedException e1) {}
-			
+			resetVar();
 		}				
 	}
 
@@ -193,8 +193,7 @@ public class Alarm implements Runnable, MessageListener{
 	public synchronized void message(Message message) {
 		logger.log(Level.CONFIG, "Recieved message: " + message.getPropertyName());
 		if (Constants.TURN_OFF_ALARM.equals(message.getPropertyName())) {
-			ct.removeMessageListener(Constants.TURN_OFF_ALARM, this);
-			ct.removeMessageListener(Constants.RADIO_STREAM_ERROR, this);
+			
 			turnOffAlarmSound();
 		}else if (Constants.RADIO_STREAM_ERROR.equals(message.getPropertyName()) && alarmTriggered) {
 			logger.log(Level.INFO, "Radio stream error in wake up alarm, using default. Message: " + message.getMessage() + "  Date registered: " + message.getDateTime());
@@ -206,8 +205,42 @@ public class Alarm implements Runnable, MessageListener{
 				logger.log(Level.SEVERE, "Error in Radio stream error message", e);
 			}
 		}
-		
+	}
+	/**
+	 * reset needed variables for the alarm
+	 */
+	private void resetVar() {
+		buzzerDefaultUsed = false;
+		alarmTriggered = false;
+	}
+	
+	private  void autoAlarmShutOff( boolean startThread) {
+		logger.log(Level.CONFIG, "autoAlarmShutOff. Start: " + startThread );
 
+		if (alarmAutoOff != null && alarmAutoOff.isAlive()) {
+			alarmAutoOff.interrupt();
+			logger.log(Level.CONFIG, "autoAlarmShutOff not null and interrupted");
+		}
+
+		if (startThread) {
+			alarmAutoOff = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					logger.log(Level.CONFIG, "autoAlarmShutOff: Auto Off start in run");
+					try {
+						Thread.sleep(60000);
+						logger.log(Level.INFO, "autoAlarmShutOff: Turning off alarm automatically.");
+						turnOffAlarmSound();
+					}catch(InterruptedException i) {
+						Thread.currentThread().interrupt();
+					}
+					logger.log(Level.CONFIG, "autoAlarmShutOff: end run method");
+				}		
+			});
+
+			alarmAutoOff.start();
+		}
 	}
 
 }

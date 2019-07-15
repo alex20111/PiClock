@@ -9,23 +9,28 @@ darksky - complete icons and correct forecast (some of the previous forecast is 
 work on MP3 
 add theme on web to change pictures
 when refreshing wifi web password,add wait icon (Spinning)
+radio playing when buzzer turn on.. shut down radio and play buzzer(Maybe done --- TEST)
+add new warning icon when error occurs .. when clicking on it , display brief report of the error.(Main Screen)
+add checkbox to turn off wifi at night ,this will complement the auto shutdown.(Config screen)
+add volume icon on radio..
+in UI- Will determin how long will it take for the alarm sound to shut down - in buzzer option panel add new number spinner
+correct Clock not in sync with system.
+add error system for weather .. SEEE TODO
+THEMES!!!!
 
 ////////////////////in the works (Working on it)
-	add option for buzzer(radio, mp3, buzzer) auto shutdown timer in alarm (in UI- Will determin how long will it take for the alarm sound to shut down/)
+	add option for buzzer(radio, mp3, buzzer) auto shutdown timer in alarm (/)
 	add percent for volume (UI).(new popup slider?)
 	add ping every 5 minute to see if intenet is working (MAYBE)!!
-	Scrolling in the weather view does not work very well with touch but works well with mouse !!!>>>?????
-
-
 
 //TESTS
 only load registered themes in xml. If not found, use the sunny background theme = test
 test network retry functionality.
 to not always save in buzzer option when pressing ok.. if nothing has changed.
-
-
+Test sendor data
 
 //DONE test
+	Scrolling in the weather view does not work very well with touch but works well with mouse !!!>>>?????
 test night background. Copy img over and theme.xml
 test weather forecast view with scrolling and theme text refresh. (night or day)
 add start of alarm thread on startup if an alarm is active. Test if alarm start up on boot.

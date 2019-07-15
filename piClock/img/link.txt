@@ -9,6 +9,14 @@ https://www.flaticon.com/free-icon/radio_1286337#term=radio&page=1&position=27
 https://www.flaticon.com/free-icon/mp3-file-format-variant_29506#term=mp3&page=1&position=19
 https://www.flaticon.com/free-icon/cog-wheel-silhouette_25442#term=cog&page=1&position=2
 
-https://www.iconfinder.com/icons/352065/perm_scan_wifi_icon
+https://www.iconfinder.com/icons/352065/perm_scan_wifi_icon            wifi_on_no_inet
 
 https://icons8.com/icons/set/cloud  Cloud n/a
+
+error icon:
+https://www.flaticon.com/free-icon/warning_196759#term=error&page=1&position=17
+
+http://www.iconarchive.com/show/cats-2-icons-by-mcdo-design/Web-Server-icon.html
+
+http://www.iconarchive.com/show/windows-8-icons-by-icons8/Media-Controls-Volume-Up-icon.html   volume
+http://www.iconarchive.com/show/windows-8-icons-by-icons8/Media-Controls-Mute-icon.html
