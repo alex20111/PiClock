@@ -120,7 +120,6 @@ public class SwingContext {
 		
 			logger.log(Level.CONFIG,"sendMessage: " + m.size());
 			for(MessageListener mfor : m) {
-				logger.log(Level.CONFIG,"MESSAGE !!: " + mfor);
 				message.setPropertyName(propertyName);
 				mfor.message(message);
 			}

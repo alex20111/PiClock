@@ -39,23 +39,28 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorType;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.enums.IconEnum;
 import net.piclock.enums.LabelEnums;
+import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeEnum;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ScreenAutoClose;
 import net.piclock.thread.ThreadManager;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.LogConfig;
 import net.piclock.util.PreferencesHandler;
 import net.piclock.util.VolumeIndicator;
 import net.piclock.view.AlarmView;
 import net.piclock.view.ConfigView;
+import net.piclock.view.ErrorView;
 import net.piclock.view.RadioStationsView;
 import net.piclock.view.Volume;
 import net.piclock.view.WeatherAlertView;
@@ -70,7 +75,7 @@ import net.weather.bean.WeatherGenericModel;
 import net.weather.utils.MessageHandl;
 import java.awt.FlowLayout;
 
-public class MainApp extends JFrame implements PropertyChangeListener {
+public class MainApp extends JFrame implements PropertyChangeListener, MessageListener {
 	private static final Logger logger = Logger.getLogger( MainApp.class.getName() );
 	private static final long serialVersionUID = 1L;	
 
@@ -121,6 +126,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 	private JPanel btnPanel;
 	private JButton btnVolume;
 	private JLabel lblWarningIcon;
+	
+	private ErrorHandler eh;
 	/**
 	 * Launch the application.
 	 */
@@ -151,8 +158,9 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		logger.info("Start Program");	
 		
 		tm = ThreadManager.getInstance();
+		 eh = new ErrorHandler();
 		
-		ct.putSharedObject(Constants.ERRORS, new ErrorHandler());
+		ct.putSharedObject(Constants.ERROR_HANDLER, eh);
 		
 		ImageIO.setUseCache(true);
 		
@@ -168,6 +176,8 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		ct.addPropertyChangeListener(Constants.SENSOR_INFO, this);
 		ct.addPropertyChangeListener(Constants.RADIO_VOLUME_ICON_TRIGGER, this);
+		
+		ct.addMessageChangeListener(Constants.ERROR_BROADCAST, this);
 				
 		setBackground(Color.BLUE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -221,7 +231,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		
 		JPanel timePanel = new JPanel();
 		mainPanel.add(timePanel, BorderLayout.CENTER);
-		timePanel.setLayout(new MigLayout("", "[][grow 80][][grow 70,right]", "[][grow 40][center][][grow 50][]"));
+		timePanel.setLayout(new MigLayout("", "[][grow 68][][grow 70,right]", "[][grow 40][center][][grow 50][]"));
 		timePanel.setOpaque(false);
 		
 		clockLabel = new JLabel("00:00");
@@ -273,7 +283,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Volume vol = new Volume(btnVolume);
+				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON, IconEnum.VOLUME_MUTED);
 				vol.setVisible(true);
 				
 			}
@@ -340,7 +350,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		weatherPanel.add(lblWeatherIcon, "cell 2 0,growx,aligny center");		
 		
 		JPanel alertIconsPanel = new JPanel();
-		alertIconsPanel.setPreferredSize(new Dimension(48, 10));
+		alertIconsPanel.setPreferredSize(new Dimension(61, 10));
 		alertIconsPanel.setMinimumSize(new Dimension(35, 10));
 		mainPanel.add(alertIconsPanel, BorderLayout.WEST);
 		alertIconsPanel.setOpaque(false);
@@ -429,7 +439,25 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
 		webServerView = new WebServerView(lblWebserverIcon);
 		
+		
+		ErrorView ev = new ErrorView();
 		lblWarningIcon = new JLabel(ImageUtils.getInstance().getWarningIcon());
+		lblWarningIcon.setVisible(false);
+		lblWarningIcon.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				try{
+					ev.populateScreen();
+					keepAliveIfScreenShutdown();
+					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+					cardLayout.show(cardsPanel, Constants.ERROR_VIEW);
+
+				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.GENERAL, new ErrorInfo(fmtEx));
+					logger.log(Level.SEVERE, "Error in mouse listener warning icon", ex);
+				}
+			}
+		});
 		leftIcons.add(lblWarningIcon);
 		
 		cardsPanel.add(av, Constants.ALARM_VIEW);
@@ -614,8 +642,6 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 			addCurrentTemp(Constants.numberFormat.format(sun.getTempC()),
 					Constants.numberFormat.format(shade.getTempC()));
 			
-//			addCurrentTemp(Constants.numberFormat.format(wb.getTempSun().getTempC()),//TODO handle nulls for sensor data
-//					Constants.numberFormat.format(wb.getTempShade().getTempC()));
 		}
 		else if (evt.getPropertyName().equals(Constants.FORECAST_RESULT)){
 			try {
@@ -637,7 +663,7 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 
 					addCurrentWeather(wcm.getSummary().trim(),icon,dt );
 					WeatherBean wb = (WeatherBean)ct.getSharedObject(Constants.SENSOR_INFO);
-					if (wb != null) { //TODO test and verify
+					if (wb != null) { 
 						Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
 						Temperature shade = wb.getTempSun().orElse(new Temperature(new Float(-999)));
 						
@@ -834,5 +860,18 @@ public class MainApp extends JFrame implements PropertyChangeListener {
 		tm.stopSensorThread();
 		
 		tm.startSensorThread();
+	}
+
+	@Override
+	public void message(net.piclock.swing.component.Message message) {
+		if (message.getPropertyName().equals(Constants.ERROR_BROADCAST)) {
+			boolean displayIcon = (boolean) message.getMessage();
+			if (displayIcon) {
+				lblWarningIcon.setVisible(true);
+			}else {
+				lblWarningIcon.setVisible(false);
+			}
+		}
+		
 	}
 }

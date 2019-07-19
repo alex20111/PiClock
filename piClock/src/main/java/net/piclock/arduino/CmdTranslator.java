@@ -72,7 +72,6 @@ public class CmdTranslator {
 		StringBuilder cmd = new StringBuilder();
 		cmd.append(START_CHAR);
 		cmd.append(Command.LDR.getCmd());
-//		cmd.append((turnOn ? ON : OFF ));//maybe
 		cmd.append(STOP_CHAR);		
 		
 		return cmd.toString();		

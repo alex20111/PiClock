@@ -100,19 +100,19 @@ public class ThreadManager {
 	public void startWeatherThread(int initDelay, Preferences pref) {
 		logger.config("startWeatherThread");
 		
-		//verify if too much errors from the weather worker
-		ErrorHandler eh =(ErrorHandler) SwingContext.getInstance().getSharedObject(Constants.ERRORS);
+//		//verify if too much errors from the weather worker
+//		ErrorHandler eh =(ErrorHandler) SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
+//		
+//		boolean start = true;  //TODO
+//		
+//		if (eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER) != null && eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER).getErrorCount() > 30 ) {
+//			start = false;
+//			logger.log(Level.WARNING, "Too much error for the weather action, do not restart weather thread");
+//		}
 		
-		boolean start = true;
-		
-		if (eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER) != null && eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER).getErrorCount() > 30 ) {
-			start = false;
-			logger.log(Level.WARNING, "Too much error for the weather action, do not restart weather thread");
-		}
-		
-		if (start) {
+//		if (start) {
 		weatherThread = (ScheduledFuture<WeatherWorker>) scheduler.scheduleAtFixedRate(new WeatherWorker(), initDelay, pref.getWeatherRefresh(), TimeUnit.MINUTES);
-		}
+//		}
 		
 	}
 	public void stopWeatherThread() {

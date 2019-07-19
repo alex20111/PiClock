@@ -6,7 +6,7 @@ public class Constants {
 	
 	public static final String ALARM_BTN_HANDLER = "alarmBtnHandler";
 
-	public static final String MAIN_VIEW 	= "main";
+	public static final String MAIN_VIEW 			= "main";
 	public static final String WEATHER_CONFIG_VIEW = "weatherConfig";
 	public static final String ALARM_VIEW 			= "alarm";
 	public static final String WEATHER_FORECAST_VIEW = "forecastViewPanel";
@@ -14,6 +14,8 @@ public class Constants {
 	public static final String WEATHER_ALERT_VIEW = "weatherAlertView";
 	public static final String RADIO_STATION_VIEW = "radioStationsView";
 	public static final String WEB_SERVER_VIEW = "webServerView";
+	public static final String ERROR_VIEW = "errorView";
+	
 	
 	
 	public static final String CARD_PANEL = "card_panel";
@@ -52,7 +54,8 @@ public class Constants {
 	
 	public static DecimalFormat numberFormat = new DecimalFormat("#.#");
 	
-	public static String ERRORS = "errors";
+	public static String ERROR_HANDLER = "errorHandler";
+	public static String ERROR_BROADCAST = "errorBroadcast";
 	
 	//DB
 	public static final String DB_URL = "./PiClock";

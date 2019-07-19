@@ -34,6 +34,7 @@ import net.piclock.main.Preferences;
 import net.piclock.swing.component.BuzzerSelection;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.PreferencesHandler;
+import javax.swing.JSpinner;
 
 public class BuzzerOptionDialog extends JDialog {
 
@@ -76,7 +77,7 @@ public class BuzzerOptionDialog extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[grow][][grow]", "[][][][][][]"));
+		contentPanel.setLayout(new MigLayout("", "[grow][][grow]", "[][][][][][][]"));
 
 		JLabel lblWakeUpAlarm = new JLabel("Wake Up Alarm Options");
 		lblWakeUpAlarm.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -166,6 +167,18 @@ public class BuzzerOptionDialog extends JDialog {
 		buttonGroup.add(btnMp3);		
 
 		contentPanel.add(radioCmb, "cell 0 5 3 1,alignx center");
+		
+		JPanel panel = new JPanel();
+		contentPanel.add(panel, "cell 0 6 3 1,grow");
+		
+		JLabel lblShutdownIn = new JLabel("Shutdown in: ");
+		panel.add(lblShutdownIn);
+		
+		JSpinner spinner = new JSpinner();
+		panel.add(spinner);
+		
+		JLabel lblMinutes = new JLabel("minutes");
+		panel.add(lblMinutes);
 
 		{
 			JPanel buttonPane = new JPanel();

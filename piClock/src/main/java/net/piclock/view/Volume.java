@@ -51,7 +51,7 @@ public class Volume extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public Volume(JButton volume) {
+	public Volume(JButton volume, IconEnum unMuted, IconEnum muted) {
 		
 		volumeButton = volume;
 		
@@ -114,15 +114,15 @@ public class Volume extends JDialog {
 						manipulateVolume(0);
 						logger.log(Level.CONFIG, "Volume MUTED");
 						ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
-						volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_MUTED));
-						t.registerIconColor(volumeButton, IconEnum.VOLUME_MUTED);
+						volumeButton.setIcon(t.getIcon(muted));
+						t.registerIconColor(volumeButton, muted);
 					}else if (btnMute.getText().equalsIgnoreCase("Un-Mute")) {
 						manipulateVolume(mutedVolLevel);
 						logger.log(Level.CONFIG, "Volume UN-MUTED");
 						btnMute.setText("Mute");
 						ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
-						volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_ICON));
-						t.registerIconColor(volumeButton, IconEnum.VOLUME_ICON);
+						volumeButton.setIcon(t.getIcon(unMuted));
+						t.registerIconColor(volumeButton,unMuted);
 
 					}
 				} catch (IOException e1) {

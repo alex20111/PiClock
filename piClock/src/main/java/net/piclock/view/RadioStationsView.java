@@ -28,11 +28,13 @@ import net.miginfocom.swing.MigLayout;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.CheckWifiStatus;
+import net.piclock.enums.IconEnum;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.theme.ThemeHandler;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.VolumeIndicator;
 
@@ -236,13 +238,15 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 			@Override
 			public void actionPerformed(ActionEvent e) {
 							
-				Volume vol = new Volume(btnVolume);
+				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON_RADIO, IconEnum.VOLUME_MUTED_RADIO);
 				vol.setVisible(true);
 				
 				btnVolume.setVisible(false);
 				
 			}
-		});;
+		});
+		ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
+		t.registerIconColor(btnVolume, IconEnum.VOLUME_ICON_RADIO);
 		panel.add(btnVolume);
 		
 		setOpaque(false);
@@ -310,6 +314,10 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 
 				autoChange(true);
 			}
+		}else if(evt.getPropertyName().equals(Constants.RADIO_VOLUME_ICON_TRIGGER) ){
+			logger.log(Level.CONFIG, "Volume icon indicator");
+			VolumeIndicator vi = (VolumeIndicator)evt.getNewValue();
+			btnVolume.setVisible(vi.displayVolumeIcon());
 		}
 	}
 	@Override

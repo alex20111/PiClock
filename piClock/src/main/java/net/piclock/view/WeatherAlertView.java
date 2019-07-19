@@ -134,7 +134,7 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 			if (wgm.getWeatherAlert() != null){
 				WeatherAlert wa = wgm.getWeatherAlert();
 	//display weather alert
-				lblWeatherAlert.setText("<html> <div style='width: 450px;word-wrap: break-word;' >" + wa.getMessage() + "</div></html>");
+				lblWeatherAlert.setText("<html> <div style='width: 420px;word-wrap: break-word;' >" + wa.getMessage() + "</div></html>");
 			}
 			
 		}else if(evt.getPropertyName().equals(Constants.FORECAST_DISPLAY_ERROR)){

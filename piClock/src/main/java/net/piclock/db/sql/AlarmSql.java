@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import home.db.ColumnType;
 import home.db.DBConnection;
@@ -15,7 +17,12 @@ import net.piclock.main.Constants;
 
 public class AlarmSql {
 	
+	private static final Logger logger = Logger.getLogger( AlarmSql.class.getName() );
+	
 	public boolean CreateAlarmTable() throws ClassNotFoundException, SQLException, IOException {
+		
+		logger.log(Level.INFO, "CreateAlarmTable");
+		
 		DBConnection con = null;
 		boolean exist = false;
 		try {
@@ -25,9 +32,8 @@ public class AlarmSql {
 			
 			exist = rs.next();
 			
-			System.out.println("Exist:  " + exist);
-			
 			if (!exist) {
+				logger.log(Level.INFO, "Alarm table does not exist , creating");
 				List<ColumnType> columns = new ArrayList<ColumnType>();					
 				columns.add(new ColumnType(AlarmEntity.ID, true).INT().setPkCriteria(new PkCriteria().autoIncrement()));
 				columns.add(new ColumnType(AlarmEntity.TIME_HOUR, false).VarChar(2));
@@ -37,6 +43,8 @@ public class AlarmSql {
 				columns.add(new ColumnType(AlarmEntity.ACTIVE, false).Boolean());
 				columns.add(new ColumnType(AlarmEntity.RADIO_ID, false).INT());
 				columns.add(new ColumnType(AlarmEntity.MP3_ID, false).INT());
+				columns.add(new ColumnType(AlarmEntity.VOLUME, false).INT());
+				columns.add(new ColumnType(AlarmEntity.ALARM_SHUTDOWN, false).INT());
 				
 				con.createTable(AlarmEntity.TBL_NM, columns);				
 			}
@@ -62,6 +70,8 @@ public class AlarmSql {
 			.setParameter(AlarmEntity.REPEAT, alarm.getRepeatString())
 			.setParameter(AlarmEntity.RADIO_ID, alarm.getRadioId())
 			.setParameter(AlarmEntity.MP3_ID, alarm.getRadioId())
+			.setParameter(AlarmEntity.VOLUME, alarm.getVolume())
+			.setParameter(AlarmEntity.ALARM_SHUTDOWN, alarm.getAlarmShutdown())
 
 			.add();
 		}finally {
@@ -81,7 +91,9 @@ public class AlarmSql {
 					.setParameter(AlarmEntity.ACTIVE, alarm.isActive())
 					.setParameter(AlarmEntity.REPEAT, alarm.getRepeatString())
 					.setParameter(AlarmEntity.RADIO_ID, alarm.getRadioId())
-					.setParameter(AlarmEntity.MP3_ID, alarm.getMp3Id()).
+					.setParameter(AlarmEntity.MP3_ID, alarm.getMp3Id())
+					.setParameter(AlarmEntity.VOLUME, alarm.getVolume())
+					.setParameter(AlarmEntity.ALARM_SHUTDOWN, alarm.getAlarmShutdown()).
 					addUpdWhereClause("Where "+AlarmEntity.ID+" = :idValue", alarm.getId()).update();
 //					.update(AlarmEntity.ID, alarm.getId());
 

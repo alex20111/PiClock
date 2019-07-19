@@ -145,10 +145,6 @@ public class ArduinoSerialCmd {
             			  logger.log(Level.INFO, "!!! ARDUINO ready !!!");
             		  }
             	  }
-            	       //TODO sedn code to arduino
-            	  //TODO send code to PI
-            	  //TODO solder wires
-            	  //TODO test
 
               } catch (IOException  | InterruptedException e ) {
                   logger.log(Level.SEVERE, "Error in arduino listener", e);

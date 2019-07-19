@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
@@ -48,6 +51,12 @@ public class WeatherWorker implements Runnable {
 					". Wifi Internet connected: " + handler.isWifiInternetConnected());
 
 			if (handler.isWifiConnected()){
+				//TODO test this ... remove when done
+				
+				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+				eh.addError(ErrorType.WEATHER, new ErrorInfo("This is a test message.. Fo man sshue... imagine if it was a stack trace.. this error is generated at the biginning."));
+				
+				//TODO  remove
 
 				Host host = Host.valueOf(pref.getWeatherProvider());
 
@@ -84,7 +93,8 @@ public class WeatherWorker implements Runnable {
 //TODO add darksy theme changes
 				}
 
-
+				//TODO remove
+			 	eh.addError(ErrorType.WEATHER, new ErrorInfo("This is a test message.. Fo man sshue... imagine if it was a stack trace.. this error is generated at the ENDDDDDDDDD."));
 			}else{
 				wgm.addMessage("No Wifi", "Not connected to WIFI", Message.INFO);
 				ct.putSharedObject(Constants.FORECAST_DISPLAY_ERROR, wgm);

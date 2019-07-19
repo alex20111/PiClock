@@ -70,7 +70,7 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 			}
 			else if (wifiName != null && !wifiName.equals("Select") && wifiPassword != null && wifiPassword.length() > 0){
 				//connect to wifi
-				piHandler.connectToWifi(wifiName, wifiPassword); //TODO when 1st starting connect, send a ping instated of disconnect. then let the normal flow.
+				piHandler.connectToWifi(wifiName, wifiPassword);
 				String conn = checkIfConnected();
 				logger.log(Level.CONFIG, "---------------------------------- returning: " + conn);
 				return Response.newFixedLengthResponse(conn);//message = generateSuccessMessage("Success, Connected");
