@@ -24,7 +24,7 @@ public class AlarmEntity {
 	private int id 			= -1;
 	private String hour 	= "";
 	private String minutes 	= "";
-	private String alarmSound   = "";
+	private String alarmSound   = "BUZZER";
 	private boolean active 	= false;
 	private int radioId 	= -1;
 	private int mp3Id 		= -1;
@@ -50,6 +50,8 @@ public class AlarmEntity {
 				this.alarmRepeat.add(AlarmRepeat.valueOf(s));
 			}
 		}
+		
+		this.volume = rs.getInt(VOLUME);
 	}
 	
 	public static String checkIfTableExist() { 

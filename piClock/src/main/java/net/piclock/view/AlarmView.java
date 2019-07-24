@@ -81,7 +81,9 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	
 	private ThreadManager tm;
 	
-	private int currentAlarmId = -1;
+//	private int currentAlarmId = -1;
+	
+	private AlarmEntity alarmEnt;//alarm for the current screen
 	
 	
 	/**
@@ -101,7 +103,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		sql = new AlarmSql();
 		sql.CreateAlarmTable();
 		
-		AlarmEntity alarmEnt = sql.loadActiveAlarm();
+		alarmEnt = sql.loadActiveAlarm();
 		
 		//add listener for button
 		AlarmBtnHandler btnHandler = new AlarmBtnHandler();
@@ -123,15 +125,14 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(lblAlarmTitle);
 		theme.registerLabelTextColor(lblAlarmTitle, LabelEnums.ALARM_TITLE);
 
+		//active alarm found, start it.
 		if (alarmEnt != null) {
 			hours = Integer.parseInt(alarmEnt.getHour());
 			minutes = Integer.parseInt(alarmEnt.getMinutes());
 			buzzerSelection = new BuzzerSelection(alarmEnt);
 			
 			tm.startAlarm(alarmEnt);
-			
-			currentAlarmId = alarmEnt.getId();
-			
+						
 		}else {
 			//if no alarm .. look if there is any and load the 1st one
 			List<AlarmEntity> ala = sql.loadAllAlarms();
@@ -145,7 +146,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				if (ala.get(0).isActive()) {
 					tm.startAlarm(alarmEnt);
 				}
-				currentAlarmId = alarmEnt.getId();
+			}else {
+				//new alarm
+				alarmEnt = new AlarmEntity();
+				buzzerSelection = new BuzzerSelection(alarmEnt);
 			}
 		}
 				
@@ -370,82 +374,72 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 					logger.log(Level.CONFIG,"Alarm alarmInfoChanged: " + alarmInfoChanged);
 
 					if (alarmInfoChanged) {
-						
 
 						tm.stopAlarm();
 
-//						List<AlarmEntity> aes = sql.loadAllAlarms();
+						boolean add = false;
+						if (alarmEnt.getId() == -1) {
+							add = true;
+						}
 
-//						if (tglbtnOnOff.isSelected()){
+						alarmEnt.setHour(String.valueOf(hours));
+						alarmEnt.setMinutes(String.valueOf(minutes));
+						alarmEnt.setAlarmSound(btnBuzzer.getText());
 
-							AlarmEntity ae = null;
+						if (Buzzer.valueOf(btnBuzzer.getText()) == Buzzer.RADIO) {
+							alarmEnt.setRadioId(buzzerSelection.getRadioId());
+						}else {
+							alarmEnt.setRadioId(-1);
+						}
+						//TODO mp3
+						List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
 
-							boolean add = false;
-							if (currentAlarmId > -1) {
-								//update
-								ae = new AlarmEntity();
-								ae.setId(currentAlarmId);
-							}else {
-								ae = new AlarmEntity();
-								add = true;
-							}
-							
-							ae.setHour(String.valueOf(hours));
-							ae.setMinutes(String.valueOf(minutes));
-							ae.setAlarmSound(btnBuzzer.getText());
+						if (sunday.isSelected()) {
+							rp.add(AlarmRepeat.SUNDAY);
+						}
+						if (monday.isSelected()) {
+							rp.add(AlarmRepeat.MONDAY);
+						}
+						if (tuesday.isSelected()) {
+							rp.add(AlarmRepeat.TUESDAY);
+						}
+						if (wednesday.isSelected()) {
+							rp.add(AlarmRepeat.WEDNESDAY);
+						}
+						if (thursday.isSelected()) {
+							rp.add(AlarmRepeat.THURSDAY);
+						}
+						if (friday.isSelected()) {
+							rp.add(AlarmRepeat.FRIDAY);
+						}
+						if (saturday.isSelected()) {
+							rp.add(AlarmRepeat.SATURDAY);
+						}
 
-							if (Buzzer.valueOf(btnBuzzer.getText()) == Buzzer.RADIO) {
-								ae.setRadioId(buzzerSelection.getRadioId());
-							}else {
-								ae.setRadioId(-1);
-							}
-							//TODO mp3
-							List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
-
-							if (sunday.isSelected()) {
-								rp.add(AlarmRepeat.SUNDAY);
-							}
-							if (monday.isSelected()) {
-								rp.add(AlarmRepeat.MONDAY);
-							}
-							if (tuesday.isSelected()) {
-								rp.add(AlarmRepeat.TUESDAY);
-							}
-							if (wednesday.isSelected()) {
-								rp.add(AlarmRepeat.WEDNESDAY);
-							}
-							if (thursday.isSelected()) {
-								rp.add(AlarmRepeat.THURSDAY);
-							}
-							if (friday.isSelected()) {
-								rp.add(AlarmRepeat.FRIDAY);
-							}
-							if (saturday.isSelected()) {
-								rp.add(AlarmRepeat.SATURDAY);
-							}
-
-							ae.setAlarmRepeat(rp);
-							if (tglbtnOnOff.isSelected()){
-								lblAlarm.setVisible(true);
-								ae.setActive(true);
-								tm.startAlarm(ae);
-							}else {
-								ae.setActive(false);
-								lblAlarm.setVisible(false);
-							}
-
-							if (add) {
-								int id = sql.add(ae);
-								currentAlarmId = id;
-								logger.log(Level.CONFIG, "Added new Alarm. ID: " + currentAlarmId);
-							}else {
-								logger.log(Level.CONFIG, "UPDATED Alarm: " + currentAlarmId);
-								sql.update(ae);
-							}
-
-							
-							logger.log(Level.INFO, "Alarm SAVED : " + ae);
+						alarmEnt.setAlarmRepeat(rp);
+						alarmEnt.setAlarmShutdown(buzzerSelection.getShutdownMin());
 						
+						if (tglbtnOnOff.isSelected()){
+							lblAlarm.setVisible(true);
+							alarmEnt.setActive(true);
+							tm.startAlarm(alarmEnt);
+						}else {
+							alarmEnt.setActive(false);
+							lblAlarm.setVisible(false);
+						}
+
+						if (add) {
+							int id = sql.add(alarmEnt);
+							alarmEnt = sql.loadAlarmById(id);
+							logger.log(Level.CONFIG, "Added new Alarm. ID: " + alarmEnt);
+						}else {
+							logger.log(Level.CONFIG, "UPDATED Alarm: " + alarmEnt);
+							sql.update(alarmEnt);
+						}
+
+
+						logger.log(Level.INFO, "Alarm SAVED : " + alarmEnt);
+
 					}
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, "main");
@@ -474,14 +468,14 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(lblMinutes_1);
 		theme.registerLabelTextColor(lblMinutes_1, LabelEnums.ALARM_HOUR_TXT);
 		
-		wakeUpAlarmOptions = new BuzzerOptionDialog(alarmEnt);
+		wakeUpAlarmOptions = new BuzzerOptionDialog();
 		btnBuzzer = new JButton(Buzzer.BUZZER.name());
 		btnBuzzer.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		btnBuzzer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
-					wakeUpAlarmOptions.setBuzzerType();
+					wakeUpAlarmOptions.setBuzzerType(alarmEnt);
 
 					wakeUpAlarmOptions.setVisible(true);
 					
@@ -512,6 +506,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		logger.log(Level.CONFIG, "PropChange: " + buzzerSelection);
 		
 		btnBuzzer.setText(buzzerSelection.getBuzzer().name());
+			
 		alarmInfoChanged = true;
 		
 	}

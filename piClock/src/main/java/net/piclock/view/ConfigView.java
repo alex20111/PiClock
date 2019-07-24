@@ -295,7 +295,7 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 		});
 		panel.add(btnCancel);
 
-		keyBoard = new KeyBoard();
+		keyBoard = new KeyBoard(false);
 		keyBoard.setLocationRelativeTo(null);
 	}
 	private void setConnectOrigValue(){

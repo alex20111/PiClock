@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,9 +34,13 @@ import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.BuzzerSelection;
+import net.piclock.swing.component.KeyBoard;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.PreferencesHandler;
 import javax.swing.JSpinner;
+import java.awt.Dimension;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextField;
 
 public class BuzzerOptionDialog extends JDialog {
 
@@ -54,33 +60,35 @@ public class BuzzerOptionDialog extends JDialog {
 	
 	private boolean mp3ScrInit = true;//TODO
 	private boolean radioScrInit = true; //used to prevent trigger of the combobox when opening the dialog
+	private JTextField txtShutdown;
 
 	/**
 	 * Create the dialog.
 	 */
-	public BuzzerOptionDialog(AlarmEntity alarmEnt) {
+	public BuzzerOptionDialog() {
 
-		if (alarmEnt != null && alarmEnt.getRadioId() > 0) {
-			radioSelectedId = alarmEnt.getRadioId();
-		}
-		//TODO if mp3
+
+	
 		
 		radioCmb = new JComboBox<>();
+		radioCmb.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		radioCmb.setVisible(false);
 
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setUndecorated(true);
-
-		setLocationRelativeTo(null);
-
+		
+		
 		setSize( 450, 300);
+		
+		setLocationRelativeTo(null);
+		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[grow][][grow]", "[][][][][][][]"));
 
 		JLabel lblWakeUpAlarm = new JLabel("Wake Up Alarm Options");
-		lblWakeUpAlarm.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblWakeUpAlarm.setFont(new Font("Tahoma", Font.BOLD, 18));
 		contentPanel.add(lblWakeUpAlarm, "cell 0 0 3 1,alignx center");
 
 		Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
@@ -142,15 +150,15 @@ public class BuzzerOptionDialog extends JDialog {
 			}
 		});
 
-		radioCmb.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (radioCmb != null && radioCmb.getSelectedItem() != null && !radioScrInit) {
-				radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
-				}
-			}
-		});
+//		radioCmb.addActionListener(new ActionListener() {
+//
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				if (radioCmb != null && radioCmb.getSelectedItem() != null && !radioScrInit) {
+//				radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
+//				}
+//			}
+//		});
 		btnMp3 = new JToggleButton("Mp3");
 		btnMp3.setUI(new MetalToggleButtonUI() {
 			@Override
@@ -172,12 +180,34 @@ public class BuzzerOptionDialog extends JDialog {
 		contentPanel.add(panel, "cell 0 6 3 1,grow");
 		
 		JLabel lblShutdownIn = new JLabel("Shutdown in: ");
+		lblShutdownIn.setFont(new Font("Tahoma", Font.BOLD, 16));
 		panel.add(lblShutdownIn);
+
 		
-		JSpinner spinner = new JSpinner();
-		panel.add(spinner);
+		txtShutdown = new JTextField();
+
+		txtShutdown.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		txtShutdown.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				KeyBoard key = new KeyBoard(true);
+				if (txtShutdown.getText().trim().length() > 0){					
+					key.setText(txtShutdown.getText().trim());
+				}
+
+				key.setVisible(true);
+			
+				txtShutdown.setText(key.getText());				
+			}
+		});	
+
+		
+		
+		panel.add(txtShutdown);
+		txtShutdown.setColumns(3);
 		
 		JLabel lblMinutes = new JLabel("minutes");
+		lblMinutes.setFont(new Font("Tahoma", Font.BOLD, 16));
 		panel.add(lblMinutes);
 
 		{
@@ -192,18 +222,21 @@ public class BuzzerOptionDialog extends JDialog {
 							boolean close = false;
 							BuzzerSelection bs;
 							
+							int shtDownMin = Integer.parseInt(txtShutdown.getText());
+							
 							if (tglbtnBuzzer.isSelected()){
-								bs = new BuzzerSelection(Buzzer.BUZZER);
+								bs = new BuzzerSelection(Buzzer.BUZZER, shtDownMin);
 								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								close = true;
 							}else if(btnRadio.isSelected()){
+//								radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
 								if (radioCmb != null && radioCmb.getSelectedItem() != null) {
-									bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId() );
+									bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId(), shtDownMin );
 									ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								}
 								close = true;
 							}else if(btnMp3.isSelected()){
-								bs = new BuzzerSelection(Buzzer.MP3, -1);//TODO
+								bs = new BuzzerSelection(Buzzer.MP3, -1, shtDownMin);//TODO
 								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								close = true;
 							}
@@ -237,24 +270,36 @@ public class BuzzerOptionDialog extends JDialog {
 			}
 		}
 	}
-	public void setBuzzerType() throws ClassNotFoundException, SQLException {
-
+	public void setBuzzerType(AlarmEntity alarmEnt) throws ClassNotFoundException, SQLException {
+		//TODO if mp3
 		radioScrInit = true;
 		mp3ScrInit = true;
 		radioCmb.setVisible(false);
 
-		AlarmEntity alarm = new AlarmSql().loadActiveAlarm();
-		Buzzer buzzer = Buzzer.BUZZER;
-		
-//		logger.log(Level.CONFIG, "setBuzzerType: " + alarm);
+		if (alarmEnt != null ) {
 
-		if (alarm != null) {
-			buzzer = Buzzer.valueOf(alarm.getAlarmSound());
+			txtShutdown.setText(String.valueOf(alarmEnt.getAlarmShutdown()));
+
+			if (alarmEnt.getRadioId() > 0) {
+				radioSelectedId = alarmEnt.getRadioId();
+			}
+
+		} else {
+			txtShutdown.setText("5");
+		}
+
+		//		AlarmEntity alarm = new AlarmSql().loadActiveAlarm();
+		Buzzer buzzer = Buzzer.BUZZER;
+
+		//		logger.log(Level.CONFIG, "setBuzzerType: " + alarm);
+
+		if (alarmEnt != null) {
+			buzzer = Buzzer.valueOf(alarmEnt.getAlarmSound());
 			if (buzzer == Buzzer.BUZZER){
 				tglbtnBuzzer.doClick();
 			}
 			if (buzzer == Buzzer.RADIO){
-				radioSelectedId = alarm.getRadioId();
+				radioSelectedId = alarmEnt.getRadioId();
 				btnRadio.doClick();
 			}
 			if (buzzer == Buzzer.MP3){

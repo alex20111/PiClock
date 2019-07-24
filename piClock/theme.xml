@@ -262,7 +262,7 @@
 				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-32-black.png" 		iconNight="volume-mute-32-black.png"></IconTheme>	
 			</labelIcon>
 		</background>
-		<background name="SNOW" image="snowing.jpg" imageFolder="img" imageNight="snowy-night.jpg">
+		<background name="SNOW" image="snowing.jpg" imageFolder="img" imageNight="snowy-night.png">
 			<label name="labels">
 				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>

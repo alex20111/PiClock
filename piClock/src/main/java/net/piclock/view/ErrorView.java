@@ -28,7 +28,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class ErrorView extends JPanel {
-
 	
 	private static final long serialVersionUID = 1L;
 	private JLabel lblErrorText;
@@ -52,7 +51,9 @@ public class ErrorView extends JPanel {
 		errors = new ArrayList<>();
 		setLayout(new BorderLayout(0, 0));
 		
+		setOpaque(false);
 		JPanel panel = new JPanel();
+		panel.setOpaque(false);
 		add(panel, BorderLayout.NORTH);
 		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[]"));
 		
@@ -72,6 +73,7 @@ public class ErrorView extends JPanel {
 		panel.add(lblErrorDisplay, "cell 2 0");
 		
 		JPanel centerPanel = new JPanel();
+		centerPanel.setOpaque(false);
 		add(centerPanel, BorderLayout.CENTER);
 		centerPanel.setLayout(new MigLayout("", "[][grow]", "[][][grow][]"));
 		
@@ -96,12 +98,14 @@ public class ErrorView extends JPanel {
 		scrollPane.setOpaque(false);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.getViewport().setOpaque(false);
 		centerPanel.add(scrollPane, "cell 0 2 2 1,grow");
 		
 		JPanel contentPanel = new JPanel();
+		contentPanel.setOpaque(false);
 		contentPanel.setFont(new Font("Tahoma", Font.BOLD, 15));
 		DragScrollListener dl = new DragScrollListener(contentPanel);
-		contentPanel.setOpaque(false);
+
 		contentPanel.setLayout(new MigLayout("", "[grow]", "[grow]"));	
 		
 		
@@ -119,6 +123,7 @@ public class ErrorView extends JPanel {
 		contentPanel.addMouseMotionListener(dl);
 		
 		JPanel buttonPanel = new JPanel();
+		buttonPanel.setOpaque(false);
 		centerPanel.add(buttonPanel, "cell 0 3 2 1,grow");
 		
 		btnBackward = new JButton("Back");

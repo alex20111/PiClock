@@ -12,24 +12,26 @@ add checkbox to turn off wifi at night ,this will complement the auto shutdown.(
 in UI- Will determin how long will it take for the alarm sound to shut down - in buzzer option panel add new number spinner. Add in database (Done) and on UI.
 ALARM, add volume level for radio or mp3. --> WAIT until implementing new slider!!!
 add error for other function (Error types to display on screen)
-
+add daily log file creation.. a log for each day
+warning icon up to 48 instated of 32 (size)
 
 ////////////////////in the works (Working on it) - work on MP3
 	add percent for volume (UI).(new popup slider)
 	add ping every 5 minute to see if intenet is working (MAYBE)!!
 
-//TEST
+//TEST//
 test network retry functionality.
 to not always save in buzzer option when pressing ok.. if nothing has changed.
-Test sensor data
 add option for buzzer(radio, mp3, buzzer) auto shutdown timer in alarm(Move code)
-add volume icon on radio, test with refresh on theme also
+add volume icon on radio, test with refresh on theme also - ICON disapering 
 correct Clock not in sync with system. //verify again
 radio playing when buzzer turn on.. shut down radio and play buzzer(Maybe done --- TEST)
 add error system for weather and other components.   -  Test
+finish alarm timer shutdown in buzzer option. make sure that the autoshutdown thread kill itself.
 
 
-//DONE test
+//DONE test//
+Test sensor data
 only load registered themes in xml. If not found, use the sunny background theme = test
 find background for each themes
 	Scrolling in the weather view does not work very well with touch but works well with mouse !!!>>>?????

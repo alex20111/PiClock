@@ -80,6 +80,8 @@ public class Alarm implements Runnable, MessageListener{
 			}else {
 				handler.turnOffAlarm(buzzer);
 			}
+			autoAlarmShutOff(false, 0);//turn off autoshutdown when alarm is shut down
+			
 			ct.removeMessageListener(Constants.TURN_OFF_ALARM, this);
 			ct.removeMessageListener(Constants.RADIO_STREAM_ERROR, this);			
 			resetVar();
@@ -167,7 +169,7 @@ public class Alarm implements Runnable, MessageListener{
 				Thread.sleep(timeRemaining);
 				alarmTriggered = true;
 				
-				autoAlarmShutOff(true); //start alarm auto shutdown
+				autoAlarmShutOff(true, alarm.getAlarmShutdown()); //start alarm auto shutdown
 
 				if (!handler.isScreenOn()){						
 					handler.turnOnScreen(false, Light.LIGHT);
@@ -214,7 +216,7 @@ public class Alarm implements Runnable, MessageListener{
 		alarmTriggered = false;
 	}
 	
-	private  void autoAlarmShutOff( boolean startThread) {
+	private  void autoAlarmShutOff( boolean startThread, int shutdownTime) {
 		logger.log(Level.CONFIG, "autoAlarmShutOff. Start: " + startThread );
 
 		if (alarmAutoOff != null && alarmAutoOff.isAlive()) {
@@ -227,9 +229,9 @@ public class Alarm implements Runnable, MessageListener{
 
 				@Override
 				public void run() {
-					logger.log(Level.CONFIG, "autoAlarmShutOff: Auto Off start in run");
+					logger.log(Level.CONFIG, "autoAlarmShutOff: Auto Off start in run. Shutdown time: " + shutdownTime);
 					try {
-						Thread.sleep(60000);
+						Thread.sleep(shutdownTime * 60000);
 						logger.log(Level.INFO, "autoAlarmShutOff: Turning off alarm automatically.");
 						turnOffAlarmSound();
 					}catch(InterruptedException i) {

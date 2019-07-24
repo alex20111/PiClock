@@ -441,6 +441,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		
 		ErrorView ev = new ErrorView();
+		cardsPanel.add(ev, Constants.ERROR_VIEW);
 		lblWarningIcon = new JLabel(ImageUtils.getInstance().getWarningIcon());
 		lblWarningIcon.setVisible(false);
 		lblWarningIcon.addMouseListener(new MouseAdapter() {
@@ -864,6 +865,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 
 	@Override
 	public void message(net.piclock.swing.component.Message message) {
+		logger.log(Level.CONFIG,"Message property: " +  message.getPropertyName() + " vakue: " + message.getMessage());
 		if (message.getPropertyName().equals(Constants.ERROR_BROADCAST)) {
 			boolean displayIcon = (boolean) message.getMessage();
 			if (displayIcon) {

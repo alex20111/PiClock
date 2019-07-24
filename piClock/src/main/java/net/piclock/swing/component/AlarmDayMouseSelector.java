@@ -26,7 +26,6 @@ public class AlarmDayMouseSelector extends MouseAdapter{
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("LALALAALALLA clicked !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		if(selected) {
 			label.setBorder(new EmptyBorder(0,0,0,0));
 			selected = false;

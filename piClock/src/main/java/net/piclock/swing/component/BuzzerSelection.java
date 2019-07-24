@@ -8,18 +8,23 @@ public class BuzzerSelection {
 	private Buzzer buzzer;
 	private int  radioId = -1;
 	private int  mp3Id = -1;
+	private int shutdownMin = -1;
 	
-	public BuzzerSelection(Buzzer buzzer) {
+	public BuzzerSelection(Buzzer buzzer, int min) {
 		this.buzzer = buzzer;
+		
+		this.shutdownMin = min;
 	}
 	
-	public BuzzerSelection(Buzzer buzzer, int id ) {
+	public BuzzerSelection(Buzzer buzzer, int id , int min) {
 		this.buzzer = buzzer;
 		if (buzzer == Buzzer.RADIO) {
 			this.radioId = id;
 		}else if (buzzer == Buzzer.MP3) {
 			this.mp3Id = id;
-		}		
+		}	
+		
+		this.shutdownMin = min;
 	}
 	
 	public BuzzerSelection(AlarmEntity alarm) {
@@ -30,6 +35,7 @@ public class BuzzerSelection {
 		}else if (buzzer == Buzzer.MP3) {
 			this.mp3Id = alarm.getMp3Id();
 		}
+		this.shutdownMin = alarm.getAlarmShutdown();
 	}
 	
 	public Buzzer getBuzzer() {
@@ -55,10 +61,17 @@ public class BuzzerSelection {
 		this.mp3Id = mp3Id;
 	}
 
+	public int getShutdownMin() {
+		return shutdownMin;
+	}
+
 	@Override
 	public String toString() {
-		return "BuzzerSelection [buzzer=" + buzzer + ", radioId=" + radioId + ", mp3Id=" + mp3Id + "]";
+		return "BuzzerSelection [buzzer=" + buzzer + ", radioId=" + radioId + ", mp3Id=" + mp3Id + ", shutdownMin="
+				+ shutdownMin + "]";
 	}
+
+
 
 	
 	

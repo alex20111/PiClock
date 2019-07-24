@@ -1,0 +1,29 @@
+Jul 22, 2019 10:55:24 AM net.piclock.main.MainApp <init> INFO: Start Program
+Jul 22, 2019 10:55:24 AM net.piclock.swing.component.SwingContext addMessageChangeListener CONFIG: SWING CONTEXT -  PROPERTY: errorBroadcast size: 1 l: net.piclock.main.MainApp[frame0,960,520,0x0,invalid,hidden,layout=java.awt.BorderLayout,title=,resizable,normal,defaultCloseOperation=HIDE_ON_CLOSE,rootPane=javax.swing.JRootPane[,0,0,0x0,invalid,layout=javax.swing.JRootPane$RootLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=16777673,maximumSize=,minimumSize=,preferredSize=],rootPaneCheckingEnabled=true]
+Jul 22, 2019 10:55:24 AM net.piclock.swing.component.SwingContext addMessageChangeListener CONFIG: END - SWING CONTEXT -  PROPERTY: errorBroadcast size: 1 l: net.piclock.main.MainApp[frame0,960,520,0x0,invalid,hidden,layout=java.awt.BorderLayout,title=,resizable,normal,defaultCloseOperation=HIDE_ON_CLOSE,rootPane=javax.swing.JRootPane[,0,0,0x0,invalid,layout=javax.swing.JRootPane$RootLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=16777673,maximumSize=,minimumSize=,preferredSize=],rootPaneCheckingEnabled=true]
+Jul 22, 2019 10:55:25 AM net.piclock.main.PiHandler getInstance INFO: PiHandler initialized
+Jul 22, 2019 10:55:25 AM com.pi4j.util.NativeLibraryLoader load SEVERE: Unable to load [libpi4j.so] using path: [/lib/raspberrypi/dynamic/libpi4j.so]
+java.lang.IllegalArgumentException: The path has to be absolute, but found: \lib\raspberrypi\dynamic\libpi4j.so
+	at com.pi4j.util.NativeLibraryLoader.loadLibraryFromClasspath(NativeLibraryLoader.java:136)
+	at com.pi4j.util.NativeLibraryLoader.load(NativeLibraryLoader.java:105)
+	at com.pi4j.wiringpi.Gpio.<clinit>(Gpio.java:189)
+	at net.piclock.main.PiHandler.<init>(PiHandler.java:66)
+	at net.piclock.main.PiHandler.getInstance(PiHandler.java:83)
+	at net.piclock.view.RadioStationsView.<init>(RadioStationsView.java:77)
+	at net.piclock.main.MainApp.<init>(MainApp.java:211)
+	at net.piclock.main.MainApp$1.run(MainApp.java:142)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:758)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:74)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:728)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:205)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+

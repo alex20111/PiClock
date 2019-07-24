@@ -114,15 +114,16 @@ public class SwingContext {
 	public void sendMessage(String propertyName, Message message){
 		Set<MessageListener> m = msgListenersMap.get(propertyName);		
 		
-		logger.log(Level.CONFIG, "Message: " + propertyName + "  Message size: " + m.size() );
-		
+			
 		if (m != null) {
-		
-			logger.log(Level.CONFIG,"sendMessage: " + m.size());
+			logger.log(Level.CONFIG, "Message: " + propertyName + "  Message size: " + m.size() );
+						
 			for(MessageListener mfor : m) {
 				message.setPropertyName(propertyName);
 				mfor.message(message);
 			}
+		}else {
+			logger.log(Level.CONFIG,"Message not found");
 		}
 	}
 	

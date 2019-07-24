@@ -54,13 +54,13 @@ public class ErrorHandler {
 	private void broadcastOn() {
 		SwingContext sc = SwingContext.getInstance();
 		
-		sc.sendMessage(Constants.ERROR_HANDLER, new Message(true));
+		sc.sendMessage(Constants.ERROR_BROADCAST, new Message(true));
 	}
 	
 	public void broadcastOff() {
 		SwingContext sc = SwingContext.getInstance();
 		
-		sc.sendMessage(Constants.ERROR_HANDLER, new Message(false));
+		sc.sendMessage(Constants.ERROR_BROADCAST, new Message(false));
 	}
 	public List<ErrorInfo> getErrorAsList(){
 		List<ErrorInfo> ers = new ArrayList<>();

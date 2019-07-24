@@ -1,6 +1,7 @@
 package net.piclock.swing.component;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -23,23 +24,25 @@ public class KeyBoard extends JDialog implements ActionListener {
 	private String[] charsUp = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
 	private String[] special = {"!","@","#","$","%","^","&","*","(",")","-","+",",","."};
 	private String[] numbers = {"1","2","3","4","5","6","7","8","9","0"};
+	
+	private int btnWidth = 51;
+	private int btnHeight = 36;
 
 	/**
 	 * Create the dialog.
 	 */
-	public KeyBoard() {
+	public KeyBoard(boolean onlyNumbers) {
 		 setUndecorated(true);
 
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		
-		
-		setSize(450, 300);
+	
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		contentPanel.setLayout(new WrapLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel);
 		
 		JPanel bottomPanel = new JPanel();
+		bottomPanel.setLayout(new WrapLayout());
 		getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 		
 		passTxt = new JFormattedTextField();
@@ -89,40 +92,74 @@ public class KeyBoard extends JDialog implements ActionListener {
 			}
 		});
 		bottomPanel.add(btnCancel);
+		
+		
+		if (onlyNumbers) {
+			setSize(250, 200);
+			setOnlyNumbersKeyboard();
+		}else {
+			setSize(450, 300);
+			setFullKeyboard();
+		}
 	
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		JButton btn = (JButton)e.getSource();
+		
+		passBuilder.append(btn.getText());
+		passTxt.setText(passBuilder.toString());		
+	}
+	
+	public String getText(){
+		return passTxt.getText();
+	}
+	public void setText(String text){
+		 passTxt.setText(text);
+	}
+	
+	private void setFullKeyboard() {
+
 		//chars
 		for(int i = 0 ; i < chars.length ; i ++){
 			btn[i] =  new JButton(chars[i]);
+			btn[i].setPreferredSize(new Dimension(btnWidth,btnHeight));
 			contentPanel.add(btn[i]);
 			btn[i].addActionListener(this);
 		}
-		
+
 		//numbers
 		int totNumbers = chars.length + numbers.length;
-		
+
 		int z = 0;
 		for(int i = chars.length ; i < totNumbers ; i ++){
 			btn[i] =  new JButton(numbers[z]);
+			btn[i].setPreferredSize(new Dimension(btnWidth,btnHeight));
 			contentPanel.add(btn[i]);
 			btn[i].addActionListener(this);
 			z++;
 		}
-		
+
 		//special
 		int totSpecial = totNumbers + special.length;
 		int f = 0;
 		for(int i = totNumbers ; i < totSpecial ; i ++){
 			btn[i] =  new JButton(special[f]);
+			btn[i].setPreferredSize(new Dimension(btnWidth,btnHeight));
 			contentPanel.add(btn[i]);
 			btn[i].addActionListener(this);
 			f++;
 		}
-		
+
 		int idx = totSpecial + 1;
 		btn[idx] =  new JButton("Upper");
+		btn[idx].setPreferredSize(new Dimension(btnWidth,btnHeight));
 		contentPanel.add(btn[idx]);
 		btn[idx].addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
@@ -140,20 +177,24 @@ public class KeyBoard extends JDialog implements ActionListener {
 			}
 		});		
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		
-		JButton btn = (JButton)e.getSource();
-		
-		passBuilder.append(btn.getText());
-		passTxt.setText(passBuilder.toString());		
+	private void setOnlyNumbersKeyboard() {
+		//numbers
+		int totNumbers =  numbers.length;
+	
+		for(int i = 0 ; i < totNumbers ; i ++){
+			
+			btn[i] =  new JButton(numbers[i]);
+			btn[i].setPreferredSize(new Dimension(btnWidth,btnHeight));
+			contentPanel.add(btn[i]);
+			btn[i].addActionListener(this);
+			
+		}
 	}
 	
-	public String getText(){
-		return passTxt.getText();
-	}
-	public void setText(String text){
-		 passTxt.setText(text);
+	public static void main (String args[]) {
+		KeyBoard k = new KeyBoard(true);
+		k.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		k.setVisible(true);
+		k.setText("12");
 	}
 }

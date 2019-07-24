@@ -56,6 +56,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 
 	private PiHandler handler;
 	
+	private RadioSql sql ;
+	
 	Thread playingThread;
 	
 	Process process;
@@ -68,6 +70,9 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 	 * @throws ClassNotFoundException 
 	 */
 	public  RadioStationsView(JLabel radioIcon) throws IOException, ClassNotFoundException, SQLException {
+		sql = new RadioSql();
+		
+		sql.CreateRadioTable();
 		
 		handler = PiHandler.getInstance();
 		
@@ -76,6 +81,9 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
 		ct.addMessageChangeListener(Constants.RADIO_STREAM_ERROR , this);
+		ct.addPropertyChangeListener(Constants.RADIO_VOLUME_ICON_TRIGGER , this);
+		
+		
 		this.lblRadioIcon = radioIcon;
 		setLayout(new BorderLayout(0, 0));
 
@@ -255,7 +263,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 	}
 	private void loadAllRadioStations() throws ClassNotFoundException, SQLException, ExecuteException, IOException {
 		logger.log(Level.CONFIG,"loadAllRadioStations");
-		RadioSql sql = new RadioSql();
+		
 
 		radioStations.removeAllItems();
 
