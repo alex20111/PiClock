@@ -25,8 +25,11 @@ public class RadioStreaming {
 	private boolean processFinished = false;
 	private SwingContext ct;
 	
+	private boolean radioPlaying = false;
+	
 	public RadioStreaming(String link) {
 		processFinished = false;
+		radioPlaying = false;
 		httpLink = link;
 		ct = SwingContext.getInstance();
 	}
@@ -37,6 +40,7 @@ public class RadioStreaming {
 		processBuilder.command("omxplayer", httpLink,"--vol","-1000", "-o","alsa:hw:1,0");
 		process = processBuilder.start();
 		
+		radioPlaying = true;
 		out = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));		
 		
 		new Thread(() -> {
@@ -53,10 +57,12 @@ public class RadioStreaming {
 					if (line != null && line.contains("have a nice day")) {
 						logger.log(Level.CONFIG, "Throwing error message: " + line);
 						ct.sendMessage(Constants.RADIO_STREAM_ERROR, new Message("Radio Stream not found. Message: " + line));
+						radioPlaying = false;
 						break;
 					}
 				}
 			} catch (IOException e) {
+				radioPlaying = false;
 				logger.log(Level.INFO, "error in output - can be normal", e);
 			}finally {
 				try {
@@ -74,6 +80,7 @@ public class RadioStreaming {
 	public void stop()  {
 		logger.log(Level.CONFIG, "STOP");
 		int count = 0;
+		radioPlaying = false;
 		try {
 			out.close();
 		} catch (IOException e) {
@@ -109,5 +116,9 @@ public class RadioStreaming {
 	
 	public String getOutput() {
 		return (output != null ? output.toString() : "");
+	}
+
+	public boolean isRadioPlaying() {
+		return radioPlaying;
 	}
 }

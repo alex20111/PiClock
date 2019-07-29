@@ -26,6 +26,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.AlarmSql;
@@ -36,6 +39,7 @@ import net.piclock.main.Preferences;
 import net.piclock.swing.component.BuzzerSelection;
 import net.piclock.swing.component.KeyBoard;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.PreferencesHandler;
 import javax.swing.JSpinner;
 import java.awt.Dimension;
@@ -65,18 +69,14 @@ public class BuzzerOptionDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public BuzzerOptionDialog() {
-
-
-	
+	public BuzzerOptionDialog() {	
 		
 		radioCmb = new JComboBox<>();
 		radioCmb.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		radioCmb.setVisible(false);
 
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setUndecorated(true);
-		
+		setUndecorated(true);		
 		
 		setSize( 450, 300);
 		
@@ -145,6 +145,8 @@ public class BuzzerOptionDialog extends JDialog {
 						radioSelectedId = -1;
 					}
 				}catch(Exception ex) {
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 					logger.log(Level.SEVERE, "Error loading", ex);
 				}
 			}
@@ -197,7 +199,11 @@ public class BuzzerOptionDialog extends JDialog {
 
 				key.setVisible(true);
 			
-				txtShutdown.setText(key.getText());				
+				if (Integer.parseInt(key.getText()) > 60) {
+					JOptionPane.showMessageDialog(BuzzerOptionDialog.this, "Cannot be more than 60 min" , "Time too long", JOptionPane.WARNING_MESSAGE);
+				}else {
+					txtShutdown.setText(key.getText());	
+				}
 			}
 		});	
 
@@ -247,6 +253,8 @@ public class BuzzerOptionDialog extends JDialog {
 							}
 						}catch (Exception ex){
 							JOptionPane.showMessageDialog(BuzzerOptionDialog.this, "Error in saving, see logs.", "Error Saving", JOptionPane.ERROR_MESSAGE);
+							ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+							eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 							logger.log(Level.SEVERE, "Error saving", ex);
 						}
 					}

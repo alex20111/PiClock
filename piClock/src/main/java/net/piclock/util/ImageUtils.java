@@ -10,7 +10,11 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.main.Constants;
+import net.piclock.swing.component.SwingContext;
 
 public class ImageUtils {
 	private static final Logger logger = Logger.getLogger( ImageUtils.class.getName() );
@@ -29,13 +33,15 @@ public class ImageUtils {
 	private ImageUtils(){
 		try{
 			weatherNA = getImage("NotAvailable.png");
-			weatherAlertIcon = getImage("weather-alert-32.png");
-			warningIcon = getImage("warning-32.png");
+			weatherAlertIcon = getImage("weather-alert-48.png");
+			warningIcon = getImage("warning-48.png");
 			weatherLoader = getAnimatedImage("loader-weather.gif");
 			buttonLoader = getAnimatedImage("loader-btn.gif");
 			
 			
 		}catch(Exception e){
+			ErrorHandler eh = (ErrorHandler)SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.GENERAL, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 			logger.log(Level.SEVERE, "Error loading images", e);
 		}
 	}

@@ -10,6 +10,9 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.AlarmSql;
@@ -23,6 +26,7 @@ import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.FormatStackTrace;
 
 public class Alarm implements Runnable, MessageListener{
 	
@@ -87,6 +91,8 @@ public class Alarm implements Runnable, MessageListener{
 			resetVar();
 			
 		} catch (IOException | InterruptedException | SQLException | ClassNotFoundException e) {
+			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+				eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 			logger.log(Level.SEVERE, "error turning off the alarm", e);
 		}
 	}	
@@ -180,12 +186,12 @@ public class Alarm implements Runnable, MessageListener{
 
 			}catch (InterruptedException ie) {					
 				logger.log(Level.CONFIG, "Current thread interrupted");
-//				btnH.deactivateListener();
-//				cm.stopBtnMonitor();
 				Thread.currentThread().interrupt();
 				resetVar();
 			}
 		} catch (Exception e) {
+			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 			logger.log(Level.SEVERE,"Error in setting off timer" , e);
 			resetVar();
 		}				
@@ -195,7 +201,7 @@ public class Alarm implements Runnable, MessageListener{
 	public synchronized void message(Message message) {
 		logger.log(Level.CONFIG, "Recieved message: " + message.getPropertyName());
 		if (Constants.TURN_OFF_ALARM.equals(message.getPropertyName())) {
-			
+			logger.log(Level.CONFIG, "Message: " + message.getMessage());
 			turnOffAlarmSound();
 		}else if (Constants.RADIO_STREAM_ERROR.equals(message.getPropertyName()) && alarmTriggered) {
 			logger.log(Level.INFO, "Radio stream error in wake up alarm, using default. Message: " + message.getMessage() + "  Date registered: " + message.getDateTime());
@@ -204,6 +210,8 @@ public class Alarm implements Runnable, MessageListener{
 				handler.turnOnAlarm(Buzzer.BUZZER, "");
 				handler.playRadio(false, "");//force turn off radio
 			} catch (Exception e) {
+				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+				eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 				logger.log(Level.SEVERE, "Error in Radio stream error message", e);
 			}
 		}
@@ -233,7 +241,8 @@ public class Alarm implements Runnable, MessageListener{
 					try {
 						Thread.sleep(shutdownTime * 60000);
 						logger.log(Level.INFO, "autoAlarmShutOff: Turning off alarm automatically.");
-						turnOffAlarmSound();
+						Message msg = new Message("off -From autoshutdown");
+						ct.sendMessage(Constants.TURN_OFF_ALARM, msg);; //always use the message to turn off the alarm so all registered parties will know about it.
 					}catch(InterruptedException i) {
 						Thread.currentThread().interrupt();
 					}

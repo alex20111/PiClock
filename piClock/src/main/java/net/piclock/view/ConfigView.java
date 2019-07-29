@@ -24,6 +24,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
@@ -32,6 +35,7 @@ import net.piclock.main.Preferences;
 import net.piclock.swing.component.KeyBoard;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.PreferencesHandler;
 import java.awt.Dimension;
@@ -56,6 +60,7 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 	private String oldWifiValue = "";
 	
 	private ImageUtils img;
+	private JCheckBox chckbxTurnOffWIFI;
 	
 	/**
 	 * Create the panel.
@@ -119,6 +124,8 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 							}
 
 						} catch (Exception e1) {
+							ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+							eh.addError(ErrorType.CONFIG, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 							logger.log(Level.SEVERE, "Error fetching SSIDs" , e);
 						}
 						btnRefreshWifi.setIcon(null);
@@ -179,6 +186,8 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 									handler.connectToWifi((String)wifiNames.getSelectedItem(),txtWifiPass.getText() );
 								} catch (Exception e1) {
 									JOptionPane.showMessageDialog(ConfigView.this, "Serious error", "Error", JOptionPane.ERROR_MESSAGE);
+									ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+									eh.addError(ErrorType.CONFIG, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 									logger.log(Level.SEVERE, "Error in Config", e1);
 									setConnectOrigValue();
 								}
@@ -220,6 +229,12 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 		chckbxTurnOffScr.setOpaque(false);
 		chckbxTurnOffScr.setSelected(initPref.isAutoOffScreen());
 		add(chckbxTurnOffScr, "cell 2 4 3 1");
+		
+		chckbxTurnOffWIFI = new JCheckBox("Turn off WIFI when dark");
+		chckbxTurnOffWIFI.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxTurnOffWIFI.setOpaque(false);
+		chckbxTurnOffWIFI.setSelected(initPref.isWifiOff());
+		add(chckbxTurnOffWIFI, "cell 2 5 3 1");
 
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -265,12 +280,16 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 						p.setWifi(wifiNames.getSelectedIndex() > 0 ? (String)wifiNames.getSelectedItem() : "");
 						p.setWifiPass(txtWifiPass.getText().trim().length() == 0? "" :txtWifiPass.getText() );
 						p.setAutoOffScreen(chckbxTurnOffScr.isSelected());
+						p.setWifiOff(chckbxTurnOffWIFI.isSelected());
+						
 
 						PreferencesHandler.save(p);
 						setVisible(false);
 					}
 				}catch(Exception ex){
 					JOptionPane.showMessageDialog(ConfigView.this, "Error in saving, see logs.", "Error Saving", JOptionPane.ERROR_MESSAGE);
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.CONFIG, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 					logger.log(Level.SEVERE, "Error saving", ex);
 				}
 			}

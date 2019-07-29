@@ -6,9 +6,13 @@ import java.util.logging.Logger;
 import com.google.gson.Gson;
 
 import home.inet.Connect;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.weather.Temperature;
 import net.piclock.weather.WeatherBean;
 
@@ -59,6 +63,8 @@ public class TempSensorWorker implements Runnable{
 			
 		}
 		}catch(Exception ex) {
+			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 			logger.log(Level.SEVERE, "error in getting sensor weather", ex);
 		}
 	}

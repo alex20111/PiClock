@@ -4,6 +4,12 @@ package net.piclock.arduino;
 import com.pi4j.io.gpio.exception.UnsupportedBoardType;
 import com.pi4j.io.serial.*;
 
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
+import net.piclock.main.Constants;
+import net.piclock.swing.component.SwingContext;
+import net.piclock.util.FormatStackTrace;
 
 import java.io.IOException;
 import java.time.LocalTime;
@@ -147,6 +153,8 @@ public class ArduinoSerialCmd {
             	  }
 
               } catch (IOException  | InterruptedException e ) {
+  				ErrorHandler eh = (ErrorHandler)SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
+  				eh.addError(ErrorType.ARDUINO, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
                   logger.log(Level.SEVERE, "Error in arduino listener", e);
               } 
 			

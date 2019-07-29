@@ -32,9 +32,12 @@ public class ErrorView extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JLabel lblErrorText;
 	private List<ErrorInfo> errors;
+	private int errorCount = -1;
+	private int errorIndex = 1;
 	
 	private JLabel lblTypeTxt;
 	private JLabel lblDateTxt;
+	private JLabel lblErrCntTxt;
 	
 	private JButton btnBackward;
 	private JButton btnForward ;
@@ -75,7 +78,7 @@ public class ErrorView extends JPanel {
 		JPanel centerPanel = new JPanel();
 		centerPanel.setOpaque(false);
 		add(centerPanel, BorderLayout.CENTER);
-		centerPanel.setLayout(new MigLayout("", "[][grow]", "[][][grow][]"));
+		centerPanel.setLayout(new MigLayout("", "[][grow]", "[][][][grow][]"));
 		
 		JLabel lblErrorType = new JLabel("Error Type: ");
 		lblErrorType.setFont(new Font("Tahoma", Font.BOLD, 15));
@@ -99,7 +102,14 @@ public class ErrorView extends JPanel {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.getViewport().setOpaque(false);
-		centerPanel.add(scrollPane, "cell 0 2 2 1,grow");
+		
+		JLabel lblNewLabel = new JLabel("Error Count:");
+		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
+		centerPanel.add(lblNewLabel, "cell 0 2");
+		
+		lblErrCntTxt = new JLabel("");
+		centerPanel.add(lblErrCntTxt, "cell 1 2");
+		centerPanel.add(scrollPane, "cell 0 3 2 1,grow");
 		
 		JPanel contentPanel = new JPanel();
 		contentPanel.setOpaque(false);
@@ -124,7 +134,7 @@ public class ErrorView extends JPanel {
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setOpaque(false);
-		centerPanel.add(buttonPanel, "cell 0 3 2 1,grow");
+		centerPanel.add(buttonPanel, "cell 0 4 2 1,grow");
 		
 		btnBackward = new JButton("Back");
 		btnBackward.setEnabled(false);
@@ -132,6 +142,7 @@ public class ErrorView extends JPanel {
 			idx --;
 			
 			if (idx >= 0) {
+				errorIndex ++;
 				displayErrors();
 				
 				if (idx == 0) {
@@ -152,6 +163,7 @@ public class ErrorView extends JPanel {
 			int size = errors.size() - 1;
 			if (size >= idx ) {
 			
+				errorIndex --;
 				displayErrors();
 				
 				if (size == idx) {
@@ -183,6 +195,9 @@ public class ErrorView extends JPanel {
 		btnBackward.setEnabled(false);
 		btnForward.setEnabled(true);
 		
+		errorCount = errors.size();
+		errorIndex = 1;
+		
 		Collections.sort(errors, new Comparator<ErrorInfo>() {
 			@Override
 			public int compare(ErrorInfo o1, ErrorInfo o2) {
@@ -200,6 +215,7 @@ public class ErrorView extends JPanel {
 		lblErrorText.setText("<html> <div style='width: 420px;word-wrap: break-word;' >" + errors.get(idx).getErrorMessage() + "</div></html>" );
 		lblDateTxt.setText( DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(errors.get(idx).getDate()));
 		lblTypeTxt.setText(errors.get(idx).getType().toString());
+		lblErrCntTxt.setText(errorIndex + " of " + errorCount);
 	}
 
 }

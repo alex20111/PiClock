@@ -6,6 +6,7 @@ public class Preferences {
 	private String wifi = "";
 	private String wifiPass = "";
 	private boolean autoOffScreen = true; //turn on off screen
+	private boolean wifiOff		  = true;
 	
 	//weather preferences
 	private boolean weatherActivated = false;
@@ -121,6 +122,12 @@ public class Preferences {
 	}
 	public void setLastVolumeLevel(int lastVolumeLevel) {
 		this.lastVolumeLevel = lastVolumeLevel;
+	}
+	public boolean isWifiOff() {
+		return wifiOff;
+	}
+	public void setWifiOff(boolean wifiOff) {
+		this.wifiOff = wifiOff;
 	}
 	@Override
 	public String toString() {

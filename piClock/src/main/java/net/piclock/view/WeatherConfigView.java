@@ -35,11 +35,15 @@ import javax.swing.SwingWorker;
 import javax.swing.text.NumberFormatter;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.PreferencesHandler;
 import net.piclock.weather.City;
@@ -135,6 +139,8 @@ public class WeatherConfigView extends JPanel {
 								lblError.setText("An Error occured, Rety");
 								logger.log(Level.SEVERE, "Error",e1 );
 								lblCityLoading.setVisible(false);
+								ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+								eh.addError(ErrorType.WEATHER_CONFIG, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 							}
 							return true;
 						}   
@@ -253,6 +259,8 @@ public class WeatherConfigView extends JPanel {
 					}
 				}catch (Exception ex){
 					JOptionPane.showMessageDialog(WeatherConfigView.this, "Error in saving, see logs.", "Error Saving", JOptionPane.ERROR_MESSAGE);
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.WEATHER_CONFIG, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 					logger.log(Level.SEVERE, "Error saving", ex);
 				}
 			}
@@ -317,6 +325,8 @@ public class WeatherConfigView extends JPanel {
 		try {
 			loadPreferences();
 		} catch (Exception e1) {
+			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.WEATHER_CONFIG, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 			logger.log(Level.SEVERE, "error", e1);
 		}		
 

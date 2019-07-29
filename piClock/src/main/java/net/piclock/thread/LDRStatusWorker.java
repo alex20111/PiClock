@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.enums.DayNightCycle;
 import net.piclock.enums.Light;
 import net.piclock.main.Constants;
@@ -14,6 +17,7 @@ import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.util.FormatStackTrace;
 
 public class LDRStatusWorker implements Runnable{
 
@@ -105,6 +109,8 @@ public class LDRStatusWorker implements Runnable{
 			//			}
 
 		}catch(Throwable tr){
+			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.LDR, new ErrorInfo(new FormatStackTrace(tr).getFormattedException()));
 			logger.log(Level.SEVERE,"Error in ldr",tr);
 		}
 	}

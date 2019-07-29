@@ -24,12 +24,16 @@ import home.misc.Exec;
 import net.piclock.arduino.ArduinoSerialCmd;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ListenerNotFoundException;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.button.MonitorButtonHandler;
 import net.piclock.enums.Buzzer;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
 import net.piclock.enums.Light;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.RadioStreaming;
 
 public class PiHandler {
@@ -41,6 +45,7 @@ public class PiHandler {
 	private static PiHandler piHandler;
 	
 	private ArduinoSerialCmd cmd;
+	private SwingContext context;
 	
 	private  boolean screenOn = true;
 	private  boolean wifiConnected = false; //if connected to the WIFI.
@@ -70,6 +75,7 @@ public class PiHandler {
 		try {
 			cmd = ArduinoSerialCmd.getInstance();
 			cmd.addButtonListener(monitorBtnHandler);
+			context = SwingContext.getInstance();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "Error in PiHandler", ex);
 		} 
@@ -95,10 +101,6 @@ public class PiHandler {
 		setScreenOn(false);
 		setBrightness(Light.DARK);
 
-//		monitorBtnHandler.setListenerActive();
-//		if (!cmd.isBtnMonitorRunning()) {
-//			cmd.startBtnMonitoring();
-//		}
 		logger.log(Level.CONFIG,"end turnOffScreen(). ");
 
 
@@ -106,12 +108,6 @@ public class PiHandler {
 	/*withWifiOn: then turn on the wifi on request*/
 	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.INFO,"Turning on screen. Wifi on option: " + withWifiOn);
-
-//		monitorBtnHandler.deactivateListener();
-//
-//		if (cmd.isBtnMonitorRunning()) {
-//			cmd.stopBtnMonitor();
-//		}
 
 		autoWifiShutDown(false);
 
@@ -187,7 +183,7 @@ public class PiHandler {
 		if (alarm == Buzzer.BUZZER){
 			buzzer(true);
 		}else if (alarm == Buzzer.RADIO){
-			playRadio(true, text);//TODO get track number
+			playRadio(true, text);
 		}else if (alarm == Buzzer.MP3){
 			playMp3(true);
 		}
@@ -226,6 +222,8 @@ public class PiHandler {
 						logger.log(Level.INFO, "autoShutDownScreen invoked, turning off screen");
 						turnOffScreen();
 					} catch (Exception e) {
+						ErrorHandler eh = (ErrorHandler)context.getSharedObject(Constants.ERROR_HANDLER);
+		  				eh.addError(ErrorType.PI, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 						logger.log(Level.SEVERE ,  "Cannot automatically shutdown monitor", e);
 					}
 				} catch (InterruptedException e) {
@@ -258,7 +256,7 @@ public class PiHandler {
 			int maxCnt = 15;
 			@Override
 			public void run() {
-				SwingContext context = SwingContext.getInstance();	
+					
 				try {
 						
 					context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.STARTING);					
@@ -310,6 +308,8 @@ public class PiHandler {
 				}  catch ( IOException e) {
 					context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_TIMEOUT);
 					keepRunning = false;
+					ErrorHandler eh = (ErrorHandler)context.getSharedObject(Constants.ERROR_HANDLER);
+	  				eh.addError(ErrorType.PI, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 					logger.log(Level.SEVERE, "Error connecting to wifi", e);
 				} 
 			}
@@ -333,7 +333,7 @@ public class PiHandler {
 		refreshWifi();
 		Thread.sleep(2000);		
 		
-		SwingContext context = SwingContext.getInstance();
+
 		context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_DISCONNECT);
 		setWifiConnected(false);
 		setWifiInternetConnected(false);
@@ -353,7 +353,6 @@ public class PiHandler {
 
 			int ext = e.run();
 
-			SwingContext context = SwingContext.getInstance();
 			Preferences p = (Preferences)context.getSharedObject(Constants.PREFERENCES);
 
 			if (p.getWifi() != null && p.getWifi().length() > 0 
@@ -449,6 +448,8 @@ public class PiHandler {
 			}
 
 		} catch (IOException | InterruptedException  e) {
+			ErrorHandler eh = (ErrorHandler)context.getSharedObject(Constants.ERROR_HANDLER);
+				eh.addError(ErrorType.PI, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 			logger.log(Level.SEVERE, "Error contacting arduino", e);
 		} 
 		return retCd;
@@ -519,11 +520,13 @@ public class PiHandler {
 				wifiOn = false;	
 				setWifiConnected(false);
 				wifiInternetConnected = false;
-				SwingContext context = SwingContext.getInstance();
+
 				context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_WIFI_OFF);
 
 				logger.log(Level.INFO, "Exit code : " + ext + " OUtput: " + e.getOutput());
 			} catch (IOException e1) {
+				ErrorHandler eh = (ErrorHandler)context.getSharedObject(Constants.ERROR_HANDLER);
+  				eh.addError(ErrorType.PI, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 				logger.log(Level.SEVERE, "wifiOff() : Error shutting wifi : " , e1);
 			}
 		}
@@ -581,12 +584,24 @@ public class PiHandler {
 
 		if (startAutoShutdown) {
 			//wait 3 minute before shutting down WIFI
-			wifiShutDown = new Thread(new Runnable() {				
+			wifiShutDown = new Thread(new Runnable() {
+				int delay = 180000;
 				@Override
 				public void run() {
 					try {
-						Thread.sleep(180000);
-						wifiOff();
+						if (streaming!= null && streaming.isRadioPlaying()) {
+							logger.log(Level.INFO, "Radio is still playing , waiting until turn off or alarm button shutdown pressed");
+							while(streaming!= null && streaming.isRadioPlaying()) {
+								//check if radio is playing.. if playing , do not turn off the wifi.. or put a timer for 3 hours.
+								Thread.sleep(10000);									
+							}
+							Thread.sleep(10000);
+							wifiOff();
+						}else {
+							logger.log(Level.INFO, "no radio playing, waiting 3 min");
+							Thread.sleep(delay);
+							wifiOff();
+						}
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}

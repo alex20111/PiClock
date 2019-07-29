@@ -25,6 +25,9 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.exec.ExecuteException;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.CheckWifiStatus;
@@ -35,6 +38,7 @@ import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.VolumeIndicator;
 
@@ -141,7 +145,9 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 							lblNowPlaying.setVisible(false);
 							loadAllRadioStations();
 
-						} catch (ClassNotFoundException | SQLException | IOException e1) {		
+						} catch (ClassNotFoundException | SQLException | IOException e1) {
+							ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+							eh.addError(ErrorType.RADIO, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 							logger.log(Level.SEVERE, "Error in loading" , e1);
 						}
 						
@@ -193,12 +199,14 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 						
 						lblNowPlaying.setText(nowPlayingText + re.getRadioName());
 						
-						btnVolume.setVisible(true);
+						btnVolume.setVisible(true);						
 
 					}catch(Exception ex) {
 						lblRadioIcon.setVisible(false);
 						btnStop.setEnabled(false);
 						fireVolumeIconChange(false);
+						ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+						eh.addError(ErrorType.RADIO, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 						logger.log(Level.SEVERE, "Error communicating with arduino", ex);
 					}
 				}
@@ -226,6 +234,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 					handler.playRadio(false, "");
 
 				}catch(Exception ex) {
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.RADIO, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 					logger.log(Level.SEVERE, "Error trying to play stream", ex);
 				}
 			}
@@ -249,7 +259,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON_RADIO, IconEnum.VOLUME_MUTED_RADIO);
 				vol.setVisible(true);
 				
-				btnVolume.setVisible(false);
+//				btnVolume.setVisible(false);
 				
 			}
 		});
@@ -259,7 +269,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		
 		setOpaque(false);
 		loadAllRadioStations();
-
+		
 	}
 	private void loadAllRadioStations() throws ClassNotFoundException, SQLException, ExecuteException, IOException {
 		logger.log(Level.CONFIG,"loadAllRadioStations");
@@ -323,8 +333,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 				autoChange(true);
 			}
 		}else if(evt.getPropertyName().equals(Constants.RADIO_VOLUME_ICON_TRIGGER) ){
-			logger.log(Level.CONFIG, "Volume icon indicator");
 			VolumeIndicator vi = (VolumeIndicator)evt.getNewValue();
+			logger.log(Level.CONFIG, "Volume icon indicator: " + vi.displayVolumeIcon());			
 			btnVolume.setVisible(vi.displayVolumeIcon());
 		}
 	}
@@ -342,6 +352,5 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		
 	}
 	
-
 
 }

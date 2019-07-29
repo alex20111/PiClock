@@ -19,12 +19,16 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.DragScrollListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ScreenAutoClose;
+import net.piclock.util.FormatStackTrace;
 import net.weather.bean.WeatherAlert;
 import net.weather.bean.WeatherGenericModel;
 import java.awt.Dimension;
@@ -68,6 +72,8 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 				try {
 					ScreenAutoClose.stop();
 				} catch (InterruptedException e1) {
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 					logger.log(Level.SEVERE,"Error while trying to stop auto close screen", e1);
 				}
 				

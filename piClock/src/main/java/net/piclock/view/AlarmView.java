@@ -30,6 +30,9 @@ import com.pi4j.io.gpio.exception.UnsupportedBoardType;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
 import net.piclock.arduino.ArduinoSerialCmd;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
@@ -43,6 +46,7 @@ import net.piclock.swing.component.BuzzerSelection;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ThreadManager;
+import net.piclock.util.FormatStackTrace;
 
 public class AlarmView extends JPanel implements PropertyChangeListener {
 
@@ -446,6 +450,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 				}catch(Exception ex){
 					JOptionPane.showMessageDialog(AlarmView.this, "Error in saving, see logs.", "Error Saving", JOptionPane.ERROR_MESSAGE);
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 					logger.log(Level.SEVERE, "Error in Alarm", ex);
 				}
 			}
@@ -480,6 +486,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 					wakeUpAlarmOptions.setVisible(true);
 					
 				}catch(Exception ex) {
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 					logger.log(Level.SEVERE, "Error while choosing the buzzer option", ex);
 				}
 			}

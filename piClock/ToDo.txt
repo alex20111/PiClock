@@ -3,38 +3,44 @@
 TODO:
 add splash screen  ok (maybe custom) - select 
 add auto start.   ok  - implement based on link
-when auto screen off is disabled. Add background for night.. Use LDR to see if it's night but don't turn off the wifi or screen. Maybe add option to turn off wifi........
 darksky - complete icons and correct forecast (some of the previous forecast is there0) 
 add theme on web to change pictures
 when refreshing wifi web password,add wait icon (Spinning)
-add new warning icon when error occurs .. when clicking on it , display brief report of the error.(Main Screen)
 add checkbox to turn off wifi at night ,this will complement the auto shutdown.(Config screen). have both option to only turn off screen and not wifi or tun off screen and wifi.
-in UI- Will determin how long will it take for the alarm sound to shut down - in buzzer option panel add new number spinner. Add in database (Done) and on UI.
 ALARM, add volume level for radio or mp3. --> WAIT until implementing new slider!!!
-add error for other function (Error types to display on screen)
+add error for other function (Error types to display on screen)  IN progress
 add daily log file creation.. a log for each day
-warning icon up to 48 instated of 32 (size)
+todo , when alarm turn on .. shut off screen in 1 minute instated of 20 seconds..(tHINKING ABOUT IT)
+Possible problem: if we are waiting to turn the WIFI down because of radio and the LDR change from night to day. Then we don't need to shut down wifi anymore.
+LDR workser, initialise the CYCLE to a valid value and not NONE.
+TODOOOOO --> verify that we do not override the auto shutdown screen check box in the config.. The autoshutdown method is called without checking the config checkbox (isAutoOffScreen). This can cause the screen to shutdown even if we did not check the checkbox in the config panel (set to false).
 
 ////////////////////in the works (Working on it) - work on MP3
+
 	add percent for volume (UI).(new popup slider)
 	add ping every 5 minute to see if intenet is working (MAYBE)!!
+	
 
 //TEST//
 test network retry functionality.
 to not always save in buzzer option when pressing ok.. if nothing has changed.
-add option for buzzer(radio, mp3, buzzer) auto shutdown timer in alarm(Move code)
-add volume icon on radio, test with refresh on theme also - ICON disapering 
-correct Clock not in sync with system. //verify again
-radio playing when buzzer turn on.. shut down radio and play buzzer(Maybe done --- TEST)
-add error system for weather and other components.   -  Test
-finish alarm timer shutdown in buzzer option. make sure that the autoshutdown thread kill itself.
 
 
 //DONE test//
+warning icon up to 48 instated of 32 (size)
+add volume icon on radio, test with refresh on theme also - ICON disapering 
+Problem when radio is playing in alarm and wifi shutdown after 3 minutes. The radio shutdown and the buzzer turn on (as expected). keep the wifi on if the alarm is on and the radio is playing.
+in UI- Will determin how long will it take for the alarm sound to shut down - in buzzer option panel add new number spinner. Add in database (Done) and on UI.
+add new warning icon when error occurs .. when clicking on it , display brief report of the error.(Main Screen)
+add option for buzzer(radio, mp3, buzzer) auto shutdown timer in alarm(Move code)
+add error system for weather and other components.   -  Test
+finish alarm timer shutdown in buzzer option. make sure that the autoshutdown thread kill itself.
+radio playing when buzzer turn on.. shut down radio and play buzzer(Maybe done --- TEST)
+correct Clock not in sync with system. //verify again
 Test sensor data
 only load registered themes in xml. If not found, use the sunny background theme = test
 find background for each themes
-	Scrolling in the weather view does not work very well with touch but works well with mouse !!!>>>?????
+Scrolling in the weather view does not work very well with touch but works well with mouse !!!>>>?????
 test night background. Copy img over and theme.xml
 test weather forecast view with scrolling and theme text refresh. (night or day)
 add start of alarm thread on startup if an alarm is active. Test if alarm start up on boot.

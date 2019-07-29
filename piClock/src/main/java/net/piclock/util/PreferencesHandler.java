@@ -16,6 +16,7 @@ public class PreferencesHandler {
 	private final static String WIFI_SSID 		= "WIFI_SSID";
 	private final static String WIFI_PASS 		= "WIFI_PASS";
 	private final static String AUTO_SCREEN_OFF = "AUTO_SCREEN_OFF";
+	private final static String WIFI_OFF = "WIFI_OFF";
 	
 	//weather
 	private final static String WEATHER_ACTIVATED 	= "WEATHER_ACTIVATED";
@@ -44,6 +45,7 @@ public class PreferencesHandler {
 
 			//default config
 			prop.setProperty(AUTO_SCREEN_OFF, String.valueOf(prefs.isAutoOffScreen()));
+			prop.setProperty(WIFI_OFF, String.valueOf(prefs.isWifiOff()));
 			prop.setProperty(WIFI_SSID,prefs.getWifi());
 			prop.setProperty(WIFI_PASS,prefs.getWifiPass());
 			
@@ -94,6 +96,7 @@ public class PreferencesHandler {
 			userPrefs = new Preferences();
 			//default config AUTO_SCREEN_CYCLE
 			userPrefs.setAutoOffScreen(Boolean.valueOf(prop.getProperty(AUTO_SCREEN_OFF, "true")));
+			userPrefs.setWifiOff(Boolean.valueOf(prop.getProperty(WIFI_OFF, "true")));
 			userPrefs.setWifi(prop.getProperty(WIFI_SSID, ""));
 			userPrefs.setWifiPass(prop.getProperty(WIFI_PASS, ""));			
 			

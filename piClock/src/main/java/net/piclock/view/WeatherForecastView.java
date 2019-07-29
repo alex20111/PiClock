@@ -25,12 +25,16 @@ import javax.swing.JSeparator;
 import javax.swing.ScrollPaneConstants;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.Scroll;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ScreenAutoClose;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.ImageUtils;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherForecastModel;
@@ -126,6 +130,8 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 				try {
 					ScreenAutoClose.stop();
 				} catch (InterruptedException e1) {
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 					logger.log(Level.SEVERE,"Error while trying to stop auto close screen", e1);
 				}
 				
@@ -149,6 +155,8 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 					ScreenAutoClose.stop();
 					ScreenAutoClose.start(cardsPanel, 45, TimeUnit.SECONDS);
 				} catch (InterruptedException e1) {
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+					eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 					logger.log(Level.SEVERE,"Error while trying to stop auto close screen", e1);
 				}				
 				
@@ -266,6 +274,8 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 						addFPanel(wfm.getDayOfWeek(),  wfm.getForecast(), img.getImage("weather" + File.separatorChar + wfm.getIconName()));
 					} catch (IOException e) {
 						addFPanel( wfm.getForecast(), wfm.getDayOfWeek(), img.getWeatherNA());
+						ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+						eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 						logger.log(Level.SEVERE, "WeatherIcon", e);
 					}
 				}

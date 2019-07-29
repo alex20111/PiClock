@@ -12,6 +12,7 @@ import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.weather.City;
 import net.weather.action.WeatherAction;
 import net.weather.bean.Message;
@@ -51,13 +52,7 @@ public class WeatherWorker implements Runnable {
 					". Wifi Internet connected: " + handler.isWifiInternetConnected());
 
 			if (handler.isWifiConnected()){
-				//TODO test this ... remove when done
-				
-				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
-				eh.addError(ErrorType.WEATHER, new ErrorInfo("This is a test message.. Fo man sshue... imagine if it was a stack trace.. this error is generated at the biginning."));
-				
-				//TODO  remove
-
+	
 				Host host = Host.valueOf(pref.getWeatherProvider());
 
 				if (host == Host.envCanada) {
@@ -92,9 +87,6 @@ public class WeatherWorker implements Runnable {
 				}else if (host == Host.DARKSKY) {
 //TODO add darksy theme changes
 				}
-
-				//TODO remove
-			 	eh.addError(ErrorType.WEATHER, new ErrorInfo("This is a test message.. Fo man sshue... imagine if it was a stack trace.. this error is generated at the ENDDDDDDDDD."));
 			}else{
 				wgm.addMessage("No Wifi", "Not connected to WIFI", Message.INFO);
 				ct.putSharedObject(Constants.FORECAST_DISPLAY_ERROR, wgm);
@@ -102,6 +94,8 @@ public class WeatherWorker implements Runnable {
 
 
 		}catch (Throwable tr){
+			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(tr).getFormattedException()));
 			logger.log(Level.SEVERE, "Error in WeatherWorker", tr);
 			wgm.addMessage("Severe Error", "In trowable is a severe error", Message.ERROR);
 			ct.putSharedObject(Constants.FORECAST_DISPLAY_ERROR, wgm);

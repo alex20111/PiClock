@@ -14,12 +14,16 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.enums.BackgroundEnum;
 import net.piclock.enums.DayNightCycle;
 import net.piclock.enums.IconEnum;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.LoadThemesFromXml;
 import net.piclock.view.WeatherForecastView;
 
@@ -300,6 +304,8 @@ public class ThemeHandler {
 						errorFile = lblIcon.getKey().name();
 					}
 				}catch(Exception ex){
+					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+	  				eh.addError(ErrorType.GENERAL, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 					logger.log(Level.SEVERE, "Error in refreshTheme. File: " + errorFile  , ex);
 				}
 				
