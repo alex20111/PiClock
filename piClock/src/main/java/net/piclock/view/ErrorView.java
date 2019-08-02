@@ -8,7 +8,8 @@ import net.miginfocom.swing.MigLayout;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.main.Constants;
-import net.piclock.swing.component.DragScrollListener;
+import net.piclock.swing.component.Scroll;
+//import net.piclock.swing.component.DragScrollListener;
 import net.piclock.swing.component.SwingContext;
 
 import javax.swing.JLabel;
@@ -114,7 +115,7 @@ public class ErrorView extends JPanel {
 		JPanel contentPanel = new JPanel();
 		contentPanel.setOpaque(false);
 		contentPanel.setFont(new Font("Tahoma", Font.BOLD, 15));
-		DragScrollListener dl = new DragScrollListener(contentPanel);
+		Scroll dl = new Scroll(contentPanel);
 
 		contentPanel.setLayout(new MigLayout("", "[grow]", "[grow]"));	
 		
@@ -126,8 +127,6 @@ public class ErrorView extends JPanel {
 		contentPanel.add(lblErrorText, "cell 0 0,aligny top");
 		scrollPane.setViewportView(contentPanel);
 		
-		lblErrorText.addMouseListener(dl);
-		lblErrorText.addMouseMotionListener(dl);
 		
 		contentPanel.addMouseListener(dl);
 		contentPanel.addMouseMotionListener(dl);
@@ -142,7 +141,7 @@ public class ErrorView extends JPanel {
 			idx --;
 			
 			if (idx >= 0) {
-				errorIndex ++;
+				errorIndex --;
 				displayErrors();
 				
 				if (idx == 0) {
@@ -163,7 +162,7 @@ public class ErrorView extends JPanel {
 			int size = errors.size() - 1;
 			if (size >= idx ) {
 			
-				errorIndex --;
+				errorIndex ++;
 				displayErrors();
 				
 				if (size == idx) {
@@ -213,7 +212,7 @@ public class ErrorView extends JPanel {
 	
 	private void displayErrors() {
 		lblErrorText.setText("<html> <div style='width: 420px;word-wrap: break-word;' >" + errors.get(idx).getErrorMessage() + "</div></html>" );
-		lblDateTxt.setText( DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(errors.get(idx).getDate()));
+		lblDateTxt.setText( DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).format(errors.get(idx).getDate()));
 		lblTypeTxt.setText(errors.get(idx).getType().toString());
 		lblErrCntTxt.setText(errorIndex + " of " + errorCount);
 	}

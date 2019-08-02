@@ -853,7 +853,11 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		//if screen is in auto shutdown mode , them restart the countdown when user do something.
 		logger.log(Level.CONFIG, "keepAliveIfScreenShutdown. PiHandler.isAutoShutdownInProgress: " + handler.isAutoShutdownInProgress());
 		if (handler.isAutoShutdownInProgress()){			
-			handler.autoShutDownScreen();
+			handler.autoShutDownScreen(20000);
+			
+		}
+		if (handler.isWifiAutoShutdownInProgress()) {
+			handler.autoWifiShutDown(true);
 		}
 	}
 	private void fetchSensorInfo(){ //every 5 min

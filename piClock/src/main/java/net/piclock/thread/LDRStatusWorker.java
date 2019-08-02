@@ -83,6 +83,9 @@ public class LDRStatusWorker implements Runnable{
 					handler.turnOffScreen();
 					handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
 				}
+				if (p.isWifiOff()) {
+					handler.autoWifiShutDown(true);
+				}
 				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.NIGHT);
 				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 				themes.fireNightCycle();
@@ -93,6 +96,9 @@ public class LDRStatusWorker implements Runnable{
 					handler.turnOnScreen(true, lightStatus);
 					handler.turnOffTM1637Time();
 				}
+				if (p.isWifiOff()) {
+					handler.turnWifiOn();
+				}
 				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.DAY);
 				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 				themes.fireDayCycle();
@@ -100,13 +106,6 @@ public class LDRStatusWorker implements Runnable{
 
 			}
 
-
-			//			//check is screen is on OR off, if it's off and it's supposed to be off , then start the auto shutdown.
-			//			if (!handler.isScreenOn() && handler.isMonitorOn() && !handler.isAutoShutdownInProgress()) {
-			//				logger.log(Level.CONFIG,"auto shutting down screen from LDR worker");
-			//				//auto shutdown.
-			//				handler.autoShutDownScreen();
-			//			}
 
 		}catch(Throwable tr){
 			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);

@@ -96,7 +96,7 @@ public class PiHandler {
 	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException, UnsupportedBusNumberException{
 		logger.log(Level.INFO,"turnOffScreen()");
 
-		autoWifiShutDown(true);
+//		autoWifiShutDown(true);
 
 		setScreenOn(false);
 		setBrightness(Light.DARK);
@@ -109,7 +109,7 @@ public class PiHandler {
 	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.INFO,"Turning on screen. Wifi on option: " + withWifiOn);
 
-		autoWifiShutDown(false);
+//		autoWifiShutDown(false);
 
 		//if screen is auto shutting down and there is a request by the LDR to turn it back on, kill it.
 		cancelScreenAutoShutdown();
@@ -208,7 +208,7 @@ public class PiHandler {
 	}
 	
 	//turn off the screen automatically
-	public void autoShutDownScreen() throws InterruptedException{
+	public void autoShutDownScreen(final int shutDownMillis) throws InterruptedException{
 		logger.log(Level.CONFIG, "autoShutDownScreen.");		
 	
 		cancelScreenAutoShutdown();	
@@ -217,7 +217,7 @@ public class PiHandler {
 			@Override
 			public void run() {
 				try {
-					Thread.sleep(20000);
+					Thread.sleep(shutDownMillis);
 					try {
 						logger.log(Level.INFO, "autoShutDownScreen invoked, turning off screen");
 						turnOffScreen();
@@ -238,6 +238,13 @@ public class PiHandler {
 	public boolean isAutoShutdownInProgress() {
 		return (screenAutoShutDown != null && screenAutoShutDown.isAlive() ? true : false);
 	}
+	public boolean isWifiAutoShutdownInProgress() {
+		return (wifiShutDown != null && wifiShutDown.isAlive() ? true : false);
+	}
+	public boolean isWifiOn() {
+		return wifiOn;
+	}
+
 	/**check if connected to the internet
 	 * @throws InterruptedException **/
 	public void checkInternetConnection(boolean retry) throws InterruptedException{
@@ -506,8 +513,9 @@ public class PiHandler {
 		logger.log(Level.CONFIG, "playAlarmRadio() , end method. " );
 
 	}		
-	private void wifiOff(){
+	private void turnWifiOff() throws InterruptedException{
 		logger.log(Level.INFO, "wifiOff() : wifiOn : " + wifiOn);
+						
 		if (wifiOn){
 
 			Exec e = new Exec();
@@ -530,6 +538,8 @@ public class PiHandler {
 				logger.log(Level.SEVERE, "wifiOff() : Error shutting wifi : " , e1);
 			}
 		}
+		
+		autoWifiShutDown(false);//TODO
 	}
 	/**
 	 * Check if the computer has an ip address.
@@ -575,11 +585,11 @@ public class PiHandler {
 	}
 	
 	
-	private void autoWifiShutDown(boolean startAutoShutdown) throws InterruptedException {
+	public void autoWifiShutDown(boolean startAutoShutdown) throws InterruptedException {
 		logger.log(Level.CONFIG, "autoWifiShutDown");
 		if (wifiShutDown != null && wifiShutDown.isAlive()){
 			wifiShutDown.interrupt();
-			logger.log(Level.CONFIG, "turnOffScreen: Interrupted wifiShutDown");
+			logger.log(Level.CONFIG, "autoWifiShutDown: Interrupted wifiShutDown");
 		}
 
 		if (startAutoShutdown) {
@@ -596,11 +606,11 @@ public class PiHandler {
 								Thread.sleep(10000);									
 							}
 							Thread.sleep(10000);
-							wifiOff();
+							turnWifiOff();
 						}else {
 							logger.log(Level.INFO, "no radio playing, waiting 3 min");
 							Thread.sleep(delay);
-							wifiOff();
+							turnWifiOff();
 						}
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();

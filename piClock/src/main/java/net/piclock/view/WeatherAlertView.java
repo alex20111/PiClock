@@ -24,7 +24,7 @@ import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
-import net.piclock.swing.component.DragScrollListener;
+import net.piclock.swing.component.Scroll;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ScreenAutoClose;
@@ -103,7 +103,8 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		JPanel contentPanel = new JPanel();
-		DragScrollListener dl = new DragScrollListener(contentPanel);
+//		DragScrollListener dl = new DragScrollListener(contentPanel);
+		Scroll scroll = new Scroll(contentPanel);
 		contentPanel.setOpaque(false);
 		add(scrollPane, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[grow]", "[grow]"));
@@ -120,11 +121,12 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		
 		theme.registerLabelTextColor(lblWeatherAlert, LabelEnums.WC_ALERT_TEXT);
 		
-		lblWeatherAlert.addMouseListener(dl);
-		lblWeatherAlert.addMouseMotionListener(dl);
 		
-		contentPanel.addMouseListener(dl);
-		contentPanel.addMouseMotionListener(dl);
+//		lblWeatherAlert.addMouseListener(dl);
+//		lblWeatherAlert.addMouseMotionListener(dl);
+//		
+		contentPanel.addMouseListener(scroll);
+		contentPanel.addMouseMotionListener(scroll);
 		
 
 	}

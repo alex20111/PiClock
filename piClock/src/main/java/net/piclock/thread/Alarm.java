@@ -179,8 +179,13 @@ public class Alarm implements Runnable, MessageListener{
 
 				if (!handler.isScreenOn()){						
 					handler.turnOnScreen(false, Light.LIGHT);
-					handler.autoShutDownScreen();
-				}				
+					handler.autoShutDownScreen(45000);
+				}	
+				if (!handler.isWifiOn()) {//wifi has already been turned on 1 min ago
+					
+					handler.autoWifiShutDown(true);
+				}
+				
 			
 				handler.turnOnAlarm(buzzer, track);
 

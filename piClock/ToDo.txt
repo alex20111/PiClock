@@ -2,31 +2,32 @@
 
 TODO:
 add splash screen  ok (maybe custom) - select 
-add auto start.   ok  - implement based on link
-darksky - complete icons and correct forecast (some of the previous forecast is there0) 
-add theme on web to change pictures
+add auto start.   ok  - implement based on link 
 when refreshing wifi web password,add wait icon (Spinning)
-add checkbox to turn off wifi at night ,this will complement the auto shutdown.(Config screen). have both option to only turn off screen and not wifi or tun off screen and wifi.
 ALARM, add volume level for radio or mp3. --> WAIT until implementing new slider!!!
 add error for other function (Error types to display on screen)  IN progress
 add daily log file creation.. a log for each day
-todo , when alarm turn on .. shut off screen in 1 minute instated of 20 seconds..(tHINKING ABOUT IT)
 Possible problem: if we are waiting to turn the WIFI down because of radio and the LDR change from night to day. Then we don't need to shut down wifi anymore.
 LDR workser, initialise the CYCLE to a valid value and not NONE.
-TODOOOOO --> verify that we do not override the auto shutdown screen check box in the config.. The autoshutdown method is called without checking the config checkbox (isAutoOffScreen). This can cause the screen to shutdown even if we did not check the checkbox in the config panel (set to false).
+ if wifi is off and dark and in the config decide to change to on, turn on wifi then
+darksky - resize icons, and add icon on main screen.
+THEME ICONS and TEXT customizition
 
 ////////////////////in the works (Working on it) - work on MP3
-
 	add percent for volume (UI).(new popup slider)
-	add ping every 5 minute to see if intenet is working (MAYBE)!!
 	
 
 //TEST//
 test network retry functionality.
-to not always save in buzzer option when pressing ok.. if nothing has changed.
+add checkbox to turn off wifi at night ,this will complement the auto shutdown.(Config screen). have both option to only turn off screen and not wifi or tun off screen and wifi.
+todo , when alarm turn on .. shut off screen in 1 minute instated of 20 seconds..(tHINKING ABOUT IT)
+use scroll.java instated of dragscrolllistener in weather alert and error view.
 
 
 //DONE test//
+errorview: counter is backward and time is not appearing on the date
+darksky - complete icons and correct forecast (some of the previous forecast is there0)
+TODOOOOO (We do NOTT) --> verify that we do not override the auto shutdown screen check box in the config.. The autoshutdown method is called without checking the config checkbox (isAutoOffScreen). This can cause the screen to shutdown even if we did not check the checkbox in the config panel (set to false).
 warning icon up to 48 instated of 32 (size)
 add volume icon on radio, test with refresh on theme also - ICON disapering 
 Problem when radio is playing in alarm and wifi shutdown after 3 minutes. The radio shutdown and the buzzer turn on (as expected). keep the wifi on if the alarm is on and the radio is playing.

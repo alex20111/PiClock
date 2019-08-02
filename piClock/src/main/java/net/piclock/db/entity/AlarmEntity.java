@@ -52,6 +52,7 @@ public class AlarmEntity {
 		}
 		
 		this.volume = rs.getInt(VOLUME);
+		this.alarmShutdown = rs.getInt(ALARM_SHUTDOWN);
 	}
 	
 	public static String checkIfTableExist() { 

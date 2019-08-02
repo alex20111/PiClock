@@ -9,21 +9,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class SwingContext {
-	
+
 	private static final Logger logger = Logger.getLogger( SwingContext.class.getName() );
 
 	/** Singleton instance of context */
 	private static SwingContext swingContext = new SwingContext();
 	/** PropertyChangeSupport */
 	private PropertyChangeSupport propertyChangeSupport = 	new PropertyChangeSupport(this);
-	
+
 	private List<MessageListener> msgListeners = new ArrayList<>();
 	private Map<String,Set<MessageListener>> msgListenersMap = new WeakHashMap<>();
+	private final ReentrantLock lock = new ReentrantLock();
 
 	@SuppressWarnings("rawtypes")
 	private Map shareableDataMap = null;
@@ -49,7 +51,7 @@ public class SwingContext {
 	public Object getSharedObject(String key) {
 		return shareableDataMap.get(key);
 	}
-	
+
 	private void firePropertyChange(String propertyName, Object oldValue, Object newValue, Object source) {
 		if (propertyName == null)
 			throw new IllegalArgumentException("No property name specified.");
@@ -76,32 +78,49 @@ public class SwingContext {
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
 		propertyChangeSupport.removePropertyChangeListener(propertyName, l);
 	}
-	
-	public void addMessageChangeListener(String propertyName, MessageListener l) {		
-		Set<MessageListener> msg = msgListenersMap.get(propertyName);
-		
-		if (msg != null) {
-			msg.add(l);
-		}else {
-			msg = new HashSet<>();
-			msg.add(l);
+
+	public void addMessageChangeListener(String propertyName, MessageListener l) {	
+		lock.lock();
+		try {
+			Set<MessageListener> msg = msgListenersMap.get(propertyName);
+
+			if (msg != null) {
+				msg.add(l);
+			}else {
+				msg = new HashSet<>();
+				msg.add(l);
+			}
+			logger.log(Level.CONFIG,"SWING CONTEXT -  PROPERTY: " + propertyName +  " size: " + msg.size() + " l: " + l  );
+			msgListenersMap.put(propertyName,msg);
+
+			logger.log(Level.CONFIG,"END - SWING CONTEXT -  PROPERTY: " + propertyName +  " size: " + msg.size() + " l: " + l  );
+		}catch (Exception ex) {
+			logger.log(Level.SEVERE, "Error " + ex);
+			lock.unlock();
+		}finally {
+			lock.unlock();
 		}
-		logger.log(Level.CONFIG,"SWING CONTEXT -  PROPERTY: " + propertyName +  " size: " + msg.size() + " l: " + l  );
-		msgListenersMap.put(propertyName,msg);
-		
-		logger.log(Level.CONFIG,"END - SWING CONTEXT -  PROPERTY: " + propertyName +  " size: " + msg.size() + " l: " + l  );
 	}
 	public void addMessageChangeListener(MessageListener l) {
 		msgListeners.add(l);
 	}
-	
+
 	public void removeMessageListener(String propertyName , MessageListener l) {
-		logger.log(Level.CONFIG, "remove property: " + propertyName + "   l: " + l);
-		Set<MessageListener> msg = msgListenersMap.get(propertyName);
-		if (msg != null) {
-			msg.remove(l);
+		lock.lock();
+		try {
+
+			logger.log(Level.CONFIG, "remove property: " + propertyName + "   l: " + l);
+			Set<MessageListener> msg = msgListenersMap.get(propertyName);
+			if (msg != null) {
+				msg.remove(l);
+			}
+		}catch (Exception ex) {
+			logger.log(Level.SEVERE, "Error " + ex);
+			lock.unlock();
+		}finally {
+			lock.unlock();
 		}
-		
+
 	}
 	public void removeMessageListener(MessageListener l) {		
 		msgListeners.remove(l);	
@@ -112,19 +131,28 @@ public class SwingContext {
 		}
 	}
 	public void sendMessage(String propertyName, Message message){
-		Set<MessageListener> m = msgListenersMap.get(propertyName);		
-		
-			
-		if (m != null) {
-			logger.log(Level.CONFIG, "Message: " + propertyName + "  Message size: " + m.size() );
-						
-			for(MessageListener mfor : m) {
-				message.setPropertyName(propertyName);
-				mfor.message(message);
+		lock.lock();
+		try {
+			Set<MessageListener> m = msgListenersMap.get(propertyName);		
+
+
+			if (m != null) {
+				logger.log(Level.CONFIG, "Message: " + propertyName + "  Message size: " + m.size() );
+
+				for(MessageListener mfor : m) {
+					message.setPropertyName(propertyName);
+					mfor.message(message);
+				}
+			}else {
+				logger.log(Level.CONFIG,"Message not found");
 			}
-		}else {
-			logger.log(Level.CONFIG,"Message not found");
+		}catch (Exception ex) {
+			logger.log(Level.SEVERE, "Error " + ex);
+			lock.unlock();
+		}finally {
+			lock.unlock();
 		}
 	}
-	
+
+
 }

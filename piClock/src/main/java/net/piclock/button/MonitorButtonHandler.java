@@ -25,18 +25,29 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 	public void stateChanged(ButtonState state) {
 		piHandler = PiHandler.getInstance();
 
-		logger.log(Level.CONFIG, "Screen on : " + piHandler.isScreenOn() + "  button state: " + state);
+		logger.log(Level.CONFIG, "Screen on : " + piHandler.isScreenOn() + " WIFI on? " + piHandler.isWifiOn() + "  Button state: " + state);
 
 		try {
-			if (!piHandler.isScreenOn() && state == ButtonState.HIGH) {
-				try {
-
-				piHandler.setBrightness(Light.VERY_DIM);
-				piHandler.turnWifiOn();
+			
+			if(state == ButtonState.HIGH) {
 				
-					piHandler.autoShutDownScreen();
-				} catch (InterruptedException e) {
-					logger.log(Level.CONFIG, "Interrupted in button monitor");
+				if (!piHandler.isScreenOn()  ) {
+					try {
+
+						piHandler.setBrightness(Light.VERY_DIM);
+						piHandler.autoShutDownScreen(20000);
+					} catch (InterruptedException e) {
+						logger.log(Level.CONFIG, "Interrupted in button monitor");
+					}
+				}
+				
+				if(!piHandler.isWifiOn()) {
+					try {
+						piHandler.turnWifiOn();
+						piHandler.autoWifiShutDown(true);
+					} catch (InterruptedException e) {
+						logger.log(Level.CONFIG, "Interrupted in button monitor WIFI");
+					}
 				}
 			}
 		}catch(IOException ex) {

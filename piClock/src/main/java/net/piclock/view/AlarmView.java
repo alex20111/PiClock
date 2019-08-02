@@ -481,6 +481,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
+					
 					wakeUpAlarmOptions.setBuzzerType(alarmEnt);
 
 					wakeUpAlarmOptions.setVisible(true);
@@ -500,6 +501,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(btnBuzzer);
 	
 		dayDaysToSelect(alarmEnt, theme);
+		
 	}
 	
 	public void setAlarmNotToggled() {

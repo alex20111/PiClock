@@ -19,6 +19,8 @@ import net.piclock.swing.component.SwingContext;
 public class ImageUtils {
 	private static final Logger logger = Logger.getLogger( ImageUtils.class.getName() );
 	private static ImageUtils imageUtils = new ImageUtils();
+	
+	public static final String WEATHER_NA_ICON = "NotAvailable.png";
 			
 	private ImageIcon weatherNA ;
 	private ImageIcon weatherAlertIcon;
@@ -32,7 +34,7 @@ public class ImageUtils {
 	
 	private ImageUtils(){
 		try{
-			weatherNA = getImage("NotAvailable.png");
+			weatherNA = getImage(WEATHER_NA_ICON);
 			weatherAlertIcon = getImage("weather-alert-48.png");
 			warningIcon = getImage("warning-48.png");
 			weatherLoader = getAnimatedImage("loader-weather.gif");
