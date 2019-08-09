@@ -67,11 +67,13 @@ import net.piclock.view.WeatherAlertView;
 import net.piclock.view.WeatherConfigView;
 import net.piclock.view.WeatherForecastView;
 import net.piclock.view.WebServerView;
+import net.piclock.weather.DarkSkyUtil;
 import net.piclock.weather.Temperature;
 import net.piclock.weather.WeatherBean;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherCurrentModel;
 import net.weather.bean.WeatherGenericModel;
+import net.weather.enums.Host;
 import net.weather.utils.MessageHandl;
 import java.awt.FlowLayout;
 
@@ -156,6 +158,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	 */
 	public MainApp() throws Exception {
 		logger.info("Start Program");	
+		
+		ErrorView ev = new ErrorView();
 		
 		tm = ThreadManager.getInstance();
 		 eh = new ErrorHandler();
@@ -254,6 +258,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.WEB_SERVER_VIEW);
 				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.GENERAL, new ErrorInfo(fmtEx));
 					logger.log(Level.SEVERE, "Error in mouse clicked", ex);
 				}
 			}
@@ -369,6 +375,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.ALARM_VIEW);
 				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.ALARM, new ErrorInfo(fmtEx));
 					logger.log(Level.SEVERE, "Error in lblAlarmIcon", ex);
 				}
 			}
@@ -402,6 +410,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					cardLayout.show(cardsPanel, Constants.RADIO_STATION_VIEW);
 
 				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.RADIO, new ErrorInfo(fmtEx));
 					logger.log(Level.SEVERE, "Error in mouse listener radio", ex);
 				}
 			}
@@ -440,7 +450,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		webServerView = new WebServerView(lblWebserverIcon);
 		
 		
-		ErrorView ev = new ErrorView();
+		
 		cardsPanel.add(ev, Constants.ERROR_VIEW);
 		lblWarningIcon = new JLabel(ImageUtils.getInstance().getWarningIcon());
 		lblWarningIcon.setVisible(false);
@@ -550,6 +560,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.ALARM_VIEW);
 				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.ALARM, new ErrorInfo(fmtEx));
 					logger.log(Level.SEVERE, "Error in Option alarm", ex);
 				}
 			}
@@ -567,6 +579,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.WEATHER_CONFIG_VIEW);
 				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.WEATHER, new ErrorInfo(fmtEx));
 					logger.log(Level.SEVERE, "Error in Option weather config", ex);
 				}
 			}
@@ -584,6 +598,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					cardLayout.show(cardsPanel, Constants.RADIO_STATION_VIEW);
 
 				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.RADIO, new ErrorInfo(fmtEx));
 					logger.log(Level.SEVERE, "Error in Option radio", ex);
 				}
 			}
@@ -603,6 +619,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.WEB_SERVER_VIEW);
 				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.GENERAL, new ErrorInfo(fmtEx));
 					logger.log(Level.SEVERE, "Error in Option settings", ex);
 				}
 			}
@@ -619,6 +637,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.CONFIG_VIEW);
 				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.GENERAL, new ErrorInfo(fmtEx));
 					logger.log(Level.SEVERE, "Error in Option settings", ex);
 				}
 			}
@@ -633,7 +653,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 
 	@Override
 	public synchronized void propertyChange(PropertyChangeEvent evt) {
-		logger.config("--propertyChange--: " + evt.getPropertyName());
+		logger.info("--propertyChange--: " + evt.getPropertyName());
 		if (evt.getPropertyName().equals(Constants.SENSOR_INFO)) {
 			WeatherBean wb = (WeatherBean)evt.getNewValue();	
 			
@@ -646,13 +666,21 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		}
 		else if (evt.getPropertyName().equals(Constants.FORECAST_RESULT)){
 			try {
-				logger.config("Auto Forecast result event ");
+				logger.info("Auto Forecast result event ");
 				
 				WeatherGenericModel wgm = (WeatherGenericModel)evt.getNewValue();
 				
 				WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
-				ImageIcon icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + wcm.getIconName(), 48, 48);				
-					
+				
+				Host host = Host.valueOf(prefs.getWeatherProvider());
+				
+				ImageIcon icon = null;
+				if (host == Host.envCanada) {
+					icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + wcm.getIconName(), 48, 48);	
+				}else {
+					icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + DarkSkyUtil.getIconFileName(wcm.getIconName()), 48, 48);	
+				}			
+				
 				Date dt = null;
 				try {
 					dt = parseToDateEnv.parse(wcm.getObservationTime()); //env cadada format	
@@ -686,11 +714,14 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			} catch (IOException | ParseException e) {
 				addCurrentWeather("Error!!", weatherNaIcon , null);
 				addCurrentTemp("--", "--");
+				String fmtEx = new FormatStackTrace(e).getFormattedException();
+				eh.addError(ErrorType.WEATHER, new ErrorInfo(fmtEx));
+				
 				logger.log(Level.SEVERE, "error", e);
 			}
 
 		}else if (evt.getPropertyName().equals(Constants.FETCH_FORECAST)){
-			logger.config("FETCHING forecast on request.");
+			logger.info("FETCHING forecast on request.");
 			int active = (int)evt.getNewValue(); //positive number weather is active
 			if (active > 0){
 				fetchForecast(0);
@@ -703,11 +734,11 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 
 			}
 		}else if (evt.getPropertyName().equals(Constants.FORECAST_DISPLAY_LOAD)){
-			logger.config("Display forecast load animation (" + Constants.FORECAST_DISPLAY_LOAD + ")");
+			logger.info("Display forecast load animation (" + Constants.FORECAST_DISPLAY_LOAD + ")");
 			displayCurrentForecastLoading();
 
 		}else if(evt.getPropertyName().equals(Constants.FORECAST_DISPLAY_ERROR)){
-			logger.config("Error in forecast ("+Constants.FORECAST_DISPLAY_ERROR+")");
+			logger.info("Error in forecast ("+Constants.FORECAST_DISPLAY_ERROR+")");
 			WeatherGenericModel wgm = (WeatherGenericModel)evt.getNewValue();			
 			
 			MessageHandl msg =  wgm.getMessages();
@@ -721,14 +752,14 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 //			tm.stopWeatherThread(); TODO add function to not restart it if too much errors.
 		}else  if(evt.getPropertyName().equals(Constants.THEMES_BACKGROUND_IMG_UPDATE)){
 			String image = (String)evt.getNewValue();
-			logger.config("Image background update. Image: " + image);
+			logger.info("Image background update. Image: " + image);
 			changeBackImage(new File(image));
 			
 		}else if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){
 			try{
 				CheckWifiStatus status = (CheckWifiStatus) evt.getNewValue();
 				
-				logger.config("CHECK INTERNET : " + evt.getNewValue() + " - Value: " + status);
+				logger.info("CHECK INTERNET : " + evt.getNewValue() + " - Value: " + status);
 
 				final ImageIcon wifiOn = themes.getIcon(IconEnum.WIFI_ON_ICON);
 				final ImageIcon wifiOFF = themes.getIcon(IconEnum.WIFI_OFF_ICON);
@@ -782,6 +813,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					lblWiFiIcon.setVisible(false);
 				}
 			}catch (Exception ex){
+				String fmtEx = new FormatStackTrace(ex).getFormattedException();
+				eh.addError(ErrorType.WIFI, new ErrorInfo(fmtEx));
 				logger.log(Level.SEVERE, "Error in blinking wifi", ex);
 			}
 		}else if(evt.getPropertyName().equals(Constants.RADIO_VOLUME_ICON_TRIGGER) ||
@@ -869,7 +902,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 
 	@Override
 	public void message(net.piclock.swing.component.Message message) {
-		logger.log(Level.CONFIG,"Message property: " +  message.getPropertyName() + " vakue: " + message.getMessage());
+		logger.log(Level.INFO,"Message property: " +  message.getPropertyName() + " vakue: " + message.getMessage());
 		if (message.getPropertyName().equals(Constants.ERROR_BROADCAST)) {
 			boolean displayIcon = (boolean) message.getMessage();
 			if (displayIcon) {

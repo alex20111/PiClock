@@ -41,5 +41,13 @@ https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/updating-alsa-con
 https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 
 //IN RASPI-config (change splash screen image: /usr/share/plymouth/themes/pix/splash.png)
-Enable boot to desktop  (https://www.youtube.com/watch?v=VQkvh6d41Y0)
+
+//auto boot
+create script start.sh:
+  #!/bin/bash
+  cd /home/pi/piClock
+  sudo java -jar [nameo f jar]
+in raspberry buster add line in autostart located: /etc/xdg/lxsession/LXDE-pi
+  /home/pi/start.sh
+
 enable splash screen.

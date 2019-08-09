@@ -56,8 +56,7 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 	private String lableForecastSize = "420px";
 	
 	private JLabel lblAlert;
-	private SwingContext ct = SwingContext.getInstance(); 
-	private DarkSkyUtil dsUtil; 
+	private SwingContext ct = SwingContext.getInstance();
 
 	int indx = 0;
 	boolean notFirst = false;
@@ -69,7 +68,6 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 
 		parent.setAutoscrolls(true);
 
-		dsUtil = new DarkSkyUtil();
 		setLayout(new BorderLayout());
 
 		parent.setLayout(new MigLayout("", "[40px,center][70px][grow]"));//"");
@@ -249,7 +247,7 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 							addFPanel(wfm.getDayOfWeek(),  wfm.getForecast(), img.getImage("weather" + File.separatorChar + wfm.getIconName()));
 						}else {
 							
-							addFPanel(wfm.getDayOfWeek(),  wfm.getForecast(), img.getImage("weather" + File.separatorChar + dsUtil.getIconFileName(wfm.getIconName())));
+							addFPanel(wfm.getDayOfWeek(),  wfm.getForecast(), img.getImage("weather" + File.separatorChar + DarkSkyUtil.getIconFileName(wfm.getIconName())));
 						}
 						
 					} catch (IOException e) {

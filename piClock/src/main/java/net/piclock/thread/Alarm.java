@@ -126,11 +126,9 @@ public class Alarm implements Runnable, MessageListener{
 							logger.log(Level.INFO, "Could not connect to the internet in ALARM");
 							break;
 						}
-						try {
+						
 							Thread.sleep(200);
-						}catch(InterruptedException i) {
-							logger.log(Level.INFO, "wifi aquisition in alarm interrupted");
-							break;}
+					
 						count ++;
 					}
 					
@@ -181,10 +179,10 @@ public class Alarm implements Runnable, MessageListener{
 					handler.turnOnScreen(false, Light.LIGHT);
 					handler.autoShutDownScreen(45000);
 				}	
-				if (!handler.isWifiOn()) {//wifi has already been turned on 1 min ago
-					
-					handler.autoWifiShutDown(true);
-				}
+//				if (!handler.isWifiOn()) {//wifi has already been turned on 1 min ago
+//					
+//					handler.autoWifiShutDown(true);
+//				}
 				
 			
 				handler.turnOnAlarm(buzzer, track);

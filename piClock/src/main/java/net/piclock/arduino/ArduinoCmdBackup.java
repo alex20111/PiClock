@@ -23,7 +23,7 @@ public class ArduinoCmdBackup {
 	private Commands prevCmd = Commands.NONE;	
 	
 	private List<ButtonChangeListener> btnListener = new ArrayList<ButtonChangeListener>();
-	private ButtonMonitor btnMon;
+//	private ButtonMonitor btnMon;
 	
 	public static ArduinoCmdBackup getInstance() throws UnsupportedBusNumberException, IOException {
 		if (arduinoCmd == null) {
@@ -134,13 +134,13 @@ public class ArduinoCmdBackup {
 	
 	public void stopBtnMonitor() throws InterruptedException {
 		logger.log(Level.CONFIG, "stopBtnMonitor");
-		if (btnMon != null) {
-			if (anyActiveBtnListener()) {
-				logger.log(Level.CONFIG, "There is still active listeners");
-			}else {
-//				btnMon.stop();
-			}
-		}
+//		if (btnMon != null) {
+//			if (anyActiveBtnListener()) {
+//				logger.log(Level.CONFIG, "There is still active listeners");
+//			}else {
+////				btnMon.stop();
+//			}
+//		}
 	}
 	
 	public boolean isBtnMonitorRunning() {

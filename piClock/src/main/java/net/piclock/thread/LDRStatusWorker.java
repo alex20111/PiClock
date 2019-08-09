@@ -35,6 +35,9 @@ public class LDRStatusWorker implements Runnable{
 	public LDRStatusWorker() {
 		cntMap.put(Light.DARK, 4);
 		handler = PiHandler.getInstance();
+		Light currLight = handler.getLDRstatus();
+		
+		cycle = (currLight == Light.DARK ? DayNightCycle.NIGHT : DayNightCycle.DAY); 
 	}
 	
 	@Override
@@ -83,9 +86,6 @@ public class LDRStatusWorker implements Runnable{
 					handler.turnOffScreen();
 					handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
 				}
-				if (p.isWifiOff()) {
-					handler.autoWifiShutDown(true);
-				}
 				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.NIGHT);
 				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 				themes.fireNightCycle();
@@ -106,6 +106,19 @@ public class LDRStatusWorker implements Runnable{
 
 			}
 
+			//control some functions
+			if (cycle == DayNightCycle.NIGHT) {
+				
+				//if we need to shutdown wifi and it is night 
+				if (p.isWifiOff() && handler.isWifiOn() && !handler.isWifiAutoShutdownInProgress()) {
+					logger.log(Level.CONFIG, "Fire wifi auto shudown from LDR Worker");
+					handler.autoWifiShutDown(true);
+				}else if (!p.isWifiOff() && !handler.isWifiOn()){
+					logger.log(Level.CONFIG, "Turn on wifi because it was off at night");
+					handler.turnWifiOn();					
+				}
+			}
+			
 
 		}catch(Throwable tr){
 			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);

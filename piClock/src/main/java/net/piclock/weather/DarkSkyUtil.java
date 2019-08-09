@@ -17,9 +17,9 @@ public class DarkSkyUtil {
 	private static final String PARTLY_CLOUDY_DAY = "partly-cloudy-day";
 	private static final String PARTLY_CLOUDY_NIGHT = "partly-cloudy-night";
 	
-	private Map<String, String> icons;
+	private static Map<String, String> icons;
 	
-	public DarkSkyUtil() {
+	static {
 		icons = new HashMap<>();
 		icons.put(CLEAR_DAY, "clear-day.png");
 		icons.put(CLEAR_NIGHT, "clear-night.png");
@@ -33,7 +33,11 @@ public class DarkSkyUtil {
 		icons.put(PARTLY_CLOUDY_NIGHT,"partly-cloudy-night.png");
 	}
 	
-	public String getIconFileName(String icon) {
+	public DarkSkyUtil() {
+
+	}
+	
+	public static String getIconFileName(String icon) {
 		String fileName = "";
 		if (icons.containsKey(icon)){
 			fileName = icons.get(icon);

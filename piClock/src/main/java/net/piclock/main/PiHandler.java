@@ -109,7 +109,7 @@ public class PiHandler {
 	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.INFO,"Turning on screen. Wifi on option: " + withWifiOn);
 
-//		autoWifiShutDown(false);
+		autoWifiShutDown(false);
 
 		//if screen is auto shutting down and there is a request by the LDR to turn it back on, kill it.
 		cancelScreenAutoShutdown();
@@ -167,8 +167,7 @@ public class PiHandler {
 	}
 	public Light getLDRstatus(){
 
-		int ldrVal = sendI2cCommand(LDR,null);	
-		logger.log(Level.CONFIG, "getLDRstatus : LDR level: "+ ldrVal);		
+		int ldrVal = sendI2cCommand(LDR,null);		
 		return Light.setLightLevel(ldrVal);
 	}
 	/**Turn on the alarm based on the selected buzzer
@@ -539,7 +538,7 @@ public class PiHandler {
 			}
 		}
 		
-		autoWifiShutDown(false);//TODO
+//		autoWifiShutDown(false);//TODO
 	}
 	/**
 	 * Check if the computer has an ip address.

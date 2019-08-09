@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,7 +24,6 @@ public class SwingContext {
 
 	private List<MessageListener> msgListeners = new ArrayList<>();
 	private Map<String,Set<MessageListener>> msgListenersMap = new WeakHashMap<>();
-	private final ReentrantLock lock = new ReentrantLock();
 
 	@SuppressWarnings("rawtypes")
 	private Map shareableDataMap = null;
@@ -80,7 +78,7 @@ public class SwingContext {
 	}
 
 	public void addMessageChangeListener(String propertyName, MessageListener l) {	
-		lock.lock();
+
 		try {
 			Set<MessageListener> msg = msgListenersMap.get(propertyName);
 
@@ -96,9 +94,6 @@ public class SwingContext {
 			logger.log(Level.CONFIG,"END - SWING CONTEXT -  PROPERTY: " + propertyName +  " size: " + msg.size() + " l: " + l  );
 		}catch (Exception ex) {
 			logger.log(Level.SEVERE, "Error " + ex);
-			lock.unlock();
-		}finally {
-			lock.unlock();
 		}
 	}
 	public void addMessageChangeListener(MessageListener l) {
@@ -106,7 +101,7 @@ public class SwingContext {
 	}
 
 	public void removeMessageListener(String propertyName , MessageListener l) {
-		lock.lock();
+	
 		try {
 
 			logger.log(Level.CONFIG, "remove property: " + propertyName + "   l: " + l);
@@ -116,9 +111,6 @@ public class SwingContext {
 			}
 		}catch (Exception ex) {
 			logger.log(Level.SEVERE, "Error " + ex);
-			lock.unlock();
-		}finally {
-			lock.unlock();
 		}
 
 	}
@@ -131,7 +123,7 @@ public class SwingContext {
 		}
 	}
 	public void sendMessage(String propertyName, Message message){
-		lock.lock();
+	
 		try {
 			Set<MessageListener> m = msgListenersMap.get(propertyName);		
 
@@ -148,9 +140,6 @@ public class SwingContext {
 			}
 		}catch (Exception ex) {
 			logger.log(Level.SEVERE, "Error " + ex);
-			lock.unlock();
-		}finally {
-			lock.unlock();
 		}
 	}
 

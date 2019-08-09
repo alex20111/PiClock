@@ -70,7 +70,6 @@ public class MiniWebServer  {
 
 			server = new WebServer(80,rootDir);
 			server.addHandler("/", new MainPage());
-//			server.addHandler("/alarm", new AlarmHandler());
 			server.addHandler("/radio", rp);
 			server.addHandler("/wifi", wifi);
 			server.addHandler("/mp3", mp3);

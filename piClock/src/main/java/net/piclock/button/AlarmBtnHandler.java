@@ -36,7 +36,7 @@ public class AlarmBtnHandler  implements ButtonChangeListener{
 
 		} catch (Exception e) {
 			ErrorHandler eh = (ErrorHandler)SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
-				eh.addError(ErrorType.GENERAL, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
+				eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 			logger.log(Level.SEVERE, "Error in button handler" , e);
 			
 		}

@@ -32,6 +32,7 @@ import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.enums.IconEnum;
+import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.swing.component.Message;
@@ -81,6 +82,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		handler = PiHandler.getInstance();
 		
 		ct = SwingContext.getInstance();
+		
+		ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
 
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
@@ -102,6 +105,8 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		JButton back = new JButton("<"); 
 		back.setPreferredSize(new Dimension(41, 30));
 		titlePanel.add(back, "cell 0 0");
+		
+		t.registerLabelTextColor(titlePanel, LabelEnums.RADIO_TITLE);
 
 		back.addActionListener(new ActionListener() {
 
@@ -158,11 +163,13 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		});
 		btnReload.setPreferredSize(new Dimension(65, 30));
 		btnReload.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		bodyPanel.add(btnReload, "cell 6 1");
+		bodyPanel.add(btnReload, "cell 6 1");		
 		
 		lblNowPlaying = new JLabel("");
 		lblNowPlaying.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		bodyPanel.add(lblNowPlaying, "cell 3 2 4 1");
+		
+		t.registerLabelTextColor(lblNowPlaying, LabelEnums.RADIO_NOW_PLAYING);
 
 		JPanel btnPanel = new JPanel();
 		btnPanel.setOpaque(false);
@@ -263,7 +270,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 				
 			}
 		});
-		ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
+		
 		t.registerIconColor(btnVolume, IconEnum.VOLUME_ICON_RADIO);
 		panel.add(btnVolume);
 		

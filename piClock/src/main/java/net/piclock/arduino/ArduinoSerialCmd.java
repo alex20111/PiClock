@@ -34,6 +34,7 @@ public class ArduinoSerialCmd {
 	private static ArduinoSerialCmd arduinoSerialCmd;
 	private Serial serial;
 	private SerialConfig config;
+	private ErrorHandler eh;
 	
 	private CmdTranslator translator;
 	
@@ -57,6 +58,10 @@ public class ArduinoSerialCmd {
 		startListener();
 		
 		open();
+		
+		 eh = new ErrorHandler();
+			
+		eh = (ErrorHandler) SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);	
 	}
 
 	
@@ -85,6 +90,8 @@ public class ArduinoSerialCmd {
 			try{
 				ldrVal = ldrQueue.poll(4000, TimeUnit.MILLISECONDS); 
 			}catch(Exception ex) {
+				String fmtEx = new FormatStackTrace(ex).getFormattedException();
+				eh.addError(ErrorType.ARDUINO, new ErrorInfo(fmtEx));
 				logger.log(Level.INFO, "LDR retrieve value timeout or null: ", ex);
 			}
 		return ldrVal;
@@ -153,8 +160,8 @@ public class ArduinoSerialCmd {
             	  }
 
               } catch (IOException  | InterruptedException e ) {
-  				ErrorHandler eh = (ErrorHandler)SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
-  				eh.addError(ErrorType.ARDUINO, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
+            	  String fmtEx = new FormatStackTrace(e).getFormattedException();
+  				eh.addError(ErrorType.ARDUINO, new ErrorInfo(fmtEx));
                   logger.log(Level.SEVERE, "Error in arduino listener", e);
               } 
 			
