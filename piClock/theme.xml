@@ -89,6 +89,8 @@
 				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -141,6 +143,8 @@
 				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -193,6 +197,8 @@
 				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -245,6 +251,8 @@
 				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -297,6 +305,8 @@
 				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">

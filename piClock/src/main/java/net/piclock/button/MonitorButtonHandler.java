@@ -36,8 +36,9 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 
 						piHandler.setBrightness(Light.VERY_DIM);
 						piHandler.autoShutDownScreen(20000);
-					} catch (InterruptedException e) {
-						logger.log(Level.CONFIG, "Interrupted in button monitor");
+						piHandler.turnWifiOn();
+					} catch (InterruptedException | IOException e) {
+						logger.log(Level.CONFIG, "in button monitor");
 					}
 				}
 

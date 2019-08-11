@@ -22,32 +22,30 @@ public class ScreenAutoClose implements Runnable {
 	
 	@Override
 	public void run() {
-		
+
 		try {
 			timeUnit.sleep(delay);
 			CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
 			cardLayout.show(cardPanel, Constants.MAIN_VIEW);
 		} catch (InterruptedException e) {
 		}
-		System.out.println("Auto close end");
 	}
 	
 	public static synchronized void start(JPanel panel , int delayTime, TimeUnit timeUnit){
 		
-		System.out.println("Start");
-		
+			
 		autoCloseThread = new Thread(new ScreenAutoClose( panel ,  delayTime,  timeUnit));
 		
 		autoCloseThread.start();
 		
 	}
 	public static synchronized void stop() throws InterruptedException{
-		System.out.println("stop");
+		
 		if (autoCloseThread != null && autoCloseThread.isAlive()){
 			autoCloseThread.interrupt();
 			while(autoCloseThread.isAlive()){
 				autoCloseThread.join(100);
-				System.out.println("autoCloseThread stopped");
+				
 			}		
 		}		
 	}

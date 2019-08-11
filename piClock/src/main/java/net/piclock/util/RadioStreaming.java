@@ -69,7 +69,7 @@ public class RadioStreaming {
 					br.close();
 
 				}catch (IOException i) {
-					i.printStackTrace();
+					logger.log(Level.SEVERE, "Don't know what happend", i);
 				}
 			}
 			processFinished = true;

@@ -85,8 +85,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	
 	private ThreadManager tm;
 	
-//	private int currentAlarmId = -1;
-	
 	private AlarmEntity alarmEnt;//alarm for the current screen
 	
 	

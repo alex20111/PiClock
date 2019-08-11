@@ -51,51 +51,49 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 	private JButton btnCancel;
 	private JComboBox<String> wifiNames;
 	private JCheckBox chckbxTurnOffScr;
-	
+
 	private KeyBoard keyBoard;
-	
+
 	private SwingContext ct = SwingContext.getInstance();
 	//onchange old values
 	private String oldPassValue = "";
 	private String oldWifiValue = "";
-	
+
 	private ImageUtils img;
 	private JCheckBox chckbxTurnOffWIFI;
-	
+
 	/**
 	 * Create the panel.
 	 */
 	public ConfigView() {
-		
+
 		img = ImageUtils.getInstance();
-		
+
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);		
-		
+
 		Preferences initPref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 		ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-		
+
 		setForeground(Color.RED);
 		setLayout(new MigLayout("", "[][grow][grow][][grow][]", "[][grow 30][center][center][][][][grow][]"));
 		setOpaque(false);
-		
+
 		JLabel lblConfig = new JLabel("Config");
 		lblConfig.setFont(new Font("Tahoma", Font.BOLD, 35));
 		add(lblConfig, "cell 1 0 4 1,alignx center");
 		theme.registerLabelTextColor(lblConfig, LabelEnums.CFG_TITLE);
-		
-		System.out.println("Inti: " + initPref.getWeatherRefresh());
-		
+
 		wifiNames = new JComboBox<String>();
-		 
-		 wifiNames.setPreferredSize(new Dimension(28, 35));
-		 wifiNames.addItem("Disable Wifi");
-		
+
+		wifiNames.setPreferredSize(new Dimension(28, 35));
+		wifiNames.addItem("Disable Wifi");
+
 		if (initPref.getWifi() != null && initPref.getWifi().length() > 0){
 			oldWifiValue = initPref.getWifi();
 			wifiNames.addItem(initPref.getWifi());
 			wifiNames.setSelectedIndex(1);
 		}
-		
+
 		btnRefreshWifi = new JButton("Refresh");
 		btnRefreshWifi.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		btnRefreshWifi.setPreferredSize(new Dimension(71, 35));
@@ -104,7 +102,7 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 				logger.log(Level.CONFIG, "refresh Wifi");
 
 				SwingUtilities.invokeLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						PiHandler handler = PiHandler.getInstance();
@@ -130,75 +128,73 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 						}
 						btnRefreshWifi.setIcon(null);
 						btnRefreshWifi.setText("Refresh");	
-						
+
 					}
 				});
 			}
 		});
-		 
-		 wifiNames.addActionListener(new ActionListener() {
-		 	
-		 	@Override
-		 	public void actionPerformed(ActionEvent e) {
 
-		 		if (wifiNames.getSelectedIndex() == 0){
-		 			txtWifiPass.setText("");					
-		 		}				
-		 	}
-		 });
-		 
-		 JLabel lblWifi = new JLabel("Wifi:");
-		 lblWifi.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		 add(lblWifi, "cell 1 2,alignx trailing");
-		 theme.registerLabelTextColor(lblWifi, LabelEnums.CFG_WIFI_NAME);
-		 
-		 add(wifiNames, "cell 2 2,growx");
+		wifiNames.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (wifiNames.getSelectedIndex() == 0){
+					txtWifiPass.setText("");					
+				}				
+			}
+		});
+
+		JLabel lblWifi = new JLabel("Wifi:");
+		lblWifi.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		add(lblWifi, "cell 1 2,alignx trailing");
+		theme.registerLabelTextColor(lblWifi, LabelEnums.CFG_WIFI_NAME);
+
+		add(wifiNames, "cell 2 2,growx");
 		add(btnRefreshWifi, "cell 3 2");
 		oldPassValue = initPref.getWifiPass();
-		
+
 		btnConnect = new JButton("Connect");
 		btnConnect.setPreferredSize(new Dimension(73, 35));
 		btnConnect.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		btnConnect.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				
-					if (txtWifiPass.getText().length() == 0){
-						JOptionPane.showMessageDialog(ConfigView.this, "Please enter password", "No Password", JOptionPane.ERROR_MESSAGE);
-					}else if(wifiNames.getSelectedIndex() == 0){ 
-						JOptionPane.showMessageDialog(ConfigView.this, "Please select WIFI", "WIFI", JOptionPane.ERROR_MESSAGE);
-					}else{
-						SwingUtilities.invokeLater(new Runnable() {
-							
-							@Override
-							public void run() {
+				if (txtWifiPass.getText().length() == 0){
+					JOptionPane.showMessageDialog(ConfigView.this, "Please enter password", "No Password", JOptionPane.ERROR_MESSAGE);
+				}else if(wifiNames.getSelectedIndex() == 0){ 
+					JOptionPane.showMessageDialog(ConfigView.this, "Please select WIFI", "WIFI", JOptionPane.ERROR_MESSAGE);
+				}else{
+					SwingUtilities.invokeLater(new Runnable() {
 
-								try {
-									btnSave.setEnabled(false);
-									btnCancel.setEnabled(false);
-									txtWifiPass.setEditable(false);
-									btnConnect.setEnabled(false);
-									btnConnect.setIcon(img.getButtonLoader());
-									btnConnect.setText("");
-									PiHandler handler = PiHandler.getInstance();
-									handler.connectToWifi((String)wifiNames.getSelectedItem(),txtWifiPass.getText() );
-								} catch (Exception e1) {
-									JOptionPane.showMessageDialog(ConfigView.this, "Serious error", "Error", JOptionPane.ERROR_MESSAGE);
-									ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
-									eh.addError(ErrorType.CONFIG, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
-									logger.log(Level.SEVERE, "Error in Config", e1);
-									setConnectOrigValue();
-								}
+						@Override
+						public void run() {
+
+							try {
+								btnSave.setEnabled(false);
+								btnCancel.setEnabled(false);
+								txtWifiPass.setEditable(false);
+								btnConnect.setEnabled(false);
+								btnConnect.setIcon(img.getButtonLoader());
+								btnConnect.setText("");
+								PiHandler handler = PiHandler.getInstance();
+								handler.connectToWifi((String)wifiNames.getSelectedItem(),txtWifiPass.getText() );
+							} catch (Exception e1) {
+								JOptionPane.showMessageDialog(ConfigView.this, "Serious error", "Error", JOptionPane.ERROR_MESSAGE);
+								ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+								eh.addError(ErrorType.CONFIG, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
+								logger.log(Level.SEVERE, "Error in Config", e1);
+								setConnectOrigValue();
 							}
-						});
-						
-					}
-				
+						}
+					});
+
+				}				
 			}
 		});
-		
+
 		txtWifiPass = new JTextField();
 		txtWifiPass.setPreferredSize(new Dimension(6, 35));
 		txtWifiPass.addMouseListener(new MouseAdapter(){
@@ -210,26 +206,26 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 				}
 
 				keyBoard.setVisible(true);
-			
+
 				txtWifiPass.setText(keyBoard.getText());				
 			}
 		});				
-		
+
 		JLabel lblPass = new JLabel("Pass:");
 		lblPass.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		add(lblPass, "cell 1 3,alignx trailing");
 		theme.registerLabelTextColor(lblPass, LabelEnums.CFG_WIFI_PASS);
-		
+
 		txtWifiPass.setText(initPref.getWifiPass());
 		add(txtWifiPass, "cell 2 3,growx");
 		add(btnConnect, "cell 3 3");
-		
+
 		chckbxTurnOffScr = new JCheckBox("Turn off screen/use LED display when dark");
 		chckbxTurnOffScr.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		chckbxTurnOffScr.setOpaque(false);
 		chckbxTurnOffScr.setSelected(initPref.isAutoOffScreen());
 		add(chckbxTurnOffScr, "cell 2 4 3 1");
-		
+
 		chckbxTurnOffWIFI = new JCheckBox("Turn off WIFI when dark");
 		chckbxTurnOffWIFI.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		chckbxTurnOffWIFI.setOpaque(false);
@@ -241,7 +237,7 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		add(panel, "cell 0 8 3 1,grow");
-		
+
 		btnSave = new JButton("Save");
 		btnSave.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnSave.setPreferredSize(new Dimension(80, 35));
@@ -251,9 +247,9 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 					boolean canSave = true;			
 
 					Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
-					
+
 					PiHandler handler = PiHandler.getInstance();
-					
+
 					if (wifiNames.getSelectedIndex() > 0 && txtWifiPass.getText().trim().length() == 0){
 						JOptionPane.showMessageDialog(ConfigView.this, "Please enter a password for wifi" , "Pass missing", JOptionPane.INFORMATION_MESSAGE);
 						canSave = false;
@@ -261,18 +257,18 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 						//this means that he has enter the wifi use and pass and he has not tested or cannot connect sonce wrong pass.
 						JOptionPane.showMessageDialog(ConfigView.this, "Please test connection before saving.\nClick cancel if other problems." , "Cannot save", JOptionPane.INFORMATION_MESSAGE);
 						canSave = false;
-					
+
 					}else if(wifiNames.getSelectedIndex() > 0 && handler.isWifiConnected()  &&
-							 ( !txtWifiPass.getText().equals(oldPassValue)  || !oldWifiValue.equals((String)wifiNames.getSelectedItem()) )
+							( !txtWifiPass.getText().equals(oldPassValue)  || !oldWifiValue.equals((String)wifiNames.getSelectedItem()) )
 							){
 						JOptionPane.showMessageDialog(ConfigView.this, "Wifi info changed, Please test connection before saving." , "Cannot save", JOptionPane.INFORMATION_MESSAGE);
 						canSave = false;
 					}
-					
+
 					if (canSave){
-								
+
 						if (wifiNames.getSelectedIndex() == 0 && handler.isWifiConnected()){
-							
+
 							handler.disconnectWifi();
 							txtWifiPass.setText("");
 						}
@@ -281,7 +277,7 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 						p.setWifiPass(txtWifiPass.getText().trim().length() == 0? "" :txtWifiPass.getText() );
 						p.setAutoOffScreen(chckbxTurnOffScr.isSelected());
 						p.setWifiOff(chckbxTurnOffWIFI.isSelected());
-						
+
 
 						PreferencesHandler.save(p);
 						setVisible(false);
@@ -295,13 +291,13 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 			}
 		});
 		panel.add(btnSave);
-		
+
 		btnCancel = new JButton("Cancel");
 		btnCancel.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnCancel.setPreferredSize(new Dimension(90, 35));
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				if (!PiHandler.getInstance().isWifiConnected()){
 					//empty pass if connection not success.
 					txtWifiPass.setText("");
@@ -329,8 +325,6 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (isVisible()){
-//			String initValue = (String)evt.getNewValue();
-//			String value = initValue.substring(4,initValue.length() );
 			CheckWifiStatus status = (CheckWifiStatus) evt.getNewValue();
 
 			if (status == CheckWifiStatus.SUCCESS){

@@ -196,7 +196,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 						lblNowPlaying.setVisible(true);
 
 						RadioEntity re = (RadioEntity)radioStations.getSelectedItem();
-						logger.log(Level.CONFIG, "Playing : " + re.getRadioName() + " TRACK: " + re.getTrackNbr());
+						logger.log(Level.INFO, "Playing : " + re.getRadioName() + " TRACK: " + re.getTrackNbr());
 						
 						handler.playRadio(true, re.getRadioLink());
 
@@ -266,8 +266,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON_RADIO, IconEnum.VOLUME_MUTED_RADIO);
 				vol.setVisible(true);
 				
-//				btnVolume.setVisible(false);
-				
+		
 			}
 		});
 		
@@ -355,9 +354,6 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 				JOptionPane.showMessageDialog(this, "Cannot play Radio stream, verify stream", "Error in stream", JOptionPane.ERROR_MESSAGE);
 			}
 			autoChange(false);
-		}
-		
+		}		
 	}
-	
-
 }

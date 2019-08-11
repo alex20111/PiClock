@@ -350,6 +350,9 @@ public class PiHandler {
 	 * @throws ExecuteException **/
 	public void turnWifiOn() throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.CONFIG, "wifiOn(). wifiOn : " + wifiOn);
+		
+		cancelWifiAutoShutdown();
+		
 		if (!wifiOn){
 			wifiOn = true;	
 			Exec e = new Exec();
@@ -426,8 +429,12 @@ public class PiHandler {
 		return exec.getOutput();
 	}	
 	private void cancelScreenAutoShutdown() throws InterruptedException{
-		logger.log(Level.CONFIG, "cancelScreenAutoShutdown");
-		if (screenAutoShutDown != null && screenAutoShutDown.isAlive()){
+			
+		boolean isRunning = screenAutoShutDown != null && screenAutoShutDown.isAlive();
+		
+		logger.log(Level.CONFIG, "cancelScreenAutoShutdown. Is running? " + isRunning);
+		
+		if (isRunning){
 			screenAutoShutDown.interrupt();
 			
 			screenAutoShutDown = null;
@@ -586,10 +593,8 @@ public class PiHandler {
 	
 	public void autoWifiShutDown(boolean startAutoShutdown) throws InterruptedException {
 		logger.log(Level.CONFIG, "autoWifiShutDown");
-		if (wifiShutDown != null && wifiShutDown.isAlive()){
-			wifiShutDown.interrupt();
-			logger.log(Level.CONFIG, "autoWifiShutDown: Interrupted wifiShutDown");
-		}
+		
+		cancelWifiAutoShutdown();
 
 		if (startAutoShutdown) {
 			//wait 3 minute before shutting down WIFI
@@ -617,6 +622,15 @@ public class PiHandler {
 				}
 			});
 			wifiShutDown.start();
+		}
+	}
+	public void cancelWifiAutoShutdown() {
+		boolean isRunning = wifiShutDown != null && wifiShutDown.isAlive();
+		
+		logger.log(Level.CONFIG, "cancelWifiAutoShutdown. Running? " + isRunning);
+		if (isRunning){
+			wifiShutDown.interrupt();
+			logger.log(Level.CONFIG, "autoWifiShutDown: Interrupted wifiShutDown");
 		}
 	}
 }

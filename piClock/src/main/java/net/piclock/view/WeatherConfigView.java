@@ -58,18 +58,13 @@ public class WeatherConfigView extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JCheckBox chckbxActivate;
 	private JComboBox<Host> cmbProvider;
-//	private JCheckBox chckbxNoUpdate;
 	private JComboBox<City> cmbCity;
 	private JSpinner refreshInMinutes;
 
 	private  SwingContext ct = SwingContext.getInstance();
 	private Preferences prefs;
-	
-//	private JLabel lblCountry;
-//	private JComboBox cmbCountry;
-	
+
 	private int whtChanged = 0; //pos number is active, neg number is not active.
-	private JLabel lblCountryLoading;
 	private JLabel lblCityLoading;
 	private JLabel lblError;
 	
@@ -103,7 +98,6 @@ public class WeatherConfigView extends JPanel {
 					int index,
 					boolean isSelected,
 					boolean cellHasFocus) {
-
 
 				if (index == -1 && cmbProvider.getSelectedIndex() == -1){
 					value = "Select";
@@ -177,16 +171,6 @@ public class WeatherConfigView extends JPanel {
 		theme.registerLabelTextColor(lblProvider, LabelEnums.WC_PROVIDER);
 		add(cmbProvider, "cell 3 3 2 1,growx");
 
-		lblCountryLoading = new JLabel("");
-		lblCountryLoading.setVisible(false);
-
-//		lblCountry = new JLabel("Country");
-//		lblCountry.setVisible(false);
-//		lblCountry.setFont(new Font("Tahoma", Font.PLAIN, 20));
-//		add(lblCountry, "hidemode 3,cell 2 4,alignx trailing");
-		add(lblCountryLoading, "flowx,cell 4 4,alignx left");
-
-
 		lblCityLoading = new JLabel(""); 
 		lblCityLoading.setIcon(ImageUtils.getInstance().getButtonLoader());
 		lblCityLoading.setOpaque(false);
@@ -199,12 +183,6 @@ public class WeatherConfigView extends JPanel {
 		add(lblCity, "cell 2 5,alignx trailing");
 		add(lblCityLoading, "flowx,cell 4 5,alignx left");
 		
-
-		//		chckbxNoUpdate = new JCheckBox("No update when screen is off");
-		//		chckbxNoUpdate.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		//		chckbxNoUpdate.setOpaque(false);
-		//		add(chckbxNoUpdate, "cell 1 7 4 1,alignx left");
-
 		JButton btnBack = new JButton("<");
 		btnBack.setPreferredSize(new Dimension(41, 35));
 		btnBack.addActionListener(new ActionListener() {
@@ -229,8 +207,7 @@ public class WeatherConfigView extends JPanel {
 
 					prefs.setWeatherActivated(chckbxActivate.isSelected());				
 
-					if(chckbxActivate.isSelected()){
-						System.out.println("sel: " + cmbProvider.getSelectedIndex() + " " + chckbxActivate.isSelected() );				
+					if(chckbxActivate.isSelected()){			
 
 						if (cmbProvider.getSelectedIndex() < 0){
 							JOptionPane.showMessageDialog(WeatherConfigView.this, "Please select a provider or de-activate the weather.", "Missing Weather Provide", JOptionPane.INFORMATION_MESSAGE);
@@ -295,13 +272,7 @@ public class WeatherConfigView extends JPanel {
 		theme.registerLabelTextColor(lblMinutes, LabelEnums.WC_MIN);
 		add(lblError, "cell 1 8 4 1");
 		add(btnBack, "cell 0 11");
-		//		theme.registerLabelTextColor(lblProvider, LabelEnums.WC_PROVIDER);
-
-//		cmbCountry = new JComboBox();
-//		cmbCountry.setPreferredSize(new Dimension(28, 35));
-//		cmbCountry.setVisible(false);
-//		add(cmbCountry, "hidemode 3,cell 3 4 2 1,growx");
-
+			
 		cmbCity = new JComboBox<City>();
 		cmbCity.setPreferredSize(new Dimension(28, 35));
 
@@ -339,8 +310,6 @@ public class WeatherConfigView extends JPanel {
 
 			if (provider == Host.envCanada){
 				System.out.println("canada");
-//				lblCountry.setVisible(false);
-//				cmbCountry.setVisible(false);
 				//set provider
 				cmbProvider.setSelectedItem(Host.envCanada);
 				//load city						
@@ -349,8 +318,6 @@ public class WeatherConfigView extends JPanel {
 			
 			}else if(provider == Host.DARKSKY){
 				cmbProvider.setSelectedItem(Host.DARKSKY);
-//				lblCountry.setVisible(true);
-//				cmbCountry.setVisible(true);
 				
 				loadProviderCity();
 							
@@ -399,13 +366,11 @@ public class WeatherConfigView extends JPanel {
 	private void enableDisable(){
 		if (chckbxActivate.isSelected()){
 			cmbProvider.setEnabled(true);
-//			chckbxNoUpdate.setEnabled(true);
 			cmbCity.setEnabled(true);
 			refreshInMinutes.setEnabled(true);
 
 		}else{
 			cmbProvider.setEnabled(false);
-//			chckbxNoUpdate.setEnabled(false);
 			cmbCity.setEnabled(false);
 			refreshInMinutes.setEnabled(false);
 		}

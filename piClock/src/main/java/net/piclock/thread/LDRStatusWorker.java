@@ -42,9 +42,7 @@ public class LDRStatusWorker implements Runnable{
 	
 	@Override
 	public void run() {
-		try{
-
-			
+		try{			
 			//call it every 10 seconds
 			Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 

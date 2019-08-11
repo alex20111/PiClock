@@ -47,7 +47,6 @@ public class ThemeHandler {
 	public ThemeHandler() throws Exception{
 		//init Themes
 		themesMap = LoadThemesFromXml.loadThemeFromXml();
-//		logger.log(Level.CONFIG, "theme map: " + themesMap);
 	}
 
 	public void loadTheme(ThemeEnum theme){
@@ -65,7 +64,7 @@ public class ThemeHandler {
 	}
 
 	public void loadRainBackdrop(){		
-		logger.log(Level.CONFIG, "loadRainBackdrop(). Current: " + currBackground.getName());
+		logger.log(Level.INFO, "loadRainBackdrop(). Current: " + currBackground.getName());
 		
 		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.RAIN);
 		
@@ -88,12 +87,12 @@ public class ThemeHandler {
 				}
 			}
 		}else if (!backGroundIncluded) {
-			logger.log(Level.CONFIG, "loadRainBackdrop(). Loading sunny since Rain is not included into the theme");
+			logger.log(Level.INFO, "loadRainBackdrop(). Loading sunny since Rain is not included into the theme");
 			loadSunnyBackdrop();
 		}
 	}
 	public void loadSunnyBackdrop(){
-		logger.log(Level.CONFIG, "loadSunnyBackdrop(). Current: " + currBackground.getName());
+		logger.log(Level.INFO, "loadSunnyBackdrop(). Current: " + currBackground.getName());
 
 		//load only when it's not the same
 		if (currBackground.getName() != BackgroundEnum.SUNNY || init){
@@ -118,7 +117,7 @@ public class ThemeHandler {
 		}
 	}
 	public void loadThunderBackdrop(){
-		logger.log(Level.CONFIG, "loadThunderBackdrop(). Current: " + currBackground.getName());
+		logger.log(Level.INFO, "loadThunderBackdrop(). Current: " + currBackground.getName());
 		
 		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.THUNDER);
 		
@@ -140,12 +139,12 @@ public class ThemeHandler {
 				}
 			}
 		}else if (!backGroundIncluded) {
-			logger.log(Level.CONFIG, "loadThunderBackdrop(). Loading sunny since Thunder is not included into the theme");
+			logger.log(Level.INFO, "loadThunderBackdrop(). Loading sunny since Thunder is not included into the theme");
 			loadSunnyBackdrop();
 		}
 	}
 	public void loadSnowBackdrop(){
-		logger.log(Level.CONFIG, "loadSnowBackdrop(). Current: " + currBackground.getName());
+		logger.log(Level.INFO, "loadSnowBackdrop(). Current: " + currBackground.getName());
 
 		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.SNOW);
 		
@@ -167,12 +166,12 @@ public class ThemeHandler {
 				}
 			}
 		}else if (!backGroundIncluded) {
-			logger.log(Level.CONFIG, "loadSnowBackdrop(). Loading sunny since Snow is not included into the theme");
+			logger.log(Level.INFO, "loadSnowBackdrop(). Loading sunny since Snow is not included into the theme");
 			loadSunnyBackdrop();
 		}
 	}
 	public void loadCloudyBackdrop(){
-		logger.log(Level.CONFIG, "loadCloudyBackdrop(). Current: " + currBackground.getName());
+		logger.log(Level.INFO, "loadCloudyBackdrop(). Current: " + currBackground.getName());
 
 		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.CLOUDY);
 		
@@ -194,12 +193,12 @@ public class ThemeHandler {
 				}
 			}
 		}else if (!backGroundIncluded) {
-			logger.log(Level.CONFIG, "loadCloudyBackdrop(). Loading sunny since Cloudy is not included into the theme");
+			logger.log(Level.INFO, "loadCloudyBackdrop(). Loading sunny since Cloudy is not included into the theme");
 			loadSunnyBackdrop();
 		}
 	}
 	public void loadFogBackdrop(){
-		logger.log(Level.CONFIG, "loadFogBackdrop(). Current: " + currBackground.getName());
+		logger.log(Level.INFO, "loadFogBackdrop(). Current: " + currBackground.getName());
 
 		boolean backGroundIncluded = isBackgroundIncludedInTheme(BackgroundEnum.FOG);
 		
@@ -221,7 +220,7 @@ public class ThemeHandler {
 				}
 			}
 		}else if (!backGroundIncluded) {
-			logger.log(Level.CONFIG, "loadFogBackdrop(). Loading sunny since FOG is not included into the theme");
+			logger.log(Level.INFO, "loadFogBackdrop(). Loading sunny since FOG is not included into the theme");
 			loadSunnyBackdrop();
 		}
 	}

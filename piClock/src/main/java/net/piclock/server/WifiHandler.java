@@ -14,11 +14,15 @@ import org.nanohttpd.protocols.http.response.Response;
 
 import home.miniHttp.HttpBase;
 import home.miniHttp.StaticPageHandler;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.PreferencesHandler;
 
 public class WifiHandler extends HttpBase implements PropertyChangeListener{
@@ -59,7 +63,7 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 
 			String message = "";
 
-			System.out.println("values !!!!!!!!!!! > " + wifiName + " pa: " + wifiPassword + " check: " + check + " connstat: " + connStatus);
+//			System.out.println("values !!!!!!!!!!! > " + wifiName + " pa: " + wifiPassword + " check: " + check + " connstat: " + connStatus);
 			if(btnDisconnect.isPresent()) {
 				wifiDisconnect();
 				message = generateSuccessMessage("Successfully disconnecte.\n You won't be able to reconnect since you are disconnected from the WIFI");
@@ -93,6 +97,8 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 			webPage =	StaticPageHandler.processPage(webPageFiles, values);
 
 		}catch (Exception ex){
+			ErrorHandler eh = (ErrorHandler)SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.WEB_SERVER, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
 			logger.log(Level.SEVERE, "error in WiFiHandler", ex);			
 		}
 

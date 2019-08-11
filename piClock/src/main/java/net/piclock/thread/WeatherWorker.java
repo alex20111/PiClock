@@ -25,15 +25,15 @@ import net.weather.enums.WeatherLang;;
 public class WeatherWorker implements Runnable {
 
 	private static final Logger logger = Logger.getLogger( WeatherWorker.class.getName() );
-	
+
 	private SwingContext ct = SwingContext.getInstance();
 	private static int load = 0;
 	private City city;
-	
+
 	public WeatherWorker() {
 		city = (City) ct.getSharedObject(Constants.FORECAST_CITY);
 	}
-	
+
 	@Override
 	public void run() {
 
@@ -48,11 +48,11 @@ public class WeatherWorker implements Runnable {
 
 			PiHandler handler = PiHandler.getInstance();
 
-			logger.config("pref.getWeatherCity(): " + pref.getWeatherCity() + ". Code: " + pref.getStationCode() + "  - Wifi connected: "+ handler.isWifiConnected() + 
+			logger.info("pref.getWeatherCity(): " + pref.getWeatherCity() + ". Code: " + pref.getStationCode() + "  - Wifi connected: "+ handler.isWifiConnected() + 
 					". Wifi Internet connected: " + handler.isWifiInternetConnected());
 
 			if (handler.isWifiConnected()){
-	
+
 				Host host = Host.valueOf(pref.getWeatherProvider());
 
 				if (host == Host.envCanada) {
@@ -64,28 +64,42 @@ public class WeatherWorker implements Runnable {
 				ct.putSharedObject(Constants.WEATHER_LST_UPD, new Date());//to prevent too many refresh.
 
 				ct.putSharedObject(Constants.FORECAST_RESULT, wgm);
-				
+
 				//Environment canada
 
 				WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
 				if (host == Host.envCanada) {
 					logger.log(Level.CONFIG, "Current Weather NAME: " + wcm.getSummary());
 					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-					if (wcm.getSummary().toLowerCase().contains("rain")){						
+					if (summaryContains(wcm.getSummary(), "rain")){						
 						theme.loadRainBackdrop();
-					}else if (wcm.getSummary().toLowerCase().contains("thunder")){						
+					}else if (summaryContains(wcm.getSummary(),"thunder")){						
 						theme.loadThunderBackdrop();
-					}else if (wcm.getSummary().toLowerCase().contains("snow")){						
+					}else if (summaryContains(wcm.getSummary(),"snow")){						
 						theme.loadSnowBackdrop();
-					}else if (wcm.getSummary().toLowerCase().contains("cloud")) {					
+					}else if (summaryContains(wcm.getSummary(),"cloud")) {					
 						theme.loadCloudyBackdrop();
-					}else if (wcm.getSummary().toLowerCase().contains("fog") || wcm.getSummary().toLowerCase().contains("mist")){					
+					}else if (summaryContains(wcm.getSummary(),"fog","mist")){					
 						theme.loadFogBackdrop();
 					}else {//default sunny						
 						theme.loadSunnyBackdrop();
 					}
 				}else if (host == Host.DARKSKY) {
-//TODO add darksy theme changes
+					logger.log(Level.CONFIG, "Dark Sky Current Weather : " + wcm.getSummary());
+					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+					if (summaryContains(wcm.getSummary(), "rain", "drizzle")){						
+						theme.loadRainBackdrop();
+					}else if (summaryContains(wcm.getSummary(),"thunder")){						
+						theme.loadThunderBackdrop();
+					}else if (summaryContains(wcm.getSummary(),"snow")){						
+						theme.loadSnowBackdrop();
+					}else if (summaryContains(wcm.getSummary(),"cloud")) {					
+						theme.loadCloudyBackdrop();
+					}else if (summaryContains(wcm.getSummary(),"fog","mist")){					
+						theme.loadFogBackdrop();
+					}else {//default sunny						
+						theme.loadSunnyBackdrop();
+					}
 				}
 			}else{
 				wgm.addMessage("No Wifi", "Not connected to WIFI", Message.INFO);
@@ -100,5 +114,18 @@ public class WeatherWorker implements Runnable {
 			wgm.addMessage("Severe Error", "In trowable is a severe error", Message.ERROR);
 			ct.putSharedObject(Constants.FORECAST_DISPLAY_ERROR, wgm);
 		}		
+	}
+
+	private boolean summaryContains(String summary, String... weather) {
+
+		if (weather != null && weather.length > 0 && summary != null && summary.length() > 0) {
+			for(String wth: weather) {
+				if (summary.toLowerCase().contains(wth)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }

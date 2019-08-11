@@ -11,11 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.lang.model.type.ErrorType;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
-import net.piclock.bean.ErrorHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
@@ -119,8 +116,6 @@ public class ThreadManager {
 		logger.log(Level.CONFIG, "Stop Weather thread");
 		if (weatherThread != null && !weatherThread.isDone()){
 
-			System.out.println("weatherThread::weatherThread Done? " + weatherThread.isDone());			
-
 			weatherThread.cancel(true);	
 			//wait for timer to stop
 			while(!weatherThread.isDone()){
@@ -129,7 +124,6 @@ public class ThreadManager {
 				} catch (InterruptedException e) {}
 			}		
 
-			System.out.println("weatherThread end loop Done? " + weatherThread.isDone());
 		}	
 	}
 	public void startLdr() {

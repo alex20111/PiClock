@@ -103,7 +103,6 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		JPanel contentPanel = new JPanel();
-//		DragScrollListener dl = new DragScrollListener(contentPanel);
 		Scroll scroll = new Scroll(contentPanel);
 		contentPanel.setOpaque(false);
 		add(scrollPane, BorderLayout.CENTER);
@@ -111,8 +110,7 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		
 		scrollPane.setViewportView(contentPanel);
 		scrollPane.getViewport().setOpaque(false);
-		
-		
+				
 		lblWeatherAlert = new JLabel("");
 		lblWeatherAlert.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblWeatherAlert.setVerticalAlignment(SwingConstants.TOP);
@@ -120,14 +118,9 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 		contentPanel.add(lblWeatherAlert, "cell 0 0,aligny top");
 		
 		theme.registerLabelTextColor(lblWeatherAlert, LabelEnums.WC_ALERT_TEXT);
-		
-		
-//		lblWeatherAlert.addMouseListener(dl);
-//		lblWeatherAlert.addMouseMotionListener(dl);
-//		
+				
 		contentPanel.addMouseListener(scroll);
-		contentPanel.addMouseMotionListener(scroll);
-		
+		contentPanel.addMouseMotionListener(scroll);		
 
 	}
 
@@ -146,7 +139,7 @@ public class WeatherAlertView extends JPanel implements PropertyChangeListener {
 			}
 			
 		}else if(evt.getPropertyName().equals(Constants.FORECAST_DISPLAY_ERROR)){
-			
+			lblWeatherAlert.setText("Error recieved, cannot display.  :( ");
 		}
 		
 	}

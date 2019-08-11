@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.nanohttpd.protocols.http.NanoHTTPD.ResponseException;
 import org.nanohttpd.protocols.http.response.Response;
@@ -14,10 +16,18 @@ import org.nanohttpd.protocols.http.response.Response;
 import home.miniHttp.HttpBase;
 import home.miniHttp.StaticPageHandler;
 import home.miniHttp.Table;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
+import net.piclock.main.Constants;
+import net.piclock.swing.component.SwingContext;
+import net.piclock.util.FormatStackTrace;
 
 public class RadioPage extends HttpBase {
+	private static final Logger logger = Logger.getLogger( RadioPage.class.getName() );
+	
 	private String pageName = "radioView"; //name from xml to build the page
 	private RadioSql sql = new RadioSql();
 	
@@ -98,7 +108,9 @@ public class RadioPage extends HttpBase {
 
 		} catch (IOException | ResponseException | ClassNotFoundException | SQLException e) {
 			webPage = "ERROR";
-			e.printStackTrace();
+			ErrorHandler eh = (ErrorHandler)SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.WEB_SERVER, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
+			logger.log(Level.SEVERE, "Error in RadioPage", e);
 		}
 		return Response.newFixedLengthResponse(webPage);
 	}
@@ -149,7 +161,9 @@ public class RadioPage extends HttpBase {
 			return t.build();
 
 		}catch(Exception ex){
-			ex.printStackTrace();
+			ErrorHandler eh = (ErrorHandler)SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.WEB_SERVER, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
+			logger.log(Level.SEVERE, "Error while creating table" , ex);
 		}
 		return "Error";
 	}
@@ -187,29 +201,6 @@ public class RadioPage extends HttpBase {
 		}
 		return false;
 	}
-//	private boolean linkExist(String link) throws ExecuteException, IOException {
-//		Exec exec = new Exec();
-//		exec.addCommand("mpc").addCommand("playlist").timeout(10000);
-//
-//		int ex = exec.run();
-//
-//		if(ex == 0) {
-//			String out = exec.getOutput();
-//			if (out.length() > 0) {
-//				String outSplit[] = out.split("\n");
-//
-//				for(int i = 0 ; i <  outSplit.length ; i ++) {
-//
-//					String play = outSplit[i];
-//
-//					if (play.trim().equalsIgnoreCase(link)) {
-//						return true;						
-//					}					
-//				}
-//			}
-//
-//		}
-//		return false;
-//	}
+
 
 }

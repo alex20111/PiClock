@@ -276,7 +276,4 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 
 		}
 	}
-	private String translateDarkSkyIcon() {
-		return "";
-	}
 }
