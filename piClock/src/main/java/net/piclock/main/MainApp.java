@@ -42,6 +42,7 @@ import net.miginfocom.swing.MigLayout;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorType;
+import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.CheckWifiStatus;
@@ -61,8 +62,9 @@ import net.piclock.util.VolumeIndicator;
 import net.piclock.view.AlarmView;
 import net.piclock.view.ConfigView;
 import net.piclock.view.ErrorView;
+import net.piclock.view.Mp3View;
 import net.piclock.view.RadioStationsView;
-import net.piclock.view.Volume;
+import net.piclock.view.VolumeNew;
 import net.piclock.view.WeatherAlertView;
 import net.piclock.view.WeatherConfigView;
 import net.piclock.view.WeatherForecastView;
@@ -112,6 +114,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	private RadioStationsView radioStationsView;
 	private AlarmView av;
 	private WebServerView webServerView;
+	private Mp3View mp3View;
 	
 	//wifi blinking
 	private boolean blinking = true;
@@ -180,6 +183,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		ct.addPropertyChangeListener(Constants.SENSOR_INFO, this);
 		ct.addPropertyChangeListener(Constants.RADIO_VOLUME_ICON_TRIGGER, this);
+		ct.addPropertyChangeListener(Constants.MP3_VOLUME_ICON_TRIGGER, this);
 		
 		ct.addMessageChangeListener(Constants.ERROR_BROADCAST, this);
 				
@@ -213,6 +217,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		forecastView = new WeatherForecastView();
 		weatherAlertView = new WeatherAlertView();	
 		radioStationsView = new RadioStationsView(lblRadioIcon);
+		mp3View				   = new Mp3View();
 		
 		cardsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setUndecorated(true);
@@ -289,7 +294,10 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON, IconEnum.VOLUME_MUTED);
+				logger.log(Level.CONFIG, "Loading volume : ---> " + prefs.getLastVolumeLevel());
+				VolumeConfig config = new VolumeConfig(prefs.getLastVolumeLevel());
+				VolumeNew vol = new VolumeNew(config);
+//				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON, IconEnum.VOLUME_MUTED);
 				vol.setVisible(true);
 				
 			}
@@ -447,11 +455,10 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		weatherPanel.add(lblTempShade, "cell 5 0,alignx right");
 		
 		av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
-		webServerView = new WebServerView(lblWebserverIcon);
-		
-		
+		webServerView = new WebServerView(lblWebserverIcon);	
 		
 		cardsPanel.add(ev, Constants.ERROR_VIEW);
+		cardsPanel.add(mp3View, Constants.MP3_VIEW);
 		lblWarningIcon = new JLabel(ImageUtils.getInstance().getWarningIcon());
 		lblWarningIcon.setVisible(false);
 		lblWarningIcon.addMouseListener(new MouseAdapter() {
@@ -607,6 +614,25 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		JMenuItem mp3Player = new JMenuItem("Mp3");
 		mp3Player.setFont(new Font("Tahoma", Font.BOLD, 20));
+
+		mp3Player.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try{
+					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
+					logger.log(Level.CONFIG, "Opening MP3 with volume: " + prefs.getLastVolumeLevel());
+					ct.sendMessage(Constants.VOLUME_SENT_FOR_CONFIG,new net.piclock.swing.component.Message(prefs.getLastVolumeLevel()));
+					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+					cardLayout.show(cardsPanel, Constants.MP3_VIEW);
+				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.GENERAL, new ErrorInfo(fmtEx));
+					logger.log(Level.SEVERE, "Error in Option settings", ex);
+				}
+			}
+		});		
+		
 		
 		JMenuItem webServer = new JMenuItem("Web Server");
 		webServer.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -789,7 +815,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					themes.registerIconColor(lblWiFiIcon, IconEnum.WIFI_ON_ICON);
 					callProgThatReqWiFi();
 
-				}else if (status == CheckWifiStatus.END_TIMEOUT || status == CheckWifiStatus.END_INTERRUPTED || status == CheckWifiStatus.END_DISCONNECT){
+				}else if (status == CheckWifiStatus.END_TIMEOUT || status == CheckWifiStatus.END_INTERRUPTED || status == CheckWifiStatus.END_DISCONNECT
+						|| status == CheckWifiStatus.END_WIFI_OFF){
 					lblWiFiIcon.setVisible(true);
 					lblWiFiIcon.setIcon(wifiOFF);
 					themes.registerIconColor(lblWiFiIcon, IconEnum.WIFI_OFF_ICON);
@@ -800,7 +827,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					//when wifi problems, radio off
 					
 					
-				}else if (status == CheckWifiStatus.END_NO_INET){
+				}else if (status == CheckWifiStatus.END_NO_INET ){
 					lblWiFiIcon.setVisible(true);
 					lblWiFiIcon.setIcon(themes.getIcon(IconEnum.WIFI_ON_NO_INET));
 					themes.registerIconColor(lblWiFiIcon, IconEnum.WIFI_ON_NO_INET);
@@ -809,9 +836,10 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 						blinkingWifiTimer.stop();
 					}
 					
-				}else if (status == CheckWifiStatus.END_WIFI_OFF){
-					lblWiFiIcon.setVisible(false);
 				}
+//				else if (status == CheckWifiStatus.END_WIFI_OFF){
+//					lblWiFiIcon.setVisible(false);
+//				}
 			}catch (Exception ex){
 				String fmtEx = new FormatStackTrace(ex).getFormattedException();
 				eh.addError(ErrorType.WIFI, new ErrorInfo(fmtEx));
@@ -902,9 +930,9 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 
 	@Override
 	public void message(net.piclock.swing.component.Message message) {
-		logger.log(Level.INFO,"Message property: " +  message.getPropertyName() + " vakue: " + message.getMessage());
+		logger.log(Level.INFO,"Message property: " +  message.getPropertyName() + " vakue: " + message);
 		if (message.getPropertyName().equals(Constants.ERROR_BROADCAST)) {
-			boolean displayIcon = (boolean) message.getMessage();
+			boolean displayIcon = (boolean) message.getFirstMessage();
 			if (displayIcon) {
 				lblWarningIcon.setVisible(true);
 			}else {

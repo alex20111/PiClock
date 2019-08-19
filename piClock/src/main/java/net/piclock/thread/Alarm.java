@@ -13,7 +13,9 @@ import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
 import net.piclock.db.entity.AlarmEntity;
+import net.piclock.db.entity.Mp3Entity;
 import net.piclock.db.entity.RadioEntity;
+import net.piclock.db.sql.Mp3Sql;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
@@ -126,8 +128,6 @@ public class Alarm implements Runnable, MessageListener{
 
 						count ++;
 					}
-
-
 				}else{
 					int triggerForecast = new Random().nextInt(999999);
 					ct.putSharedObject(Constants.FETCH_FORECAST, triggerForecast);
@@ -150,7 +150,13 @@ public class Alarm implements Runnable, MessageListener{
 					buzzerDefaultUsed = true;
 				}
 			}else if (buzzer == Buzzer.MP3 && alarm.getMp3Id() > -1) {
-				//TODO load track
+				Mp3Entity mp3 = new Mp3Sql().loadMp3ById(alarm.getMp3Id());
+				if (mp3 != null) {
+					track = mp3.getMp3FileName();
+				}else {
+					buzzer = Buzzer.BUZZER;
+					buzzerDefaultUsed = true;
+				}
 			}else {
 				buzzer = Buzzer.BUZZER;  //load default value if errors in others.
 			}
@@ -169,7 +175,7 @@ public class Alarm implements Runnable, MessageListener{
 					handler.autoShutDownScreen(45000);
 				}	
 
-				handler.turnOnAlarm(buzzer, track);
+				handler.turnOnAlarm(buzzer, track, alarm.getVolume());
 
 			}catch (InterruptedException ie) {					
 				logger.log(Level.CONFIG, "Current thread interrupted");
@@ -188,18 +194,29 @@ public class Alarm implements Runnable, MessageListener{
 	public synchronized void message(Message message) {
 		logger.log(Level.CONFIG, "Recieved message: " + message.getPropertyName());
 		if (Constants.TURN_OFF_ALARM.equals(message.getPropertyName())) {
-			logger.log(Level.CONFIG, "Message: " + message.getMessage());
+			logger.log(Level.CONFIG, "Message: " + message.getFirstMessage());
 			turnOffAlarmSound();
 		}else if (Constants.RADIO_STREAM_ERROR.equals(message.getPropertyName()) && alarmTriggered) {
-			logger.log(Level.INFO, "Radio stream error in wake up alarm, using default. Message: " + message.getMessage() + "  Date registered: " + message.getDateTime());
+			logger.log(Level.INFO, "Radio stream error in wake up alarm, using default. Message: " + message.getFirstMessage() + "  Date registered: " + message.getDateTime());
 			buzzerDefaultUsed = true;
 			try {
-				handler.turnOnAlarm(Buzzer.BUZZER, "");
-				handler.playRadio(false, "");//force turn off radio
+				handler.turnOnAlarm(Buzzer.BUZZER, "", -1);
+				handler.playRadio(false, "", -1);//force turn off radio
 			} catch (Exception e) {
 				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
 				eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 				logger.log(Level.SEVERE, "Error in Radio stream error message", e);
+			}
+		}else if (Constants.MP3_STREAM_ERROR.equals(message.getPropertyName()) && alarmTriggered) {
+			logger.log(Level.INFO, "MP3 stream error in wake up alarm, using default. Message: " + message.getFirstMessage() + "  Date registered: " + message.getDateTime());
+			buzzerDefaultUsed = true;
+			try {
+				handler.turnOnAlarm(Buzzer.BUZZER, "", -1);
+				handler.playMp3(false, "", -1);//force turn off radio
+			} catch (Exception e) {
+				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+				eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
+				logger.log(Level.SEVERE, "Error in MP3 stream error message", e);
 			}
 		}
 	}

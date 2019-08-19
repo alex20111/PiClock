@@ -28,7 +28,7 @@ public class AlarmEntity {
 	private boolean active 	= false;
 	private int radioId 	= -1;
 	private int mp3Id 		= -1;
-	private int volume 		= -1;
+	private int volume 		= 0;
 	private int alarmShutdown = -1;
 	private List<AlarmRepeat> alarmRepeat = new ArrayList<AlarmRepeat>();  // rang  -> all week , only week end, only mondays.
 	

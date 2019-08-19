@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
@@ -13,9 +14,9 @@ import javax.swing.SwingUtilities;
 public class Scroll extends MouseAdapter{
 
 	private Point origin;
-	private JPanel panel;
+	private JComponent panel;
 	private boolean mousePressedFirst = false;
-	public Scroll (JPanel component){
+	public Scroll (JComponent component){
 		panel = component;
 	}
 

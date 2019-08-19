@@ -15,6 +15,7 @@ public class Constants {
 	public static final String RADIO_STATION_VIEW = "radioStationsView";
 	public static final String WEB_SERVER_VIEW = "webServerView";
 	public static final String ERROR_VIEW = "errorView";
+	public static final String MP3_VIEW = "mp3_view";
 	
 	
 	
@@ -61,6 +62,19 @@ public class Constants {
 	public static final String DB_URL = "./PiClock";
 	public static final String DB_USER = "PiClock";
 	public static final String DB_PASS = "12345PiClock";
+	
+	//mp3
+	public static final String RELOAD_FROM_WEB = "reloadFromWeb";
+	public static final String B_VISIBLE_FRM_BUZZ_SEL = "selectMakeVisibleFromBuzzerSelect";
+	public static final String VOLUME_SENT_FOR_CONFIG = "VOLUME_SENT_FOR_CONFIG";
+	public static final String VOLUME_DISPLAY = "display_volume_icon";
+	public static final String MP3_INFO = "mp3Info";
+	public static final String BUZZ_OPT_MSG = "buzzerOptionMessage";
+	public static final String BUZZER_OPTION_PANEL = "buzzerOptionPanel";
+	public static final String MP3_STREAM_ERROR = "mp3StreamError";
+	
+	
+	
 	
 	
 	

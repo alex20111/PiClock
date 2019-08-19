@@ -52,6 +52,7 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 	private static final Logger logger = Logger.getLogger( WeatherForecastView.class.getName() );
 	
 	private JPanel parent = new JPanel();
+	private Color currentColor = Color.BLACK;
 	
 	private String lableForecastSize = "420px";
 	
@@ -150,12 +151,14 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 		
 		JLabel daysLbl = new JLabel();
 		JLabel icLbl = new JLabel();
-		JLabel fLbl = new JLabel();
+		JLabel fLbl = new JLabel();	
+		
 		JSeparator separator;	
-		daysLbl.setOpaque(false);
+		
 		if(notFirst){
 			//add seperator
 			 separator = new JSeparator();
+			 separator.setForeground(currentColor);
 			 parent.add(separator, "cell 0 "+indx+" 3 1, grow" );
 			 indx ++;			
 		}else{
@@ -163,12 +166,15 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 		}		
 
 		daysLbl = new JLabel();
+		daysLbl.setForeground(currentColor);
 		daysLbl.setText("<html><div style='width: 35px;word-wrap: break-word;'>"+day+"</html>");
 		daysLbl.setFont(new Font("Tahoma", Font.BOLD, 20));
+		daysLbl.setOpaque(false);
 
 		icLbl = new JLabel(ic);
 		
 		fLbl = new JLabel();
+		fLbl.setForeground(currentColor);
 		fLbl.setFont(new Font("Tahoma", Font.BOLD, 20));
 		fLbl.setText("<html><div style='width: "+ lableForecastSize + ";word-wrap: break-word;'>"+f+"</html>");
 		fLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -209,6 +215,10 @@ public class WeatherForecastView extends JPanel implements PropertyChangeListene
 	}
 	
 	public void colorComponent(Color color){
+		logger.log(Level.CONFIG, "Color the weather forecast text: COLOR: " + color);
+		
+		currentColor = color;
+		
 		Component[] componentList = parent.getComponents();
 		//Loop through the components
 		for(Component c : componentList){

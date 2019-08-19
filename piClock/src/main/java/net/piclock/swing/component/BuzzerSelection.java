@@ -9,6 +9,7 @@ public class BuzzerSelection {
 	private int  radioId = -1;
 	private int  mp3Id = -1;
 	private int shutdownMin = -1;
+	private int selVolume =-1;
 	
 	public BuzzerSelection(Buzzer buzzer, int min) {
 		this.buzzer = buzzer;
@@ -27,16 +28,16 @@ public class BuzzerSelection {
 		this.shutdownMin = min;
 	}
 	
-	public BuzzerSelection(AlarmEntity alarm) {
-		buzzer = Buzzer.valueOf(alarm.getAlarmSound());
-		
-		if (buzzer == Buzzer.RADIO) {
-			this.radioId = alarm.getRadioId();
-		}else if (buzzer == Buzzer.MP3) {
-			this.mp3Id = alarm.getMp3Id();
-		}
-		this.shutdownMin = alarm.getAlarmShutdown();
-	}
+//	public BuzzerSelection(AlarmEntity alarm) {
+//		buzzer = Buzzer.valueOf(alarm.getAlarmSound());
+//		
+//		if (buzzer == Buzzer.RADIO) {
+//			this.radioId = alarm.getRadioId();
+//		}else if (buzzer == Buzzer.MP3) {
+//			this.mp3Id = alarm.getMp3Id();
+//		}
+//		this.shutdownMin = alarm.getAlarmShutdown();
+//	}
 	
 	public Buzzer getBuzzer() {
 		return buzzer;
@@ -65,11 +66,21 @@ public class BuzzerSelection {
 		return shutdownMin;
 	}
 
+	public int getSelVolume() {
+		return selVolume;
+	}
+
+	public void setSelVolume(int selVolume) {
+		this.selVolume = selVolume;
+	}
+
 	@Override
 	public String toString() {
 		return "BuzzerSelection [buzzer=" + buzzer + ", radioId=" + radioId + ", mp3Id=" + mp3Id + ", shutdownMin="
-				+ shutdownMin + "]";
+				+ shutdownMin + ", selVolume=" + selVolume + "]";
 	}
+
+
 
 
 

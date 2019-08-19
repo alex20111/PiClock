@@ -28,6 +28,7 @@ import net.miginfocom.swing.MigLayout;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
+import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.CheckWifiStatus;
@@ -35,6 +36,7 @@ import net.piclock.enums.IconEnum;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
+import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
@@ -104,9 +106,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		titlePanel.setOpaque(false);
 		JButton back = new JButton("<"); 
 		back.setPreferredSize(new Dimension(41, 30));
-		titlePanel.add(back, "cell 0 0");
-		
-		t.registerLabelTextColor(titlePanel, LabelEnums.RADIO_TITLE);
+		titlePanel.add(back, "cell 0 0");		
 
 		back.addActionListener(new ActionListener() {
 
@@ -124,6 +124,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		JLabel lblRadio = new JLabel("Radio");
 		lblRadio.setFont(new Font("Tahoma", Font.BOLD, 35));
 		titlePanel.add(lblRadio, "cell 2 0");
+		t.registerLabelTextColor(lblRadio, LabelEnums.RADIO_TITLE);
 
 		JPanel bodyPanel = new JPanel();
 		bodyPanel.setOpaque(false);
@@ -198,7 +199,9 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 						RadioEntity re = (RadioEntity)radioStations.getSelectedItem();
 						logger.log(Level.INFO, "Playing : " + re.getRadioName() + " TRACK: " + re.getTrackNbr());
 						
-						handler.playRadio(true, re.getRadioLink());
+						Preferences prefs  = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+						
+						handler.playRadio(true, re.getRadioLink(), prefs.getLastVolumeLevel());
 
 						btnStop.setEnabled(true);						
 
@@ -230,6 +233,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					
 
 					lblRadioIcon.setVisible(false);					
 					lblNowPlaying.setVisible(false);
@@ -238,7 +242,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 
 					fireVolumeIconChange(false);
 					
-					handler.playRadio(false, "");
+					handler.playRadio(false, "", -1);
 
 				}catch(Exception ex) {
 					ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
@@ -263,7 +267,10 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 			@Override
 			public void actionPerformed(ActionEvent e) {
 							
-				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON_RADIO, IconEnum.VOLUME_MUTED_RADIO);
+				Preferences prefs  = (Preferences) ct.getSharedObject(Constants.PREFERENCES);
+				VolumeConfig config = new VolumeConfig(prefs.getLastVolumeLevel());
+				VolumeNew vol = new VolumeNew(config);
+//				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON_RADIO, IconEnum.VOLUME_MUTED_RADIO);
 				vol.setVisible(true);
 				
 		
@@ -316,7 +323,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		VolumeIndicator vi = (VolumeIndicator) ct.getSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER);
 		if(vi != null && vi.isRadioPlaying()) {
 			try {
-				handler.playRadio(false, "");
+				handler.playRadio(false, "" , -1);
 			} catch (Exception e) {
 				logger.log(Level.CONFIG, "Error in property change", e);
 			}

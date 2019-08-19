@@ -22,24 +22,24 @@ import net.piclock.util.FormatStackTrace;
 public class LDRStatusWorker implements Runnable{
 
 	private static final Logger logger = Logger.getLogger( LDRStatusWorker.class.getName() );
-	
+
 	private SwingContext ct = SwingContext.getInstance();
 	private DayNightCycle lastCycleStatus = DayNightCycle.NONE;
 	private DayNightCycle cycle = DayNightCycle.NONE;
-	
+
 	private Light lastLightStatus = Light.VERY_BRIGHT;
-	
+
 	private Map<Light, Integer> cntMap = new HashMap<Light, Integer>();
 	PiHandler handler;
-	
+
 	public LDRStatusWorker() {
 		cntMap.put(Light.DARK, 4);
 		handler = PiHandler.getInstance();
 		Light currLight = handler.getLDRstatus();
-		
+
 		cycle = (currLight == Light.DARK ? DayNightCycle.NIGHT : DayNightCycle.DAY); 
 	}
-	
+
 	@Override
 	public void run() {
 		try{			
@@ -55,7 +55,7 @@ public class LDRStatusWorker implements Runnable{
 
 				Integer cMap = cntMap.get(lightStatus);
 				int cnt = (cMap == null ? 0 : cMap.intValue());
-				
+
 				if (cnt  >= getCnt(lightStatus)) {
 					cntMap.clear();
 					//adjust LCD based on the LDR.					
@@ -70,7 +70,7 @@ public class LDRStatusWorker implements Runnable{
 				}else {
 					cnt++;
 					cntMap.put(lightStatus, cnt);
-					
+
 					if(cntMap.size() > 1) {
 						cntMap.clear();
 						cntMap.put(lightStatus, cnt);
@@ -78,35 +78,20 @@ public class LDRStatusWorker implements Runnable{
 				}
 			}
 
-			if (cycle == DayNightCycle.NIGHT && cycle != lastCycleStatus){
-				//turn off screeen if screen is on.
-				if(p.isAutoOffScreen()){
-					handler.turnOffScreen();
-					handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
-				}
-				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.NIGHT);
-				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-				themes.fireNightCycle();
-				lastCycleStatus = DayNightCycle.valueOf(cycle.name());
+			if (cycle == DayNightCycle.NIGHT ){
 
-			}else if (cycle == DayNightCycle.DAY && cycle != lastCycleStatus){
-				if(p.isAutoOffScreen()){
-					handler.turnOnScreen(true, lightStatus);
-					handler.turnOffTM1637Time();
+				if (cycle != lastCycleStatus) {
+					//turn off screeen if screen is on.
+					if(p.isAutoOffScreen()){
+						handler.turnOffScreen();
+						handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
+					}
+					ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.NIGHT);
+					ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+					themes.fireNightCycle();
+					lastCycleStatus = DayNightCycle.valueOf(cycle.name());
 				}
-				if (p.isWifiOff()) {
-					handler.turnWifiOn();
-				}
-				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.DAY);
-				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-				themes.fireDayCycle();
-				lastCycleStatus = DayNightCycle.valueOf(cycle.name());
 
-			}
-
-			//control some functions
-			if (cycle == DayNightCycle.NIGHT) {
-				
 				//if we need to shutdown wifi and it is night 
 				if (p.isWifiOff() && handler.isWifiOn() && !handler.isWifiAutoShutdownInProgress()) {
 					logger.log(Level.CONFIG, "Fire wifi auto shudown from LDR Worker");
@@ -114,9 +99,29 @@ public class LDRStatusWorker implements Runnable{
 				}else if (!p.isWifiOff() && !handler.isWifiOn()){
 					logger.log(Level.CONFIG, "Turn on wifi because it was off at night");
 					handler.turnWifiOn();					
+				}				
+
+
+			}else if (cycle == DayNightCycle.DAY ){
+
+				if (cycle != lastCycleStatus) {
+
+					handler.turnOnScreen(true, lightStatus);
+					handler.turnOffTM1637Time();
+
+
+					ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.DAY);
+					ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+					themes.fireDayCycle();
+					lastCycleStatus = DayNightCycle.valueOf(cycle.name());
+				}
+
+				if (!handler.isWifiOn()) {//does not matter if the option to turn off wifi is ON, when day and wifi dowon, turn it on.
+					handler.turnWifiOn();
 				}
 			}
-			
+
+
 
 		}catch(Throwable tr){
 			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
@@ -124,7 +129,7 @@ public class LDRStatusWorker implements Runnable{
 			logger.log(Level.SEVERE,"Error in ldr",tr);
 		}
 	}
-	
+
 	private int getCnt(Light current) {
 		if (lastLightStatus == Light.DARK && current.isDayLight() || 
 				lastLightStatus.isDayLight() && !current.isDayLight()) {
@@ -133,5 +138,5 @@ public class LDRStatusWorker implements Runnable{
 			return 1;
 		}
 	}
-	
+
 }

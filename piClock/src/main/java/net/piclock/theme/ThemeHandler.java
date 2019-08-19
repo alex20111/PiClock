@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
@@ -224,7 +225,8 @@ public class ThemeHandler {
 			loadSunnyBackdrop();
 		}
 	}
-	public void fireNightCycle(){		
+	public void fireNightCycle(){	
+		logger.log(Level.CONFIG,"fireNightCycle");
 
 		currBackground.setCycle(DayNightCycle.NIGHT);
 
@@ -233,7 +235,7 @@ public class ThemeHandler {
 	}
 	
 	public void fireDayCycle(){
-		
+		logger.log(Level.CONFIG,"fireDayCycle");
 		currBackground.setCycle(DayNightCycle.DAY);
 		
 		refreshTheme();
@@ -284,6 +286,8 @@ public class ThemeHandler {
 							((JLabel)o).setForeground(color);
 						}else if (o instanceof WeatherForecastView && label.getKey() == LabelEnums.WEATHER_FORECAST_VIEW) {
 							((WeatherForecastView)o).colorComponent(color);
+						}else if (o instanceof JCheckBox) {
+							((JCheckBox)o).setForeground(color);
 						}
 					}
 

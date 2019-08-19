@@ -118,7 +118,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		
 		ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 		
-		ct.addPropertyChangeListener(Constants.BUZZER_CHANGED, this);	
+		ct.addPropertyChangeListener(Constants.BUZZER_CHANGED, this);
+//		ct.addMessageChangeListener(Constants.BUZZ_OPT_MSG, this);
 
 		JLabel lblAlarmTitle = new JLabel("Alarm");
 		lblAlarmTitle.setHorizontalAlignment(SwingConstants.CENTER);
@@ -131,7 +132,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		if (alarmEnt != null) {
 			hours = Integer.parseInt(alarmEnt.getHour());
 			minutes = Integer.parseInt(alarmEnt.getMinutes());
-			buzzerSelection = new BuzzerSelection(alarmEnt);
+//			buzzerSelection = new BuzzerSelection(alarmEnt);
 			
 			tm.startAlarm(alarmEnt);
 						
@@ -143,7 +144,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				minutes = Integer.parseInt(ala.get(0).getMinutes());
 				//also set the days 
 				alarmEnt = ala.get(0);
-				buzzerSelection = new BuzzerSelection(alarmEnt);
 				
 				if (ala.get(0).isActive()) {
 					tm.startAlarm(alarmEnt);
@@ -151,7 +151,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			}else {
 				//new alarm
 				alarmEnt = new AlarmEntity();
-				buzzerSelection = new BuzzerSelection(alarmEnt);
 			}
 		}
 				
@@ -393,7 +392,16 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 						}else {
 							alarmEnt.setRadioId(-1);
 						}
-						//TODO mp3
+						if (Buzzer.valueOf(btnBuzzer.getText()) == Buzzer.MP3) {
+							alarmEnt.setMp3Id(buzzerSelection.getMp3Id());
+						}else {
+							alarmEnt.setMp3Id(-1);
+						}
+						
+						if (buzzerSelection.getSelVolume() > 0) {
+							alarmEnt.setVolume(buzzerSelection.getSelVolume());
+						}
+						
 						List<AlarmRepeat> rp = new ArrayList<AlarmRepeat>();
 
 						if (sunday.isSelected()) {
@@ -470,7 +478,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblMinutes_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMinutes_1.setBounds(420, 280, 160, 35);
 		add(lblMinutes_1);
-		theme.registerLabelTextColor(lblMinutes_1, LabelEnums.ALARM_HOUR_TXT);
+		theme.registerLabelTextColor(lblMinutes_1, LabelEnums.ALARM_MIN_TXT);
 		
 		wakeUpAlarmOptions = new BuzzerOptionDialog();
 		btnBuzzer = new JButton(Buzzer.BUZZER.name());
@@ -499,6 +507,9 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(btnBuzzer);
 	
 		dayDaysToSelect(alarmEnt, theme);
+		
+		//add option into session
+		ct.putSharedObject(Constants.BUZZER_OPTION_PANEL, wakeUpAlarmOptions);
 		
 	}
 	
@@ -597,5 +608,28 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(lblDaySat);
 		
 	}
+	
+//	@Override
+//	public void message(Message message) {
+//
+//		if (message.getPropertyName().equals(Constants.BUZZ_OPT_MSG)){ //comes from the buzzer dialog
+//			if ("buzzer".equalsIgnoreCase((String)message.getMessagePerIndex(0))){
+//				alarmEnt.setMp3Id(-1);
+//				alarmEnt.setRadioId(-1);
+//				btnBuzzer.setText((String)message.getMessagePerIndex(0));
+//			}else if ("radio".equalsIgnoreCase((String)message.getMessagePerIndex(0))){
+//				alarmEnt.setMp3Id(-1);
+//				alarmEnt.setRadioId((int)message.getMessagePerIndex(1));
+//				alarmEnt.setVolume((int)message.getMessagePerIndex(2));
+//				btnBuzzer.setText((String)message.getMessagePerIndex(0));
+//			}else if ("mp3".equalsIgnoreCase((String)message.getMessagePerIndex(0))){
+//				alarmEnt.setMp3Id((int)message.getMessagePerIndex(1));
+//				alarmEnt.setRadioId(-1);
+//				alarmEnt.setVolume((int)message.getMessagePerIndex(2));
+//				btnBuzzer.setText((String)message.getMessagePerIndex(0));
+//			}
+//
+//		}
+//	}
 
 }

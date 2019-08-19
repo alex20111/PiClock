@@ -26,6 +26,7 @@
 				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
@@ -81,6 +82,7 @@
 				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
@@ -135,6 +137,7 @@
 				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
@@ -189,6 +192,7 @@
 				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
@@ -243,6 +247,7 @@
 				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
@@ -297,6 +302,7 @@
 				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>

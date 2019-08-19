@@ -225,12 +225,16 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 		chckbxTurnOffScr.setOpaque(false);
 		chckbxTurnOffScr.setSelected(initPref.isAutoOffScreen());
 		add(chckbxTurnOffScr, "cell 2 4 3 1");
+		theme.registerLabelTextColor(chckbxTurnOffScr, LabelEnums.CFG_SCREEN_CHKBX);
+		
 
 		chckbxTurnOffWIFI = new JCheckBox("Turn off WIFI when dark");
 		chckbxTurnOffWIFI.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		chckbxTurnOffWIFI.setOpaque(false);
 		chckbxTurnOffWIFI.setSelected(initPref.isWifiOff());
 		add(chckbxTurnOffWIFI, "cell 2 5 3 1");
+		
+		theme.registerLabelTextColor(chckbxTurnOffWIFI, LabelEnums.CFG_WIFI_CHKBX);
 
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
@@ -253,7 +257,7 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 					if (wifiNames.getSelectedIndex() > 0 && txtWifiPass.getText().trim().length() == 0){
 						JOptionPane.showMessageDialog(ConfigView.this, "Please enter a password for wifi" , "Pass missing", JOptionPane.INFORMATION_MESSAGE);
 						canSave = false;
-					}else if (wifiNames.getSelectedIndex() > 0 && txtWifiPass.getText().trim().length() > 0 && !handler.isWifiConnected() ){ 
+					}else if (wifiNames.getSelectedIndex() > 0 && txtWifiPass.getText().trim().length() > 0 && !handler.isWifiConnected()){ 
 						//this means that he has enter the wifi use and pass and he has not tested or cannot connect sonce wrong pass.
 						JOptionPane.showMessageDialog(ConfigView.this, "Please test connection before saving.\nClick cancel if other problems." , "Cannot save", JOptionPane.INFORMATION_MESSAGE);
 						canSave = false;

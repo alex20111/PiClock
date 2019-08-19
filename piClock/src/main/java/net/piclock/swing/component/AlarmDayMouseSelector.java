@@ -17,7 +17,7 @@ public class AlarmDayMouseSelector extends MouseAdapter{
 	public AlarmDayMouseSelector(JLabel label, boolean initSelected) {
 		this.label = label;
 		this.selected = initSelected;
-		this.border = new RoundedBorder(Color.black, 40);
+		this.border = new RoundedBorder(Color.black, 40,2);
 		
 		if (selected) {
 			label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));

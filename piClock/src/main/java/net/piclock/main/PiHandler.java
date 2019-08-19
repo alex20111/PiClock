@@ -34,6 +34,7 @@ import net.piclock.main.Constants;
 import net.piclock.enums.Light;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
+import net.piclock.util.Mp3Streaming;
 import net.piclock.util.RadioStreaming;
 
 public class PiHandler {
@@ -66,6 +67,7 @@ public class PiHandler {
 	private ButtonChangeListener monitorBtnHandler;
 	
 	private RadioStreaming streaming;
+	private Mp3Streaming mp3Stream;
 	
 	private PiHandler() {
 		Gpio.wiringPiSetup();
@@ -109,7 +111,7 @@ public class PiHandler {
 	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.INFO,"Turning on screen. Wifi on option: " + withWifiOn);
 
-		autoWifiShutDown(false);
+//		autoWifiShutDown(false);
 
 		//if screen is auto shutting down and there is a request by the LDR to turn it back on, kill it.
 		cancelScreenAutoShutdown();
@@ -176,15 +178,15 @@ public class PiHandler {
 	 * @throws IOException 
 	 * @throws ExecuteException 
 	 * @throws InterruptedException **/
-	public void turnOnAlarm(Buzzer alarm, String text) throws   ExecuteException, IOException, InterruptedException{
+	public void turnOnAlarm(Buzzer alarm, String text, int volume) throws   ExecuteException, IOException, InterruptedException{
 		logger.log(Level.CONFIG,"Turning on: " + alarm.getName());		
 		
 		if (alarm == Buzzer.BUZZER){
 			buzzer(true);
 		}else if (alarm == Buzzer.RADIO){
-			playRadio(true, text);
+			playRadio(true, text, volume);
 		}else if (alarm == Buzzer.MP3){
-			playMp3(true);
+			playMp3(true, text, volume);
 		}
 	}
 	public void turnOffAlarm(Buzzer buzzerType) throws ExecuteException, IOException, InterruptedException{
@@ -193,9 +195,9 @@ public class PiHandler {
 		if (buzzerType == Buzzer.BUZZER){
 			buzzer(false);
 		}else if (buzzerType == Buzzer.RADIO){
-			playRadio(false, "");
+			playRadio(false, "", -1);
 		}else if (buzzerType == Buzzer.MP3){
-			playMp3(false);
+			playMp3(false, "", -1);
 		}
 	}
 	public void displayTM1637Time(String time){
@@ -391,6 +393,18 @@ public class PiHandler {
 			return false;
 		}
 	}
+	public void adjustVolume(int volume) throws ExecuteException, IOException {
+		logger.log(Level.CONFIG, "manipulate volume: " + volume);
+		Exec exec = new Exec();
+		exec.addCommand("amixer").addCommand("-c").addCommand("1").addCommand("set")
+		.addCommand("Speaker").addCommand(String.valueOf(volume) + "%").timeout(10000);
+		
+		int ext = exec.run();
+		
+		if (ext > 0 ){
+			logger.log(Level.INFO, "Problem with volume. Ext: " + ext + "  output: " + exec.getOutput());
+		}
+	}
 	public void setBrightness(Light light) {
 		logger.log(Level.CONFIG, "setBrightness : " + light + "   pwn: " + light.getPwmLevel());
 		SoftPwm.softPwmWrite(24, light.getPwmLevel());
@@ -478,20 +492,42 @@ public class PiHandler {
 			sendI2cCommand(BUZZER, "false");
 		}
 	}
-	/**play random mp3 on / off **/
-	private void playMp3(boolean on){
-		logger.log(Level.CONFIG, "playAlarmMp3() : " + on);
-		if (on){
-			//play random MP3
-		}else{
-			//off
-		}			
+	/**play random mp3 on / off 
+	 * @throws InterruptedException 
+	 * @throws IOException 
+	 * @throws IllegalStateException **/
+	public void playMp3(boolean on, String mp3File, int volume) throws InterruptedException, IllegalStateException, IOException{
+		logger.log(Level.CONFIG, "playMp3() : " + on + " track: " + mp3File);
+		if (on) {
+			if (mp3Stream != null) {
+				logger.log(Level.CONFIG, "Already streaming, closing stream");
+				mp3Stream.writeCommand("q");
+				Thread.sleep(100);
+				mp3Stream.stop();
+			}
+			adjustVolume(volume);
+			mp3Stream = new Mp3Streaming(mp3File);
+			mp3Stream.play();
+			
+			cmd.turnSpeakerOn();
+		}else {
+			if (mp3Stream != null) {
+				mp3Stream.writeCommand("q");
+				Thread.sleep(100);
+				mp3Stream.stop();
+			}
+			cmd.turnSpeakerOff();
+			mp3Stream = null;
+		}
+
+		logger.log(Level.CONFIG, "playMp3() , end method. " );
+			
 	}
 	/**Play the radio on the user selected frequency 
 	 * @throws IOException 
 	 * @throws ExecuteException 
 	 * @throws InterruptedException **/
-	public void playRadio(boolean on, String link) throws ExecuteException, IOException, InterruptedException{
+	public void playRadio(boolean on, String link, int volume) throws ExecuteException, IOException, InterruptedException{
 		logger.log(Level.CONFIG, "playAlarmRadio() : " + on);
 		
 		if (on) {
@@ -502,6 +538,7 @@ public class PiHandler {
 				streaming.stop();
 			}
 			
+			adjustVolume(volume);
 			streaming = new RadioStreaming(link);
 			streaming.play();
 			

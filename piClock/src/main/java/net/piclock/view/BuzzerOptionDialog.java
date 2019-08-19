@@ -1,6 +1,7 @@
 package net.piclock.view;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -31,22 +32,22 @@ import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.RadioEntity;
-import net.piclock.db.sql.AlarmSql;
+import net.piclock.db.sql.Mp3Sql;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.Buzzer;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.BuzzerSelection;
 import net.piclock.swing.component.KeyBoard;
+import net.piclock.swing.component.Message;
+import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
 import net.piclock.util.PreferencesHandler;
-import javax.swing.JSpinner;
-import java.awt.Dimension;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
-public class BuzzerOptionDialog extends JDialog {
+public class BuzzerOptionDialog extends JDialog implements MessageListener {
 
 	private static final Logger logger = Logger.getLogger( BuzzerOptionDialog.class.getName() );
 
@@ -61,10 +62,16 @@ public class BuzzerOptionDialog extends JDialog {
 
 	private JComboBox<RadioEntity> radioCmb;
 	private int radioSelectedId = -1;
+	private int mp3SelectedId = -1;
 	
-	private boolean mp3ScrInit = true;//TODO
-	private boolean radioScrInit = true; //used to prevent trigger of the combobox when opening the dialog
+	private int lastVolume = -1;
+	
+	private boolean mp3ScrInit = true;
 	private JTextField txtShutdown;
+	private JLabel lblMp3TrkName;
+	
+	private boolean noMp3Selected = false;
+	//
 
 	/**
 	 * Create the dialog.
@@ -82,10 +89,12 @@ public class BuzzerOptionDialog extends JDialog {
 		
 		setLocationRelativeTo(null);
 		
+		ct.addMessageChangeListener(Constants.MP3_INFO, this);
+		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[grow][][grow]", "[][][][][][][]"));
+		contentPanel.setLayout(new MigLayout("", "[grow][][grow]", "[][][][][][][][]"));
 
 		JLabel lblWakeUpAlarm = new JLabel("Wake Up Alarm Options");
 		lblWakeUpAlarm.setFont(new Font("Tahoma", Font.BOLD, 18));
@@ -152,15 +161,6 @@ public class BuzzerOptionDialog extends JDialog {
 			}
 		});
 
-//		radioCmb.addActionListener(new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				if (radioCmb != null && radioCmb.getSelectedItem() != null && !radioScrInit) {
-//				radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
-//				}
-//			}
-//		});
 		btnMp3 = new JToggleButton("Mp3");
 		btnMp3.setUI(new MetalToggleButtonUI() {
 			@Override
@@ -169,7 +169,11 @@ public class BuzzerOptionDialog extends JDialog {
 			}
 		});
 
-		btnMp3.setEnabled(false); //TODO re-enable when function is working.
+		btnMp3.addActionListener(l -> {
+			if (!mp3ScrInit) { //only handle it when the user click on the button and not when initializing it.
+			handleMp3Button();
+			}
+		});
 		contentPanel.add(btnMp3, "cell 1 4,growx");
 
 		buttonGroup.add(tglbtnBuzzer);
@@ -178,8 +182,12 @@ public class BuzzerOptionDialog extends JDialog {
 
 		contentPanel.add(radioCmb, "cell 0 5 3 1,alignx center");
 		
+		 lblMp3TrkName = new JLabel("");
+		lblMp3TrkName.setHorizontalAlignment(SwingConstants.CENTER);
+		contentPanel.add(lblMp3TrkName, "cell 0 6 3 1,alignx center");
+		
 		JPanel panel = new JPanel();
-		contentPanel.add(panel, "cell 0 6 3 1,grow");
+		contentPanel.add(panel, "cell 0 7 3 1,grow");
 		
 		JLabel lblShutdownIn = new JLabel("Shutdown in: ");
 		lblShutdownIn.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -206,8 +214,6 @@ public class BuzzerOptionDialog extends JDialog {
 				}
 			}
 		});	
-
-		
 		
 		panel.add(txtShutdown);
 		txtShutdown.setColumns(3);
@@ -227,24 +233,30 @@ public class BuzzerOptionDialog extends JDialog {
 						try{
 							boolean close = false;
 							BuzzerSelection bs;
-							
+
 							int shtDownMin = Integer.parseInt(txtShutdown.getText());
-							
+
 							if (tglbtnBuzzer.isSelected()){
 								bs = new BuzzerSelection(Buzzer.BUZZER, shtDownMin);
 								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								close = true;
 							}else if(btnRadio.isSelected()){
-//								radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
+								//TODO add last volume for radio
 								if (radioCmb != null && radioCmb.getSelectedItem() != null) {
 									bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId(), shtDownMin );
 									ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								}
 								close = true;
 							}else if(btnMp3.isSelected()){
-								bs = new BuzzerSelection(Buzzer.MP3, -1, shtDownMin);//TODO
-								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
-								close = true;
+								if (noMp3Selected){
+									JOptionPane.showMessageDialog(BuzzerOptionDialog.this, "No Mp3 selected,\nplease select a Mp3 or another option",
+											"No Selection", JOptionPane.WARNING_MESSAGE);
+								}else {
+									bs = new BuzzerSelection(Buzzer.MP3, mp3SelectedId, shtDownMin);
+									bs.setSelVolume(lastVolume);
+									ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
+									close = true;
+								}
 							}
 							PreferencesHandler.save(pref);
 
@@ -279,29 +291,29 @@ public class BuzzerOptionDialog extends JDialog {
 		}
 	}
 	public void setBuzzerType(AlarmEntity alarmEnt) throws ClassNotFoundException, SQLException {
-		//TODO if mp3
-		radioScrInit = true;
+		
+		//reset all variable needed 
 		mp3ScrInit = true;
+		noMp3Selected = false;
 		radioCmb.setVisible(false);
+		lblMp3TrkName.setText("");
 
+		//set the button based on the alarm sound type
+		Buzzer buzzer = Buzzer.BUZZER;
+		
 		if (alarmEnt != null ) {
 
-			txtShutdown.setText(String.valueOf(alarmEnt.getAlarmShutdown()));
+			txtShutdown.setText(String.valueOf(alarmEnt.getAlarmShutdown()));//alarm shutdown time
 
 			if (alarmEnt.getRadioId() > 0) {
 				radioSelectedId = alarmEnt.getRadioId();
 			}
-
-		} else {
-			txtShutdown.setText("5");
-		}
-
-		//		AlarmEntity alarm = new AlarmSql().loadActiveAlarm();
-		Buzzer buzzer = Buzzer.BUZZER;
-
-		//		logger.log(Level.CONFIG, "setBuzzerType: " + alarm);
-
-		if (alarmEnt != null) {
+			if (alarmEnt.getMp3Id() > 0) {
+				mp3SelectedId = alarmEnt.getMp3Id();
+			}
+			
+			lastVolume = alarmEnt.getVolume();
+			
 			buzzer = Buzzer.valueOf(alarmEnt.getAlarmSound());
 			if (buzzer == Buzzer.BUZZER){
 				tglbtnBuzzer.doClick();
@@ -311,13 +323,16 @@ public class BuzzerOptionDialog extends JDialog {
 				btnRadio.doClick();
 			}
 			if (buzzer == Buzzer.MP3){
+				lblMp3TrkName.setText(new Mp3Sql().loadMp3ById(alarmEnt.getMp3Id()).getMp3Name());
 				btnMp3.doClick();
 			}
-		}
-		else {
+
+		} else {
+			txtShutdown.setText("5");
 			tglbtnBuzzer.doClick();
 		}
-		radioScrInit = false;
+
+			
 		mp3ScrInit = false;
 	}
 	private boolean loadRadioList() throws ClassNotFoundException, SQLException {
@@ -337,7 +352,6 @@ public class BuzzerOptionDialog extends JDialog {
 			}
 			
 			if (toSel != null) {
-				System.out.println("Radio -!-!-!-!-! : " + toSel);
 				radioCmb.setSelectedItem(toSel);
 			}
 			
@@ -359,4 +373,33 @@ public class BuzzerOptionDialog extends JDialog {
 	public void setRadioSelectedId(int radioSelectedId) {
 		this.radioSelectedId = radioSelectedId;
 	}
+	
+	private void handleMp3Button() {
+		setVisible(false);
+
+		JPanel contentPane = (JPanel)ct.getSharedObject(Constants.CARD_PANEL);
+		//send message to other panel for selecting the row in the table with associated id.			
+		ct.sendMessage(Constants.B_VISIBLE_FRM_BUZZ_SEL, new Message(mp3SelectedId, lastVolume));
+		CardLayout cardLayout = (CardLayout) contentPane.getLayout(); 
+		cardLayout.show(contentPane, Constants.MP3_VIEW);	
+	}
+	@Override
+	public void message(Message message) {
+		if(message.getPropertyName().equals(Constants.MP3_INFO)){
+
+			logger.log(Level.CONFIG,"Message in BuzzerOption", message);
+			int success = (int)message.getMessagePerIndex(0);
+			if (success == 0){
+				noMp3Selected = false;			
+
+				mp3SelectedId = (Integer)message.getMessageList().get(1);//comes from alm entity
+				lastVolume = (Integer)message.getMessageList().get(2);
+				lblMp3TrkName.setText((String)message.getMessagePerIndex(3));
+			}else {
+				noMp3Selected = true;
+			}
+		}
+
+	}
+	
 }
