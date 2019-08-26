@@ -24,6 +24,7 @@ import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import home.fileutils.UnZip;
+import home.miniHttp.CookieValue;
 import home.miniHttp.HttpBase;
 import home.miniHttp.StaticPageHandler;
 import home.miniHttp.Table;
@@ -289,10 +290,14 @@ public class Mp3Handler extends HttpBase{
 				
 				message = generateSuccessMessage("File successfully uploaded");
 				
-			}else if (mp3File.get().indexOf(".mp3") > 0){				
+			}else if (mp3File.get().indexOf(".mp3") > 0){	
+				System.out.println("MP#: IN");
 				saveFiles(mp3Folder);
 				String fileName = getFileName();
-				addToDB(new File(mp3Folder + fileName));
+				
+				System.out.println("MP#: FILE name: " + fileName);
+				
+				addToDB(new File(mp3Folder + File.separatorChar +  fileName));
 				
 				ct.sendMessage(Constants.RELOAD_FROM_WEB, new Message("Reload"));
 
@@ -306,7 +311,13 @@ public class Mp3Handler extends HttpBase{
 	}
 	private String getFileName(){
 		String osSepChar = (mp3File.get().contains("\\") ? "\\" : "/" );
-		return mp3File.get().substring(mp3File.get().lastIndexOf(osSepChar), mp3File.get().length());	
+		String fileName = mp3File.get();
+		
+		if (fileName.contains(osSepChar)) {
+			fileName = mp3File.get().substring(mp3File.get().lastIndexOf(osSepChar), mp3File.get().length());
+		}
+		
+		return fileName;	
 	}
 	private void addToDB(File mp3File) throws ClassNotFoundException, SQLException, UnsupportedTagException, InvalidDataException, IOException{
 		

@@ -32,6 +32,7 @@ import net.piclock.enums.Buzzer;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
 import net.piclock.enums.Light;
+import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
 import net.piclock.util.Mp3Streaming;
@@ -499,6 +500,7 @@ public class PiHandler {
 	public void playMp3(boolean on, String mp3File, int volume) throws InterruptedException, IllegalStateException, IOException{
 		logger.log(Level.CONFIG, "playMp3() : " + on + " track: " + mp3File);
 		if (on) {
+			toggleMusicSystem(false, true);
 			if (mp3Stream != null) {
 				logger.log(Level.CONFIG, "Already streaming, closing stream");
 				mp3Stream.writeCommand("q");
@@ -531,6 +533,8 @@ public class PiHandler {
 		logger.log(Level.CONFIG, "playAlarmRadio() : " + on);
 		
 		if (on) {
+			toggleMusicSystem(true, false);
+			
 			if (streaming != null) {
 				logger.log(Level.CONFIG, "Already streaming, closing stream");
 				streaming.writeCommand("q");
@@ -669,5 +673,37 @@ public class PiHandler {
 			wifiShutDown.interrupt();
 			logger.log(Level.CONFIG, "autoWifiShutDown: Interrupted wifiShutDown");
 		}
+	}
+	/**
+	 * If the radio is requested, tur off mp3 and if mp3 is requested , turn off radio
+	 * @param radioRequested
+	 * @param mp3Requested
+	 * @throws InterruptedException
+	 */
+	private void toggleMusicSystem(boolean radioRequested, boolean mp3Requested) throws InterruptedException {
+		logger.log(Level.CONFIG, " Toggeling music system. Radio: " + radioRequested + "  MP3: " +mp3Requested);
+		
+		
+		//if radio requested, turn off MP3.
+		if (radioRequested) {
+			if (mp3Stream != null) {
+				
+				mp3Stream.writeCommand("q");
+				Thread.sleep(100);
+				mp3Stream.stop();
+				context.sendMessage(Constants.MUSIC_TOGGELED, new Message("mp3off"));
+			}
+		}else if (mp3Requested) {
+		//if MP3 requested, turn off Radio
+			if (streaming != null) {
+				logger.log(Level.CONFIG, "closing radio");
+				streaming.writeCommand("q");
+				Thread.sleep(100);
+				streaming.stop();
+				//send message that the radio was running and then turned off
+				context.sendMessage(Constants.MUSIC_TOGGELED, new Message("radiooff"));
+			}
+		}
+		
 	}
 }

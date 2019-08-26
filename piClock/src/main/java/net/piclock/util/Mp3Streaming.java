@@ -30,7 +30,7 @@ public class Mp3Streaming {
 	public Mp3Streaming(String link) {
 		processFinished = false;
 		mp3Playing = false;
-		mp3Link = "/home/pi/piClocl/mp3/" + link;
+		mp3Link = "/home/pi/piClock/mp3/" + link;
 		ct = SwingContext.getInstance();
 	}
 	

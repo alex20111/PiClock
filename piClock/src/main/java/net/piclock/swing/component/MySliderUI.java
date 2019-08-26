@@ -8,8 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JSlider;
@@ -22,7 +20,6 @@ public class MySliderUI extends BasicSliderUI {
     
     private Dimension dim = new Dimension(19, 28);
     
-    private List<ThumbPosition> listeners = new ArrayList<>();
 
     public MySliderUI(JSlider slider) {
         super(slider);
@@ -45,7 +42,7 @@ public class MySliderUI extends BasicSliderUI {
     	
     	 Graphics2D g2d = (Graphics2D) g;
     	 
-    	 fireThumbPositionListeners(thumbRect.x, thumbRect.y, thumbRect.getSize());
+//    	 fireThumbPositionListeners(thumbRect.x, thumbRect.y, thumbRect.getSize());
     
     	 int x = thumbRect.x + 1;
     	 int y = thumbRect.y + 1;
@@ -69,13 +66,5 @@ public class MySliderUI extends BasicSliderUI {
     	this.thumbColor = color;
     }
     
-    public void addListener(ThumbPosition tp){
-    	listeners.add(tp);
-    }
-    private void fireThumbPositionListeners(int x, int y, Dimension dim){
-    	for(ThumbPosition p : listeners){
-    		p.position(x, y, dim);
-    	}
-    }
 
 }

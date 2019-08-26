@@ -41,7 +41,7 @@ public class ArduinoSerialCmd {
 	private List<ButtonChangeListener> btnListeners = new ArrayList<ButtonChangeListener>();
 	
 	private final BlockingQueue<Integer> ldrQueue =  new ArrayBlockingQueue<>(1);
-	
+	private final BlockingQueue<List<String>> scanQueue =  new ArrayBlockingQueue<>(1);
 	
 	private ArduinoSerialCmd() throws UnsupportedBoardType, IOException, InterruptedException {
 		serial = SerialFactory.createInstance();
@@ -118,8 +118,49 @@ public class ArduinoSerialCmd {
 	public void timeOff() throws IllegalStateException, IOException {
 		sendCommand(translator.generateTimeOffCmd());
 	}
+	public List<String> scanForFmChanels() throws IllegalStateException, IOException, InterruptedException {
+		System.out.println("Scanning");
+		if (translator.getRadioScanStatus() == RadioScan.STARTED) {
+			throw new IllegalStateException("Scan is still running, cannot initiate an other scan");
+		}
+		sendCommand(translator.generateScanFM());
+		
+		List<String> data = new ArrayList<>();
+		try {
+			data = scanQueue.poll(30, TimeUnit.SECONDS);
+		}catch(Exception ex) {
+			String fmtEx = new FormatStackTrace(ex).getFormattedException();
+			eh.addError(ErrorType.ARDUINO, new ErrorInfo(fmtEx));
+			translator.setScan(RadioScan.NONE);
+			logger.log(Level.INFO, "scan station retrieve value timeout or null: ", ex);
+		}
+		
+		return data;
+		
+	}
+	/**
+	 * Turn radio off
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+	public void radioOff() throws IllegalStateException, IOException {
+		setRadioChannel(-1, false);
+	}
+	/**
+	 * select a radio channel
+	 * @param channel
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+	public void radioSelectChannel(int channel) throws IllegalStateException, IOException {
+		setRadioChannel(channel, true);
+	}
+	private  void setRadioChannel(int channel, boolean on ) throws IllegalStateException, IOException {
+		sendCommand(translator.generateSelectChannelCmd(String.valueOf(channel), on));
+	}
 	public synchronized void  sendCommand(String command) throws IllegalStateException, IOException {		
 		logger.log(Level.CONFIG, "Sending command: " + command);
+		System.out.println("Sending command: " + command);
 		serial.write(command);
 		try {
 			Thread.sleep(50);
@@ -132,14 +173,14 @@ public class ArduinoSerialCmd {
 		btnListeners.remove(btn);
 	}
 	
-	private void startListener() {
+	private synchronized void startListener() {
 		serial.addListener(new SerialDataEventListener() {
           @Override
           public void dataReceived(SerialDataEvent event) {
 
         	  try {
             	
-//            	  System.out.println("Data retrieve form arduino: " + event.getAsciiString());
+            	  System.out.println("Data retrieve form arduino: " + event.getAsciiString());
             	  
             	 Command cmd =  translator.translateReceivedCmd(event.getAsciiString());
             	  
@@ -156,6 +197,11 @@ public class ArduinoSerialCmd {
             			  fireBtnChangeEvent(state);
             		  }else if (cmd == Command.READY) {
             			  logger.log(Level.INFO, "!!! ARDUINO ready !!!");
+            		  }else if (cmd == Command.SCAN_RADIO && translator.getRadioScanStatus() ==  RadioScan.FINISHED) {
+            			  
+            			  translator.setScan(RadioScan.NONE);
+//            			System.out.println("Station list: " + translator.getStations());
+            			scanQueue.put(translator.getStations());
             		  }
             	  }
 
@@ -232,117 +278,4 @@ public class ArduinoSerialCmd {
     	
     	
     }
-//
-//        // !! ATTENTION !!
-//        // By default, the serial port is configured as a console port
-//        // for interacting with the Linux OS shell.  If you want to use
-//        // the serial port in a software program, you must disable the
-//        // OS from using this port.
-//        //
-//        // Please see this blog article for instructions on how to disable
-//        // the OS console for this port:
-//        // https://www.cube-controls.com/2015/11/02/disable-serial-port-terminal-output-on-raspbian/
-//
-//        // create Pi4J console wrapper/helper
-//        // (This is a utility class to abstract some of the boilerplate code)
-//        final Console console = new Console();
-//
-//        // print program title/header
-//        console.title("<-- The Pi4J Project -->", "Serial Communication Example");
-//
-//        // allow for user to exit program using CTRL-C
-//        console.promptForExit();
-//
-//        // create an instance of the serial communications class
-////        final Serial serial = SerialFactory.createInstance();
-//
-//        // create and register the serial data listener
-//        serial.addListener(new SerialDataEventListener() {
-//            @Override
-//            public void dataReceived(SerialDataEvent event) {
-//
-//                // NOTE! - It is extremely important to read the data received from the
-//                // serial port.  If it does not get read from the receive buffer, the
-//                // buffer will continue to grow and consume memory.
-//
-//                // print out the data received to the console
-//                try {
-//                    console.println("[HEX DATA]   " + event.getHexByteString());
-//                    console.println("[ASCII DATA] " + event.getAsciiString());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//        try {
-//            // create serial config object
-//            SerialConfig config = new SerialConfig();
-//
-//            // set default serial settings (device, baud rate, flow control, etc)
-//            //
-//            // by default, use the DEFAULT com port on the Raspberry Pi (exposed on GPIO header)
-//            // NOTE: this utility method will determine the default serial port for the
-//            //       detected platform and board/model.  For all Raspberry Pi models
-//            //       except the 3B, it will return "/dev/ttyAMA0".  For Raspberry Pi
-//            //       model 3B may return "/dev/ttyS0" or "/dev/ttyAMA0" depending on
-//            //       environment configuration.
-//            config.device(SerialPort.getDefaultPort())
-//                  .baud(Baud._38400)
-//                  .dataBits(DataBits._8)
-//                  .parity(Parity.NONE)
-//                  .stopBits(StopBits._1)
-//                  .flowControl(FlowControl.NONE);
-//
-//            // parse optional command argument options to override the default serial settings.
-//            if(args.length > 0){
-//                config = CommandArgumentParser.getSerialConfig(config, args);
-//            }
-//
-//            // display connection details
-//            console.box(" Connecting to: " + config.toString(),
-//                    " We are sending ASCII data on the serial port every 1 second.",
-//                    " Data received on serial port will be displayed below.");
-//
-//
-//            // open the default serial device/port with the configuration settings
-//            serial.open(config);
-//
-//            // continuous loop to keep the program running until the user terminates the program
-//            while(console.isRunning()) {
-//                try {
-//                    // write a formatted string to the serial transmit buffer
-//                    serial.write("CURRENT TIME: " + new Date().toString());
-//
-//                    // write a individual bytes to the serial transmit buffer
-//                    serial.write((byte) 13);
-//                    serial.write((byte) 10);
-//
-//                    // write a simple string to the serial transmit buffer
-//                    serial.write("Second Line");
-//
-//                    // write a individual characters to the serial transmit buffer
-//                    serial.write('\r');
-//                    serial.write('\n');
-//
-//                    // write a string terminating with CR+LF to the serial transmit buffer
-//                    serial.writeln("Third Line");
-//                }
-//                catch(IllegalStateException ex){
-//                    ex.printStackTrace();
-//                }
-//
-//                // wait 1 second before continuing
-//                Thread.sleep(1000);
-//            }
-//
-//        }
-//        catch(IOException ex) {
-//            console.println(" ==>> SERIAL SETUP FAILED : " + ex.getMessage());
-//            return;
-//        }
-//    }
 }
-
-// END SNIPPET: serial-snippet
-

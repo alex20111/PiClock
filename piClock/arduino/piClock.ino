@@ -1,4 +1,8 @@
 #include <TM1637Display.h>
+#include <Wire.h>
+#include <radio.h>
+#include <SI4703.h>
+
 
 // Module connection pins (Digital Pins)
 #define CLK 2
@@ -7,11 +11,15 @@
 #define LDR A1
 #define BUZZER 9
 #define SPEAKER_MOSFET 8
+#define RESET_PIN_RADIO 5
+#define SDIO  A4
+
+SI4703   radio(RESET_PIN_RADIO, SDIO);    ///< Create an instance of a SI4703 chip radio.
 
 TM1637Display display(CLK, DIO);
 
 //serial variables
-const byte numChars = 7;
+const byte numChars = 8;
 char receivedChars[numChars];
 boolean newData = false;
 
@@ -30,8 +38,8 @@ int militaryTime = 0;
 uint8_t level = 0;
 
 //send back char buffer
-char sendMsg[7];
-char bufferChar[3];
+char sendMsg[8];
+char bufferChar[5];
 
 //btn
 uint8_t buttonState;             // the current reading from the input pin
@@ -42,6 +50,13 @@ uint8_t lastButtonState = HIGH;  // the previous reading from the input pin
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 50;    // the debounce time; increase if the out
 
+//radio
+boolean scanFm = false;
+int scanLastChannel = 0;
+int fmStation = 1069;  //106.9
+
+
+
 void setup() {
   pinMode(BTNA, INPUT);
   pinMode(LDR, INPUT);
@@ -50,8 +65,18 @@ void setup() {
 
   digitalWrite(SPEAKER_MOSFET, HIGH);
 
+
+  // Initialize the Radio
+  radio.init();
+
+  radio.setBandFrequency(RADIO_BAND_FM, fmStation); // 5. preset.
+
+  radio.setMono(false);
+  radio.setMute(true);
+  radio.setVolume(1);
+
   Serial.begin(9600);
-  Serial.print("<ready>");//send ready signal to calluer
+  Serial.print(F("<ready>"));//send ready signal to calluer
   Serial.flush();
 }
 
@@ -65,6 +90,10 @@ void loop() {
   }
 
   readButton1(); //read button 1
+
+  if (scanFm) {
+    scanFmBand();
+  }
 
 }
 
@@ -222,6 +251,25 @@ void handleSerialData() {
       case 'c':
         timeDisplayBrightness();
         break;
+      case 's':
+        if (!scanFm) {
+          fmStation = radio.getMinFrequency();// Rock FM.
+          scanLastChannel = radio.getMinFrequency();
+          radio.setFrequency(fmStation);
+          scanFm = true;
+        }
+        break;
+      case 'r':
+        if (receivedChars[1] == '8') {
+          radio.setMute(false);
+          radio.setVolume(2);
+
+          setRadioChannel();
+        } else {
+          radio.setMute(true);
+          radio.setVolume(0);
+        }
+        break;
       default:
         // statements
         break;
@@ -269,29 +317,98 @@ void readButton1() {
   // save the reading. Next time through the loop, it'll be the lastButtonState:
   lastButtonState = reading;
 
+}
+
+void scanFmBand() {
+
+  if (fmStation >= scanLastChannel) {
+    scanLastChannel = fmStation;
+
+    radio.seekUp(true);
+    //  Serial.print("Freq: ");
+    fmStation = radio.getFrequency();
+    //  Serial.println(fmStation);
+    clearMsg();
+
+    itoa(fmStation, bufferChar, 10);
+
+    sendMsg[0] = '<';
+    sendMsg[1] = 's';
+
+    uint8_t i = 0;
+    uint8_t idx = 2;
+    for (i = 0 ; i < strlen(bufferChar) ; i ++) {
+      sendMsg[idx] = bufferChar[i];
+      idx ++;
+    }
+
+    sendMsg[idx] = '>';
+
+    Serial.print(sendMsg);
+    Serial.flush();//that means do not wait and send info to caller
 
 
+  } else {
+
+    clearMsg();
+    sendMsg[0] = '<';
+    sendMsg[1] = 's';
+    sendMsg[2] = 'e';
+    sendMsg[3] = 'n';
+    sendMsg[4] = 'd';
+    sendMsg[5] = '>';
+    delay(50);
+    Serial.print(sendMsg);
+    Serial.flush();
+    scanFm = false;
+  }
 
 
-
-
-
-
-  //   //Button function
-  //  uint8_t btn = digitalRead(BTNA);
-  //  if (btn == HIGH && !btnPressed) { //send when data shange
+  //  fmStation = radio.seekUp();
+  //
+  //  if (fmStation != scanLastChannel) {
+  //
   //    clearMsg();
+  //
+  //    itoa(fmStation, bufferChar, 10);
+  //
   //    sendMsg[0] = '<';
-  //    sendMsg[1] = 'a';
-  //    sendMsg[2] = 49;
-  //    sendMsg[3] = '>';
+  //    sendMsg[1] = 's';
+  //
+  //    uint8_t i = 0;
+  //    uint8_t idx = 2;
+  //    for (i = 0 ; i < strlen(bufferChar) ; i ++) {
+  //      sendMsg[idx] = bufferChar[i];
+  //      idx ++;
+  //    }
+  //
+  //    sendMsg[idx] = '>';
   //
   //    Serial.print(sendMsg);
-  //    Serial.flush();
-  //    btnPressed = true;
-  //    delay(100);
+  //    Serial.flush();//that means do not wait and send info to caller
   //
-  //  } else if (btn == LOW && btnPressed) {
-  //    btnPressed = false;
+  //    scanLastChannel = fmStation;
+  //  } else {
+  //    scanFm = false;
   //  }
+
+}
+void setRadioChannel() {
+  char channelBuffer[5];
+  channelBuffer [0] = receivedChars[2];
+  channelBuffer [1] = receivedChars[3];
+  channelBuffer [2] = receivedChars[4];
+  channelBuffer [3] = receivedChars[5];
+
+  if (strlen(receivedChars) > 6 ) { // 8990 = 4, 10690 = 5 so r88990 = 6 and r810690 = 7
+    channelBuffer [4] = receivedChars[6];
+  }
+
+
+  fmStation = atoi(channelBuffer);
+
+  //  Serial.print(channelBuffer);
+  //  Serial.print(fmStation);
+
+  radio.setFrequency(fmStation);
 }

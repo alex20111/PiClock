@@ -4,7 +4,6 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -40,6 +39,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
+
 import java.awt.FlowLayout;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -66,12 +66,12 @@ import net.piclock.util.WordUtils;
 public class Mp3View extends JPanel implements MessageListener {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final Logger logger = Logger.getLogger( Mp3View.class.getName() );
-	
+
 	private String BTN_VOL_ALARM = "Set Volume";
 	private String BTN_VOL_MP3	 = "Vol";
-	
+
 	private JLabel lblSelectionTxt;
 	private JTable table;
 	private TableRowSorter<TableModel> sorter;
@@ -100,10 +100,12 @@ public class Mp3View extends JPanel implements MessageListener {
 	//slider table
 	private Hashtable<Integer, JLabel> sliderTable;
 	private boolean allowSliderChangeEvent = true;
-	
+
 	//handler
 	private PiHandler handler;
 	
+	private JLabel lblMp3MainIcon;
+
 	/**
 	 * Create the panel.
 	 * @throws IOException 
@@ -111,9 +113,11 @@ public class Mp3View extends JPanel implements MessageListener {
 	 * @throws ClassNotFoundException 
 	 */
 	@SuppressWarnings({ "serial", "rawtypes" })
-	public Mp3View() throws IOException, ClassNotFoundException, SQLException {
+	public Mp3View(JLabel lblMp3Icon) throws IOException, ClassNotFoundException, SQLException {
 
+		lblMp3MainIcon = lblMp3Icon;
 		handler = PiHandler.getInstance();
+
 		sql = new Mp3Sql();
 
 		ct = SwingContext.getInstance();
@@ -121,10 +125,12 @@ public class Mp3View extends JPanel implements MessageListener {
 		ct.addMessageChangeListener(Constants.B_VISIBLE_FRM_BUZZ_SEL, this); //this is to make the button visible to selecte a mp3.
 		ct.addMessageChangeListener(Constants.VOLUME_SENT_FOR_CONFIG, this);
 		ct.addMessageChangeListener(Constants.RELOAD_FROM_WEB, this);
-		
+		ct.addMessageChangeListener(Constants.MUSIC_TOGGELED, this);
+
 
 		setLayout(new BorderLayout(0, 0));
 		setSize(800, 480);
+		setOpaque(false);
 
 		JPanel titlePanel = new JPanel();
 		add(titlePanel, BorderLayout.NORTH);
@@ -132,15 +138,17 @@ public class Mp3View extends JPanel implements MessageListener {
 		JLabel lblTitle = new JLabel("MP3");
 		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 24));
 		titlePanel.add(lblTitle);
+		titlePanel.setOpaque(false);
 
 		JPanel panelView = new JPanel();
 		panelView.setBorder(new EmptyBorder(0, 5, 2, 0));
 		add(panelView, BorderLayout.CENTER);
 		panelView.setLayout(new BorderLayout(0, 0));
+		panelView.setOpaque(false);
 
 		scrollPane = new JScrollPane();
 		panelView.add(scrollPane, BorderLayout.CENTER);
-		
+
 		lblSelectionTxt = new JLabel("");
 		lblSelectionTxt.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		scrollPane.setColumnHeaderView(lblSelectionTxt);
@@ -149,7 +157,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 		centerRenderer.setVerticalAlignment( JLabel.TOP );		
-		
+
 		DefaultTableModel model = new DefaultTableModel(new Object[] { "Track Name", "Artist" , "Category","Time", " "}, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -159,27 +167,28 @@ public class Mp3View extends JPanel implements MessageListener {
 		};
 
 		table = new JTable(model);			
-		
+
 		Scroll scroll = new Scroll(table);
 		table.addMouseListener(scroll); 
 		table.addMouseMotionListener(scroll); 		
-		
+
 		TableColumnModel tcm = table.getColumnModel();
-//		tcm.removeColumn( tcm.getColumn(4) );//TODO - re-enable
-		
+		//		tcm.removeColumn( tcm.getColumn(4) );//TODO - re-enable
+
 		tcm.getColumn(1).setCellRenderer( centerRenderer );
 		tcm.getColumn(2).setCellRenderer( centerRenderer );
 		tcm.getColumn(3).setCellRenderer( centerRenderer );
-		
+
 		tcm.getColumn(0).setPreferredWidth(360);
 		tcm.getColumn(1).setPreferredWidth(160);
 		tcm.getColumn(2).setPreferredWidth(75);
 		tcm.getColumn(3).setPreferredWidth(70);
-		
+
 		sorter = new TableRowSorter<TableModel>(table.getModel());
 		table.setRowSorter(sorter);
 
 		scrollPane.setViewportView(table);
+		scrollPane.getViewport().setOpaque(false);
 
 		JPanel contentPanel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) contentPanel.getLayout();
@@ -203,6 +212,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		});
 		lblTrack.setFont(new Font("Tahoma", Font.BOLD, 16));
 		contentPanel.add(lblTrack);
+		contentPanel.setOpaque(false);
 
 		lblArtist = new JLabel("Artist");
 		lblArtist.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -239,6 +249,8 @@ public class Mp3View extends JPanel implements MessageListener {
 
 		//Slider
 		PopupSlider s = new PopupSlider(JSlider.VERTICAL, 0, 25, 25);
+		s.getSlider().setOpaque(false);
+		s.setOpaque(false);
 
 		sliderTable = new Hashtable<Integer, JLabel>();
 		sliderTable.put (0, new JLabel("Z"));
@@ -269,30 +281,28 @@ public class Mp3View extends JPanel implements MessageListener {
 		sliderTable.put (25, new JLabel("A"));
 		s.setLabelTable (sliderTable);
 
-		s.setPopupLabelFont(new Font("Tahoma", Font.BOLD, 16));
-		s.setPopupLabelDimension(new Dimension(50,40));
-		s.useLabelTableText(true);
 		s.setPaintTicks(true);
 		s.setPaintLabels(true);
+		s.useTableLabelText(true);
 
-		s.popupBorderThickness(2);
+		//		s.popupBorderThickness(2);
 		s.setBorder(new EmptyBorder(10, 10, 10, 15));
-	
+
 		s.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mousePressed(MouseEvent e) {
 				allowSliderChangeEvent = true;
 			}
 		});
-		
+
 
 		panelView.add(s, BorderLayout.EAST);
 		final Dictionary dic = s.getLabelTable();
 
-		s.addChangeListener(new ChangeListener() {
+		s.getSlider().addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
 				if (allowSliderChangeEvent){
-					int value = s.getValue();
+					int value = s.getSlider().getValue();
 					JLabel text = (JLabel)dic.get(value);
 
 					boolean goingUp = false;
@@ -305,13 +315,13 @@ public class Mp3View extends JPanel implements MessageListener {
 
 					DefaultTableModel d = (DefaultTableModel) table.getModel();
 					for(int i = 0; i < table.getRowCount() ; i ++){
-	
+
 						String val = (String)d.getValueAt(table.convertRowIndexToModel(i), selection.getRowSel());
 
 						if (val.contains("<html>")  ){
 							val = val.replaceAll("\\<.*?>","").trim() ;
 						}
-						
+
 						if (val.toUpperCase().startsWith(text.getText())){
 							int conv = -1;
 							if (goingUp){
@@ -336,6 +346,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		btnPanel.setLayout(new MigLayout("hidemode 3", "[][grow][][][][grow][]", "[]"));
 
 		btnBack = new JButton("<");
+		btnBack.setSize(45, 37);
 		btnPanel.add(btnBack, "cell 0 0");
 
 		btnPlay = new JButton("P");
@@ -347,23 +358,25 @@ public class Mp3View extends JPanel implements MessageListener {
 		btnAlarmMp3 = new JButton("Select for alarm");
 		btnPanel.add(btnAlarmMp3, "cell 4 0");
 
+		btnPanel.setOpaque(false);
+
 		btnVol = new JButton(BTN_VOL_MP3);
 		btnVol.addActionListener(l -> {	
-			
+
 			VolumeConfig config = new VolumeConfig(selectedVolume);
 			config.setMp3Id(getMp3IdFromTable());
 			config.setFromAlarm(setVolumeForAlarm);
 			VolumeNew vol = new VolumeNew(config); 
-			
+
 			vol.setVisible(true);
-			
+
 		});
 		btnPanel.add(btnVol, "cell 6 0");
 		btnAlarmMp3.setVisible(false);
 		btnAlarmMp3.addActionListener(l -> {
 			//NO: put result as shared object alarm will get shared object (cannot do it since it's not a modale popup)
 			Message msg = new Message();
-//			System.out.println("vtable.getSelectedRow() " + table.getSelectedRow() );
+			//			System.out.println("vtable.getSelectedRow() " + table.getSelectedRow() );
 			if (table.getSelectedRow() > -1   ){
 				try{
 					int id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(table.getSelectedRow()), 4);		
@@ -383,8 +396,8 @@ public class Mp3View extends JPanel implements MessageListener {
 					logger.log(Level.SEVERE,"Error in selecting mp3", ex);
 					msg.addIntToMessageList(-1);
 				}
-				
-				
+
+
 			}else{
 				msg.addIntToMessageList(-1);
 			}
@@ -392,127 +405,137 @@ public class Mp3View extends JPanel implements MessageListener {
 			JPanel contentPane = (JPanel)ct.getSharedObject(Constants.CARD_PANEL);
 			CardLayout cardLayout = (CardLayout) contentPane.getLayout(); 
 			cardLayout.show(contentPane, Constants.ALARM_VIEW);
-			
+
 			btnMp3Mode();
-			
+
 			((BuzzerOptionDialog)ct.getSharedObject(Constants.BUZZER_OPTION_PANEL)).setVisible(true);			
-			
+
 		});
 		btnStop.addActionListener(l ->{
-			
+
 			btnStop.setEnabled(false);
-			fireVolumeIconChange(false);
-			System.out.println("MP screen -BTN  STOP Used");
+			try {
+				handler.playMp3(false, "", -1);
+				fireVolumeIconChange(false);
+				lblMp3MainIcon.setVisible(false);
+				System.out.println("MP screen -BTN  STOP Used");
+			} catch (IllegalStateException | InterruptedException | IOException e1) {
+				// TODO Auto-generated catch block
+				logger.log(Level.SEVERE, "Error in stopping music", e1);
+
+			}
+
 		});
 		btnPlay.addActionListener(l ->{	
-		
-//			System.out.println("col 1: " + table.getColumnModel().getColumn(0).getPreferredWidth() + " col2: " + table.getColumnModel().getColumn(1).getPreferredWidth() + " col3: " + table.getColumnModel().getColumn(2).getPreferredWidth() + " col4: " + table.getColumnModel().getColumn(3).getPreferredWidth());
-			
+
+			//			System.out.println("col 1: " + table.getColumnModel().getColumn(0).getPreferredWidth() + " col2: " + table.getColumnModel().getColumn(1).getPreferredWidth() + " col3: " + table.getColumnModel().getColumn(2).getPreferredWidth() + " col4: " + table.getColumnModel().getColumn(3).getPreferredWidth());
+
 			try {
 
-			if (table.getSelectedRow() != -1 ){
-				
-				int id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(table.getSelectedRow()), 4);		
-				if (id >= 0){
-					Mp3Entity mp3 = sql.loadMp3ById(id);				
-					
-					handler.playMp3(true, mp3.getMp3FileName(), selectedVolume);
-					btnStop.setEnabled(true);
-					fireVolumeIconChange(true);
-				}
+				if (table.getSelectedRow() != -1 ){
 
-			}	
-			
+					int id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(table.getSelectedRow()), 4);		
+					if (id >= 0){
+						Mp3Entity mp3 = sql.loadMp3ById(id);
+
+						handler.playMp3(true, mp3.getMp3FileName(), selectedVolume);
+						btnStop.setEnabled(true);
+						fireVolumeIconChange(true);
+						lblMp3MainIcon.setVisible(true);
+					}
+
+				}	
+
 			}catch (IOException | IllegalStateException | InterruptedException | ClassNotFoundException | SQLException e){
 				e.printStackTrace();
 				logger.log(Level.CONFIG, "Error while trying to play mp3", e);
 			}
-			
+
 		});
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JPanel contentPane = (JPanel)ct.getSharedObject(Constants.CARD_PANEL);
 				CardLayout cardLayout = (CardLayout) contentPane.getLayout(); 
-				cardLayout.show(contentPane, "mainpanel");
+				cardLayout.show(contentPane, Constants.MAIN_VIEW);
 			}
 		});
 		selection = Selection.TRACK;
 
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(false);
-		
+
 		DefaultListSelectionModel selectionModel = new DefaultListSelectionModel();
 		selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		selectionModel.addListSelectionListener(new ListSelectionListener() {
-		    public void valueChanged(ListSelectionEvent e) {
-		    	if (!e.getValueIsAdjusting()){
-		    		
-		    		//verify if the slider selection is consistent with the table selection
-		    		DefaultTableModel mod = (DefaultTableModel)table.getModel();
-		    		
-		    		int selectedRow = table.getSelectedRow();
-		    		
-		    		if (selectedRow != -1){
-		    			
-		    			int id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(table.getSelectedRow()), 4);	
-		    			
-		    			if (id >=0 ){
-		    				btnPlay.setEnabled(true);
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()){
 
-		    				String cellValue = (String)mod.getValueAt(table.convertRowIndexToModel(selectedRow), selection.getRowSel());
+					//verify if the slider selection is consistent with the table selection
+					DefaultTableModel mod = (DefaultTableModel)table.getModel();
 
-		    				if (cellValue.contains("<html>")  ){
-		    					cellValue = cellValue.replaceAll("\\<.*?>","").trim() ;
-		    				}
+					int selectedRow = table.getSelectedRow();
 
-		    				if (cellValue != null && cellValue.length() > 1){
-		    					allowSliderChangeEvent = false;
-		    					s.setValue(setSliderValue(cellValue.substring(0, 1)));		    				
-		    				}
-		    			}
-		    			
-		    		}else{
-		    			btnPlay.setEnabled(false);		    	
-		    		}	    	
-		    	}
-		    }
+					if (selectedRow != -1){
+
+						int id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(table.getSelectedRow()), 4);	
+
+						if (id >=0 ){
+							btnPlay.setEnabled(true);
+
+							String cellValue = (String)mod.getValueAt(table.convertRowIndexToModel(selectedRow), selection.getRowSel());
+
+							if (cellValue.contains("<html>")  ){
+								cellValue = cellValue.replaceAll("\\<.*?>","").trim() ;
+							}
+
+							if (cellValue != null && cellValue.length() > 1){
+								allowSliderChangeEvent = false;
+								s.getSlider().setValue(setSliderValue(cellValue.substring(0, 1)));		    				
+							}
+						}
+
+					}else{
+						btnPlay.setEnabled(false);		    	
+					}	    	
+				}
+			}
 		});
-		
+
 		table.setSelectionModel( selectionModel);
-		
+
 		btnPlay.setEnabled(false);
 		btnStop.setEnabled(false);		
-		
+
 		loadAllMp3();
-		
+
 		//check if any loaded , if none loaded, disable play button and add message in table.
 		if (table.getRowCount() == 0 ){
 			addRow(null);
-						
+
 		}		
 	}
 
 	private void addRow(Mp3Entity mp3){
 		DefaultTableModel model = (DefaultTableModel)table.getModel();
-		
+
 		if (mp3 != null){
 			String genre = mp3.getMp3Genre() > -1 ? ID3v1Genres.GENRES[mp3.getMp3Genre()] : mp3.getMp3GenreDesc();
 			String artist = "<html>  " + WordUtils.wrap(mp3.getArtist() != null 
 					&& mp3.getArtist().length() > 0 ? mp3.getArtist() : "unknown" , 23, "\n", true)+ "</html>";
-					
+
 			String duration = "0";
 			if (mp3.getMp3Length() > 0){
 				duration = String.format("%d:%02d", 
-					    TimeUnit.SECONDS.toMinutes(mp3.getMp3Length()),
-					    mp3.getMp3Length() - 
-					    TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(mp3.getMp3Length())) 
-					);
+						TimeUnit.SECONDS.toMinutes(mp3.getMp3Length()),
+						mp3.getMp3Length() - 
+						TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(mp3.getMp3Length())) 
+						);
 			}
-			
+
 			model.addRow(new Object[]{mp3.getMp3Name(), artist, genre != null && genre.trim().length() > 0 ? genre : "unknown" ,
 					duration, mp3.getId()});
-			
+
 		}else{
 			model.addRow(new Object[]{"No mp3 found !!!","", "", 0,-1});			
 		}
@@ -534,9 +557,9 @@ public class Mp3View extends JPanel implements MessageListener {
 	}
 
 	private void loadAllMp3() throws ClassNotFoundException, SQLException, IOException{
-		
+
 		sql.CreateMp3Table();
-		
+
 		List<Mp3Entity> ent = sql.loadAllMp3();
 
 		Collections.sort(ent, new SortMp3ByName());
@@ -572,49 +595,57 @@ public class Mp3View extends JPanel implements MessageListener {
 				DefaultTableModel d = (DefaultTableModel) table.getModel();
 				for(int i = 0; i < table.getRowCount() ; i ++){
 					int id = (int)d.getValueAt(i, 4);
-					
+
 					if (id == msgSelId){
 						int sel = table.convertRowIndexToView(i);						
 						table.addRowSelectionInterval(sel,sel);
 						break;
 					}
 				}				
-				
+
 				btnAlarmMp3.setText("Select for alarm");
-				
+
 				if (btnStop.isEnabled()){
 					//this usually means that it was playing.. stop it
 					System.out.println("Stopping current music!!!!");
 					btnStop.doClick();
 				}
-				
+
 			}else if ( (table.getModel().getRowCount() == 1 && msgSelId == -1 ) || table.getModel().getRowCount() == 0 ){
 				btnAlarmMp3.setText("Back to alarm");
 			}else{
 				btnAlarmMp3.setText("Select for alarm");
 			}
-			
+
 			selectedVolume = (int) message.getMessagePerIndex(1);
-			
+
 			btnAlarmMode();
 		}else if (message.getPropertyName().equals(Constants.RELOAD_FROM_WEB)){
-			
+
 			DefaultTableModel model = (DefaultTableModel) table.getModel();
 			model.setRowCount(0);
-			
+
 			try {
 				loadAllMp3();
 			} catch (ClassNotFoundException | SQLException | IOException e) {
-				
+
 				e.printStackTrace();
 			}
-			
+
 		}else if(message.getPropertyName().equals(Constants.VOLUME_SENT_FOR_CONFIG)){
 			selectedVolume = (Integer)message.getMessagePerIndex(0);
 			logger.log(Level.CONFIG,"MP screen -volume selected from previous card: " + selectedVolume );
+		}else if (message.getPropertyName().equals(Constants.MUSIC_TOGGELED)) {
+			logger.log(Level.CONFIG, "Music toggeled: " + message);
+			String msg = (String) message.getFirstMessage();
+			if (msg.equals("mp3off")) {
+				logger.log(Level.CONFIG, "Music toggeled ---- OOOOFFFF: " + message);
+				lblMp3MainIcon.setVisible(false);
+				btnStop.setEnabled(false);
+			}
 		}
 	}
-	
+
 	private void btnMp3Mode(){
 		btnStop.setVisible(true);
 		btnPlay.setVisible(true);
@@ -633,7 +664,7 @@ public class Mp3View extends JPanel implements MessageListener {
 	}
 	private int getMp3IdFromTable(){
 		int row = table.getSelectedRow();
-		
+
 		if (row > -1){
 			return (Integer)table.getModel().getValueAt(table.convertRowIndexToModel(row), 4);
 		}
@@ -647,23 +678,38 @@ public class Mp3View extends JPanel implements MessageListener {
 		}		
 		return 25;
 	}
-	
-	
+
+
 	private void fireVolumeIconChange(boolean displayOn) {
 		VolumeIndicator vi = (VolumeIndicator)ct.getSharedObject(Constants.MP3_VOLUME_ICON_TRIGGER);			
-		
+
 		if (vi == null) {
 			vi =  new VolumeIndicator();
 			vi.setMp3Playing(displayOn);
 			ct.putSharedObject(Constants.MP3_VOLUME_ICON_TRIGGER, vi);
 		}else {
-			
+
 			VolumeIndicator viNew = new VolumeIndicator();
 			viNew.setMp3Playing(displayOn);
 			viNew.setRadioPlaying(vi.isRadioPlaying());
 			ct.putSharedObject(Constants.MP3_VOLUME_ICON_TRIGGER, viNew);
-			
+
 		}
 	}
-	
+//	public static void main(String args[]) throws ClassNotFoundException, IOException, SQLException {
+//		Mp3View m = new Mp3View();
+//
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					JFrame frame = new JFrame();
+//					frame.add(m);
+//					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 }

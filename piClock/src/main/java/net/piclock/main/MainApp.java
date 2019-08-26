@@ -211,13 +211,14 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		};
 						
 		setContentPane(cardsPanel);
-		lblRadioIcon = new JLabel();		
+		lblRadioIcon = new JLabel();
+		lblMp3Icon = new JLabel();
 		
 		weatherConfig = new WeatherConfigView();
 		forecastView = new WeatherForecastView();
 		weatherAlertView = new WeatherAlertView();	
 		radioStationsView = new RadioStationsView(lblRadioIcon);
-		mp3View				   = new Mp3View();
+		mp3View				   = new Mp3View(lblMp3Icon);
 		
 		cardsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setUndecorated(true);
@@ -427,8 +428,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		alertIconsPanel.add(lblRadioIcon);
 		
-		lblMp3Icon = new JLabel();
-		lblMp3Icon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
+		lblMp3Icon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right //TODO
 		lblMp3Icon.setVisible(false);
 		themes.registerIconColor(lblMp3Icon, IconEnum.MP3_ICON);
 		alertIconsPanel.add(lblMp3Icon);
@@ -837,9 +837,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					}
 					
 				}
-//				else if (status == CheckWifiStatus.END_WIFI_OFF){
-//					lblWiFiIcon.setVisible(false);
-//				}
 			}catch (Exception ex){
 				String fmtEx = new FormatStackTrace(ex).getFormattedException();
 				eh.addError(ErrorType.WIFI, new ErrorInfo(fmtEx));
@@ -847,8 +844,9 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			}
 		}else if(evt.getPropertyName().equals(Constants.RADIO_VOLUME_ICON_TRIGGER) ||
 				evt.getPropertyName().equals(Constants.MP3_VOLUME_ICON_TRIGGER)){
-			logger.log(Level.CONFIG, "Volume icon indicator");
+			
 			VolumeIndicator vi = (VolumeIndicator)evt.getNewValue();
+			logger.log(Level.CONFIG, "Volume icon indicator. " + vi);
 			btnVolume.setVisible(vi.displayVolumeIcon());
 		}
 	}		

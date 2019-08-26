@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project piClock">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.jarfile" value="C:/dev/exec"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/ArdTest.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="net.piclock.arduino.ArduinoTestDriver"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="C:/Users/ADMIN/git/PiClock/piClock/target/classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/ADMIN/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/ADMIN/.m2/repository/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/ADMIN/.m2/repository/home/alex/Utilities/1.0/Utilities-1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/ADMIN/.m2/repository/com/pi4j/pi4j-core/1.2/pi4j-core-1.2.jar"/>
+
+        </jar>
+    </target>
+</project>

@@ -2,8 +2,6 @@ package net.piclock.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -26,12 +24,13 @@ import net.piclock.swing.component.Message;
 import net.piclock.swing.component.PopupSlider;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.PreferencesHandler;
+import javax.swing.BoxLayout;
 
 
 public class VolumeNew extends JDialog {
 
 	private static final Logger logger = Logger.getLogger( VolumeNew.class.getName() );
-	
+
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private SwingContext ct;
@@ -42,27 +41,30 @@ public class VolumeNew extends JDialog {
 
 	private JButton muteButton; 
 	private JButton sampleVolBtn;
-	
+
 	private Thread sampleVolThrd;
-	
+
 	private int mutedValue = -1;
-	
+
 
 	/**
 	 * Create the dialog.
 	 */
 	public VolumeNew(VolumeConfig config) {
-		
+
 		ct = SwingContext.getInstance();
 		prefs = (Preferences) ct.getSharedObject(Constants.PREFERENCES);
-		
+
 		handler = PiHandler.getInstance();
-		
-		setSize(200, 430);
+
+		setModal(true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setUndecorated(true);
-		setLocationRelativeTo(null);
+		
 		setModalityType(ModalityType.APPLICATION_MODAL);
+		setSize(100, 430);
+		setLocationRelativeTo(null);		
+		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -70,38 +72,39 @@ public class VolumeNew extends JDialog {
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
 			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("OK");
+				okButton.setPreferredSize(new Dimension(57, 23));
 				okButton.addActionListener(l -> {
-					
+
 					if (config.isFromAlarm()){
-						System.out.println("Volume Class - send vol for ala: " + s.getValue());
-						
+						System.out.println("Volume Class - send vol for ala: " + s.getSlider().getValue());
+
 						if (sampleVolThrd != null && sampleVolThrd.isAlive()){
 							sampleVolThrd.interrupt();
 						}
-						ct.sendMessage(Constants.VOLUME_SENT_FOR_CONFIG, new Message(s.getValue()));
+						ct.sendMessage(Constants.VOLUME_SENT_FOR_CONFIG, new Message(s.getSlider().getValue()));
 					}else{
 						try {
-						
-							prefs.setLastVolumeLevel(s.getValue());
+
+							prefs.setLastVolumeLevel(s.getSlider().getValue());
 							PreferencesHandler.save(prefs);
-							ct.sendMessage(Constants.VOLUME_SENT_FOR_CONFIG, new Message(s.getValue()));
+							ct.sendMessage(Constants.VOLUME_SENT_FOR_CONFIG, new Message(s.getSlider().getValue()));
 						}catch (IOException e) {
 							logger.log(Level.SEVERE, "Error while saving volume in preferences", e);
 						}
 					}
-					
+
 					this.setVisible(false);
 				});
+				buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
-				
+
 				muteButton = new JButton("mute");
 				buttonPane.add(muteButton);
 				muteButton.addActionListener(l ->{
@@ -109,7 +112,7 @@ public class VolumeNew extends JDialog {
 					try {
 						if (muteButton.getText().equalsIgnoreCase("mute")){
 							muteButton.setText("UnMute");
-							mutedValue = s.getValue();
+							mutedValue = s.getSlider().getValue();
 							handler.adjustVolume(0);
 						}else{
 							muteButton.setText("Mute");
@@ -123,12 +126,12 @@ public class VolumeNew extends JDialog {
 			}			
 			sampleVolBtn = new JButton("Test");
 			sampleVolBtn.addActionListener(l ->{
-				
+
 				//sample for 5 seconds
 				if (sampleVolThrd != null && sampleVolThrd.isAlive()){
 					sampleVolThrd.interrupt();
 				}
-								
+
 				sampleVolThrd = new Thread(new Runnable(){
 
 					@Override
@@ -140,17 +143,18 @@ public class VolumeNew extends JDialog {
 
 								m = new  Mp3Sql().loadMp3ById(config.getMp3Id());
 
-								handler.playMp3(true,m.getMp3FileName(), s.getValue());
+								handler.playMp3(true,m.getMp3FileName(), s.getSlider().getValue());
 
 								try {
 									Thread.sleep(6000);
 								} catch (InterruptedException e) {
+									handler.playMp3(false, "", -1);
 									Thread.currentThread().interrupt();
 								}
 
 								handler.playMp3(false, "", -1);
 							}else if (config.getRadioId() > 0){
-
+								//TODO - Handle radio volume in the future
 							}
 							System.out.println("sampleVolThrd, stopped");
 						} catch (Exception ex){
@@ -165,17 +169,15 @@ public class VolumeNew extends JDialog {
 		}
 		s = new PopupSlider(JSlider.VERTICAL, 0, 100, config.getVolumeLevel());
 
-		s.setMinorTickSpacing(5);
-		s.setMajorTickSpacing(25);
-		s.setPopupLabelFont(new Font("Tahoma", Font.BOLD, 16));
-		s.setPopupLabelDimension(new Dimension(50,40));
+		s.getSlider().setMinorTickSpacing(5);
+		s.getSlider().setMajorTickSpacing(25);
 		s.setPaintTicks(true);
 		s.setPaintLabels(true);
+		s.setThumbDimension(new Dimension(29, 38));
 
-		s.popupBorderThickness(2);
 
 		getContentPane().add(s, BorderLayout.CENTER);
-		
+
 		if (config.isFromAlarm()){
 			muteButton.setVisible(false);
 			if (config.hasId()){
@@ -185,44 +187,45 @@ public class VolumeNew extends JDialog {
 			muteButton.setVisible(true);
 			sampleVolBtn.setVisible(false);
 		}
-		
-		
-		s.addMouseListener(new MouseAdapter(){
-			
+
+
+		s.getSlider().addMouseListener(new MouseAdapter(){
+
 			@Override
 			public void mouseReleased(MouseEvent e) {			
 				try {
-					handler.adjustVolume(s.getValue());
-//					adjustVolume(s.getValue());
+
+					handler.adjustVolume(s.getSlider().getValue());
+					//					adjustVolume(s.getValue());
 				} catch (IOException e1) {
 					logger.log(Level.CONFIG, "Error " , e1);
 				}
 			}
 		});		
 
-		
-		
+
+
 
 	} 
-//	private void adjustVolume(int volume) throws IOException{
-//		logger.log(Level.CONFIG, "manipulate volume: " + volume);
-//		Exec exec = new Exec();
-//		exec.addCommand("amixer").addCommand("-c").addCommand("1").addCommand("set")
-//		.addCommand("Speaker").addCommand(String.valueOf(volume) + "%").timeout(10000);
-//		
-//		int ext = exec.run();
-//		
-//		if (ext > 0 ){
-//			logger.log(Level.INFO, "Problem with volume. Ext: " + ext + "  output: " + exec.getOutput());
-//		}
-//		
-////		if (prefs.getLastVolumeLevel() == 0 && s.getValue() > 0) {
-////			logger.log(Level.CONFIG, "Volume unmuted");
-////			ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
-////			volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_ICON));
-////			t.registerIconColor(volumeButton, IconEnum.VOLUME_ICON);
-////		}
-//		
-//	}
+	//	private void adjustVolume(int volume) throws IOException{
+	//		logger.log(Level.CONFIG, "manipulate volume: " + volume);
+	//		Exec exec = new Exec();
+	//		exec.addCommand("amixer").addCommand("-c").addCommand("1").addCommand("set")
+	//		.addCommand("Speaker").addCommand(String.valueOf(volume) + "%").timeout(10000);
+	//		
+	//		int ext = exec.run();
+	//		
+	//		if (ext > 0 ){
+	//			logger.log(Level.INFO, "Problem with volume. Ext: " + ext + "  output: " + exec.getOutput());
+	//		}
+	//		
+	////		if (prefs.getLastVolumeLevel() == 0 && s.getValue() > 0) {
+	////			logger.log(Level.CONFIG, "Volume unmuted");
+	////			ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
+	////			volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_ICON));
+	////			t.registerIconColor(volumeButton, IconEnum.VOLUME_ICON);
+	////		}
+	//		
+	//	}
 
 }

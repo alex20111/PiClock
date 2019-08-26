@@ -93,7 +93,7 @@ public class SwingContext {
 
 			logger.log(Level.CONFIG,"END - SWING CONTEXT -  PROPERTY: " + propertyName +  " size: " + msg.size() + " l: " + l  );
 		}catch (Exception ex) {
-			logger.log(Level.SEVERE, "Error " + ex);
+			logger.log(Level.SEVERE, "Error " , ex);
 		}
 	}
 	public void addMessageChangeListener(MessageListener l) {
@@ -110,7 +110,7 @@ public class SwingContext {
 				msg.remove(l);
 			}
 		}catch (Exception ex) {
-			logger.log(Level.SEVERE, "Error " + ex);
+			logger.log(Level.SEVERE, "Error " , ex);
 		}
 
 	}
@@ -139,7 +139,7 @@ public class SwingContext {
 				logger.log(Level.CONFIG,"Message not found");
 			}
 		}catch (Exception ex) {
-			logger.log(Level.SEVERE, "Error " + ex);
+			logger.log(Level.SEVERE, "Error " , ex);
 		}
 	}
 

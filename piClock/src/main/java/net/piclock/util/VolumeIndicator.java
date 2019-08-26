@@ -22,6 +22,10 @@ public class VolumeIndicator {
 	public boolean displayVolumeIcon() {
 		return mp3Playing || radioPlaying;
 	}
+	@Override
+	public String toString() {
+		return "VolumeIndicator [mp3Playing=" + mp3Playing + ", radioPlaying=" + radioPlaying + "]";
+	}
 	
 	
 	

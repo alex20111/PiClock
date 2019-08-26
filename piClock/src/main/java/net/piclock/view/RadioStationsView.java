@@ -90,6 +90,7 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
 		ct.addMessageChangeListener(Constants.RADIO_STREAM_ERROR , this);
+		ct.addMessageChangeListener(Constants.MUSIC_TOGGELED , this);
 		ct.addPropertyChangeListener(Constants.RADIO_VOLUME_ICON_TRIGGER , this);
 		
 		
@@ -361,6 +362,15 @@ public class RadioStationsView extends JPanel implements PropertyChangeListener,
 				JOptionPane.showMessageDialog(this, "Cannot play Radio stream, verify stream", "Error in stream", JOptionPane.ERROR_MESSAGE);
 			}
 			autoChange(false);
+		}else if (message.getPropertyName().equals(Constants.MUSIC_TOGGELED)) {
+			logger.log(Level.CONFIG, "Music toggeled: " + message);
+			String msg = (String)message.getFirstMessage();
+			if (msg.equals("radiooff")) {
+				logger.log(Level.CONFIG, "Music toggeled ---- OOOOFFFFRRRR: " + message);
+				btnStop.setEnabled(false);
+				lblRadioIcon.setVisible(false);	
+				lblNowPlaying.setVisible(false);
+			}
 		}		
 	}
 }

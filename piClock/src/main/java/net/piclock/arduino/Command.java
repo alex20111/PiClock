@@ -1,7 +1,7 @@
 package net.piclock.arduino;
 
 public enum Command{
-		LDR("l"), BTN("a"), TIME("t"),TIME_OFF("o"), BUZZER("b"),TIME_BRIGHTNESS("c"), MOSFET("m"), NONE(""), READY("ready");
+		LDR("l"), BTN("a"), TIME("t"),TIME_OFF("o"), BUZZER("b"),TIME_BRIGHTNESS("c"), MOSFET("m"), NONE(""), READY("ready"), SCAN_RADIO("s"), SELECT_RADIO_CH("r");
 		
 		private String cmd;
 		private Command(String cmd){

@@ -57,7 +57,7 @@
 				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>		
 			</labelIcon>
 		</background>
-	<background name="RAIN" image="rain-orig-480.jpg" imageFolder="img" imageNight="clear-sky-night.jpg">
+	<background name="RAIN" image="rain-orig-480.jpg" imageFolder="img" imageNight="rain-night.jpg">
 			<label name="labels">
 				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>

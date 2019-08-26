@@ -376,6 +376,11 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 	
 	private void handleMp3Button() {
 		setVisible(false);
+		
+		if (lastVolume == -1) {
+			logger.log(Level.CONFIG, "Last volume at -1, adjusting to 25");
+			lastVolume = 20;
+		}
 
 		JPanel contentPane = (JPanel)ct.getSharedObject(Constants.CARD_PANEL);
 		//send message to other panel for selecting the row in the table with associated id.			

@@ -18,7 +18,7 @@ public class Constants {
 	public static final String MP3_VIEW = "mp3_view";
 	
 	
-	
+	public static final String MUSIC_TOGGELED = "Music toggeled";
 	public static final String CARD_PANEL = "card_panel";
 	public static final String PREFERENCES = "PREFERENCES";
 	

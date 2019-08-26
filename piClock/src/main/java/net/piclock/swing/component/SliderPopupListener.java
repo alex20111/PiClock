@@ -40,11 +40,10 @@ class SliderPopupListener extends MouseAdapter {
 		label.setOpaque(false);
 		label.setBackground(UIManager.getColor("ToolTip.background"));
 		label.setBorder(rb);
-		label.setBackground(Color.pink);
 		toolTip.add(label);
 		toolTip.setSize(size);
-		toolTip.setAlwaysOnTop(true);
-		AWTUtilities.setWindowOpaque(toolTip, false); 
+//		toolTip.setAlwaysOnTop(true);
+//		AWTUtilities.setWindowOpaque(toolTip, false); 
 
 	}
 	public SliderPopupListener(int sliderOrientation) {
@@ -93,11 +92,11 @@ class SliderPopupListener extends MouseAdapter {
 
 	@Override public void mousePressed(MouseEvent e) {
 
-		if (UIManager.getBoolean("Slider.onlyLeftMouseButtonDrag") && SwingUtilities.isLeftMouseButton(e)) {
+//		if (UIManager.getBoolean("Slider.onlyLeftMouseButtonDrag") && SwingUtilities.isLeftMouseButton(e)) {
 			xCoord = e.getPoint().x;  
 			updateToolTip(e);   
 			toolTip.setVisible(true);
-		}
+//		}
 	}
 	@Override
 	public void mouseReleased(MouseEvent e) 
