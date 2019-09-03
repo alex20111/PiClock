@@ -103,8 +103,13 @@ public class Mp3View extends JPanel implements MessageListener {
 
 	//handler
 	private PiHandler handler;
-	
+
 	private JLabel lblMp3MainIcon;
+
+	//Thread
+	private Thread playThread;
+	private boolean playNext = false;
+	private boolean playing = false;
 
 	/**
 	 * Create the panel.
@@ -126,6 +131,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		ct.addMessageChangeListener(Constants.VOLUME_SENT_FOR_CONFIG, this);
 		ct.addMessageChangeListener(Constants.RELOAD_FROM_WEB, this);
 		ct.addMessageChangeListener(Constants.MUSIC_TOGGELED, this);
+		ct.addMessageChangeListener(Constants.MP3_PLAY_NEXT, this);
 
 
 		setLayout(new BorderLayout(0, 0));
@@ -340,6 +346,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		});
 
 		setSelected(lblTrack);
+	
 
 		btnPanel = new JPanel();
 		add(btnPanel, BorderLayout.SOUTH);
@@ -415,12 +422,17 @@ public class Mp3View extends JPanel implements MessageListener {
 
 			btnStop.setEnabled(false);
 			try {
+				playing = false;
+				//				playThread.interrupt();
+				playNext = false;
+
+
 				handler.playMp3(false, "", -1);
 				fireVolumeIconChange(false);
 				lblMp3MainIcon.setVisible(false);
 				System.out.println("MP screen -BTN  STOP Used");
 			} catch (IllegalStateException | InterruptedException | IOException e1) {
-				// TODO Auto-generated catch block
+
 				logger.log(Level.SEVERE, "Error in stopping music", e1);
 
 			}
@@ -428,25 +440,65 @@ public class Mp3View extends JPanel implements MessageListener {
 		});
 		btnPlay.addActionListener(l ->{	
 
-			//			System.out.println("col 1: " + table.getColumnModel().getColumn(0).getPreferredWidth() + " col2: " + table.getColumnModel().getColumn(1).getPreferredWidth() + " col3: " + table.getColumnModel().getColumn(2).getPreferredWidth() + " col4: " + table.getColumnModel().getColumn(3).getPreferredWidth());
-
 			try {
 
 				if (table.getSelectedRow() != -1 ){
 
 					int id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(table.getSelectedRow()), 4);		
-					if (id >= 0){
+					if (id >= 0){						
+						
 						Mp3Entity mp3 = sql.loadMp3ById(id);
 
-						handler.playMp3(true, mp3.getMp3FileName(), selectedVolume);
+
 						btnStop.setEnabled(true);
 						fireVolumeIconChange(true);
 						lblMp3MainIcon.setVisible(true);
+
+						playThread = new Thread(new Runnable() {
+
+							@Override
+							public void run() {
+								int rowSelected = table.getSelectedRow();
+								
+								playing = true;
+								try {
+									handler.playMp3(true, mp3.getMp3FileName(), selectedVolume);
+									//wwait until finished and then play next
+									while(playing) {
+										if (playNext) {
+											//increment rowSelected by 1
+											rowSelected ++;
+											logger.log(Level.CONFIG, "Row sel: " + rowSelected + "  table rows: " + table.getRowCount());
+											if(rowSelected < table.getRowCount()) {
+												int mp3Id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(rowSelected), 4);
+												Mp3Entity newMp3 = sql.loadMp3ById(mp3Id);
+												handler.playMp3(true, newMp3.getMp3FileName(), selectedVolume);
+												playNext = false;
+											}else {
+												//restart from top
+												rowSelected = 0;												
+											}
+										}
+										Thread.sleep(100);
+									}									
+
+								} catch (IllegalStateException | InterruptedException | IOException | ClassNotFoundException | SQLException e) {
+									Thread.currentThread().interrupt();
+									logger.log(Level.SEVERE, "Error in playThread" , e);
+									playing = false;
+								}
+
+							}
+
+						});
+
+						playThread.start();						
+
 					}
 
 				}	
 
-			}catch (IOException | IllegalStateException | InterruptedException | ClassNotFoundException | SQLException e){
+			}catch (IllegalStateException | ClassNotFoundException | SQLException e){
 				e.printStackTrace();
 				logger.log(Level.CONFIG, "Error while trying to play mp3", e);
 			}
@@ -571,20 +623,9 @@ public class Mp3View extends JPanel implements MessageListener {
 		table.setRowHeight(50);
 	}
 
-	enum Selection{
-		TRACK(0), ARTIST(1), CATG(2);
 
-		private int rowSel;
-
-		private Selection(int rowSelected){
-			rowSel = rowSelected;
-		}
-		public int getRowSel(){
-			return rowSel;
-		}
-	}
 	@Override
-	public void message(Message message) {
+	public synchronized void message(Message message) {
 		//Value received from the buzzer view.. id mp3 was selected, the Id will be passed back for selection
 		if (message.getPropertyName().equals(Constants.B_VISIBLE_FRM_BUZZ_SEL)){ //to switch button visible
 			logger.log(Level.CONFIG,"MP3 screen -  message: " + message);
@@ -643,6 +684,9 @@ public class Mp3View extends JPanel implements MessageListener {
 				lblMp3MainIcon.setVisible(false);
 				btnStop.setEnabled(false);
 			}
+		}else if(message.getPropertyName().equals(Constants.MP3_PLAY_NEXT)) {
+			logger.log(Level.CONFIG, "Play next mp3: " + message.getFirstMessage());
+			playNext = true;
 		}
 	}
 
@@ -696,20 +740,17 @@ public class Mp3View extends JPanel implements MessageListener {
 
 		}
 	}
-//	public static void main(String args[]) throws ClassNotFoundException, IOException, SQLException {
-//		Mp3View m = new Mp3View();
-//
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					JFrame frame = new JFrame();
-//					frame.add(m);
-//					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
+
+	enum Selection{
+		TRACK(0), ARTIST(1), CATG(2);
+
+		private int rowSel;
+
+		private Selection(int rowSelected){
+			rowSel = rowSelected;
+		}
+		public int getRowSel(){
+			return rowSel;
+		}
+	}
 }

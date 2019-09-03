@@ -67,5 +67,10 @@ public class RadioEntity {
 
 	public void setLastSelection(boolean lastSelection) {
 		this.lastSelection = lastSelection;
-	}	
+	}
+	public int radioNameToChannel() {
+		float channelFloat = Float.parseFloat(this.radioName);
+
+		return (int) (channelFloat * 10);
+	}
 }

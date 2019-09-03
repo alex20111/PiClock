@@ -72,6 +72,7 @@ public class Constants {
 	public static final String BUZZ_OPT_MSG = "buzzerOptionMessage";
 	public static final String BUZZER_OPTION_PANEL = "buzzerOptionPanel";
 	public static final String MP3_STREAM_ERROR = "mp3StreamError";
+	public static final String MP3_PLAY_NEXT = "PlayingNextMp3";
 	
 	
 	

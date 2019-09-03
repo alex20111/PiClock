@@ -8,23 +8,34 @@ add error for other function (Error types to display on screen)  IN progress (Pa
 add daily log file creation.. a log for each day
 Possible problem: if we are waiting to turn the WIFI down because of radio and the LDR change from night to day. Then we don't need to shut down wifi anymore.
 THEME ICONS and TEXT customizition
-play next mp3 when 1st one is finished. 
-test mp3 in alarm if it does not work. Rever tto buzzer
 
-cannot re-enable wifi after unchecked in the setting when WIFI is off.. Need to be able to re-enable it,
+*** *** add function to turn off display when the checkbox in settings is re-enabled. (To turn off monitor when dark). Scenario: user checlk off the checkbox. then when night, check it on again. Then the scheen should shut down and the time display should turn on
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
+update piclock.ino scanning or remove it.
+-Add volume option for radio in buzzer dialog.
+add volume icon in radio view. also there switching
+
+add new web page for backgrounds.
+
+
+
 	
 
 //TEST//
-test network retry functionality.
-add checkbox to turn off wifi at night ,this will complement the auto shutdown.(Config screen). have both option to only turn off screen and not wifi or tun off screen and wifi.
- if wifi is off and dark and in the config decide to change to on, turn on wifi then
- test to see if the weatherforecastview is painted when night (Nope)
- test new code
- in the works (Working on it) - work on MP3
+Test new radio in alarm.
+Add util to remove radios from JList. Also test radio and MP3 toggle
+test network retry functionality. 
+Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. 
+test radio functionality
+test mp3 in alarm if it does not work. Rever tto buzzer
+play next mp3 when 1st one is finished. 
  
 
 //DONE test//
+ if wifi is off and dark and in the config decide to change to on, turn on wifi then
+add checkbox to turn off wifi at night ,this will complement the auto shutdown.(Config screen). have both option to only turn off screen and not wifi or tun off screen and wifi.
+cannot re-enable wifi after unchecked in the setting when WIFI is off.. Need to be able to re-enable it in config when in night.
+test to see if the weatherforecastview is painted when night (YES)
  Volume lable default appear on top for the slider value
 add percent for volume (UI).(new popup slider)
  Test volume disaperring

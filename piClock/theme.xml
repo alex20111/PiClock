@@ -44,7 +44,7 @@
 				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
 				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
 				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
-				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-24.png" 			iconNight="mp3-black-24.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
 				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
 				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
 				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
@@ -99,7 +99,7 @@
 				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
 				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
 				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
-				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-24.png" 			iconNight="mp3-black-24.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
 				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
 				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
 				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
@@ -154,7 +154,7 @@
 				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
 				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
 				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
-				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-24.png" 			iconNight="mp3-black-24.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
 				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
 				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
 				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
@@ -209,7 +209,7 @@
 				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
 				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
 				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
-				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-24.png" 			iconNight="mp3-black-24.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
 				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
 				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
 				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
@@ -264,7 +264,7 @@
 				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
 				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
 				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
-				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-24.png" 			iconNight="mp3-black-24.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
 				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
 				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
 				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
@@ -319,7 +319,7 @@
 				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
 				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
 				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
-				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-24.png" 			iconNight="mp3-black-24.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
 				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
 				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
 				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>

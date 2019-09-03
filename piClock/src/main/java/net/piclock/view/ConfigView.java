@@ -28,6 +28,7 @@ import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
 import net.piclock.enums.CheckWifiStatus;
+import net.piclock.enums.DayNightCycle;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
@@ -251,13 +252,14 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 					boolean canSave = true;			
 
 					Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+					DayNightCycle cycle = (DayNightCycle)ct.getSharedObject(Constants.DAY_NIGHT_CYCLE);
 
 					PiHandler handler = PiHandler.getInstance();
 
 					if (wifiNames.getSelectedIndex() > 0 && txtWifiPass.getText().trim().length() == 0){
 						JOptionPane.showMessageDialog(ConfigView.this, "Please enter a password for wifi" , "Pass missing", JOptionPane.INFORMATION_MESSAGE);
 						canSave = false;
-					}else if (wifiNames.getSelectedIndex() > 0 && txtWifiPass.getText().trim().length() > 0 && !handler.isWifiConnected()){ 
+					}else if (wifiNames.getSelectedIndex() > 0 && txtWifiPass.getText().trim().length() > 0 && !handler.isWifiConnected() && cycle == DayNightCycle.DAY){ 
 						//this means that he has enter the wifi use and pass and he has not tested or cannot connect sonce wrong pass.
 						JOptionPane.showMessageDialog(ConfigView.this, "Please test connection before saving.\nClick cancel if other problems." , "Cannot save", JOptionPane.INFORMATION_MESSAGE);
 						canSave = false;

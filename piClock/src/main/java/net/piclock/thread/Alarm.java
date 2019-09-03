@@ -87,7 +87,8 @@ public class Alarm implements Runnable, MessageListener{
 			autoAlarmShutOff(false, 0);//turn off autoshutdown when alarm is shut down
 
 			ct.removeMessageListener(Constants.TURN_OFF_ALARM, this);
-			ct.removeMessageListener(Constants.RADIO_STREAM_ERROR, this);			
+			ct.removeMessageListener(Constants.RADIO_STREAM_ERROR, this);
+			ct.removeMessageListener(Constants.MP3_STREAM_ERROR, this);
 			resetVar();
 
 		} catch (IOException | InterruptedException e) {
@@ -101,6 +102,7 @@ public class Alarm implements Runnable, MessageListener{
 
 		ct.addMessageChangeListener(Constants.TURN_OFF_ALARM , this);
 		ct.addMessageChangeListener(Constants.RADIO_STREAM_ERROR , this);
+		ct.addMessageChangeListener(Constants.MP3_STREAM_ERROR , this);
 
 		try {
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
@@ -134,13 +136,14 @@ public class Alarm implements Runnable, MessageListener{
 				}
 			}
 
-			String track = "";
+			String mp3Filename = "";
+			int radioChannel = -1;
 
 			if (buzzer == Buzzer.RADIO && alarm.getRadioId() > -1 ) {
 				if (handler.isWifiInternetConnected()) {
 					RadioEntity rad = new RadioSql().loadRadioById(alarm.getRadioId());
 					if (rad != null) {
-						track = rad.getRadioLink();
+						radioChannel = rad.radioNameToChannel();
 					}else {
 						buzzer = Buzzer.BUZZER;
 						buzzerDefaultUsed = true;
@@ -152,7 +155,7 @@ public class Alarm implements Runnable, MessageListener{
 			}else if (buzzer == Buzzer.MP3 && alarm.getMp3Id() > -1) {
 				Mp3Entity mp3 = new Mp3Sql().loadMp3ById(alarm.getMp3Id());
 				if (mp3 != null) {
-					track = mp3.getMp3FileName();
+					mp3Filename = mp3.getMp3FileName();
 				}else {
 					buzzer = Buzzer.BUZZER;
 					buzzerDefaultUsed = true;
@@ -174,8 +177,13 @@ public class Alarm implements Runnable, MessageListener{
 					handler.turnOnScreen(false, Light.LIGHT);
 					handler.autoShutDownScreen(45000);
 				}	
+				
+				
+				if (alarm.getVolume() == -1) {
+					alarm.setVolume(15);
+				}
 
-				handler.turnOnAlarm(buzzer, track, alarm.getVolume());
+				handler.turnOnAlarm(buzzer, mp3Filename, radioChannel, alarm.getVolume());
 
 			}catch (InterruptedException ie) {					
 				logger.log(Level.CONFIG, "Current thread interrupted");
@@ -200,7 +208,7 @@ public class Alarm implements Runnable, MessageListener{
 			logger.log(Level.INFO, "Radio stream error in wake up alarm, using default. Message: " + message.getFirstMessage() + "  Date registered: " + message.getDateTime());
 			buzzerDefaultUsed = true;
 			try {
-				handler.turnOnAlarm(Buzzer.BUZZER, "", -1);
+				handler.turnOnAlarm(Buzzer.BUZZER, "", -1, -1);
 				handler.playRadio(false, "", -1);//force turn off radio
 			} catch (Exception e) {
 				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
@@ -211,7 +219,7 @@ public class Alarm implements Runnable, MessageListener{
 			logger.log(Level.INFO, "MP3 stream error in wake up alarm, using default. Message: " + message.getFirstMessage() + "  Date registered: " + message.getDateTime());
 			buzzerDefaultUsed = true;
 			try {
-				handler.turnOnAlarm(Buzzer.BUZZER, "", -1);
+				handler.turnOnAlarm(Buzzer.BUZZER, "", -1, -1);
 				handler.playMp3(false, "", -1);//force turn off radio
 			} catch (Exception e) {
 				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);

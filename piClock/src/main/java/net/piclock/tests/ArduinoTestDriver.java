@@ -50,7 +50,7 @@ public class ArduinoTestDriver {
     	Thread.sleep(1000);
 //    	for(int i = 0 ; i < 10; i ++) {
     	System.out.println("Setting channel to 106.9");
-    	s.radioSelectChannel(10690);
+    	s.radioSelectChannel(1069);
     	reRoutToSpeaker();
     	Thread.sleep(5000);
     	
@@ -78,7 +78,7 @@ public class ArduinoTestDriver {
 		Exec exec = new Exec();
 		
 		exec.addCommand("sudo");
-		exec.addCommand("./piClock/play.sh");
+		exec.addCommand("./piClock/scripts/play.sh");
 		exec.timeout(5000);
 		int ret = exec.run();
 		

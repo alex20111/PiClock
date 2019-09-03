@@ -503,6 +503,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			btnBuzzer.setText(alarmEnt.getAlarmSound());
 		}
 		
+		buzzerSelection = new BuzzerSelection(alarmEnt);
+		
 		btnBuzzer.setBounds(615, 235, 140, 40);
 		add(btnBuzzer);
 	

@@ -16,7 +16,9 @@ import javax.swing.border.EmptyBorder;
 
 import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.Mp3Entity;
+import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.Mp3Sql;
+import net.piclock.db.sql.RadioSql;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
@@ -154,7 +156,9 @@ public class VolumeNew extends JDialog {
 
 								handler.playMp3(false, "", -1);
 							}else if (config.getRadioId() > 0){
-								//TODO - Handle radio volume in the future
+								RadioSql sql = new RadioSql();
+								RadioEntity r  = sql.loadRadioById(config.getRadioId());
+								handler.radioSetChannel(r.radioNameToChannel(), s.getSlider().getValue());
 							}
 							System.out.println("sampleVolThrd, stopped");
 						} catch (Exception ex){

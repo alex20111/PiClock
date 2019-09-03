@@ -118,8 +118,9 @@ public class ArduinoSerialCmd {
 	public void timeOff() throws IllegalStateException, IOException {
 		sendCommand(translator.generateTimeOffCmd());
 	}
+	@Deprecated
 	public List<String> scanForFmChanels() throws IllegalStateException, IOException, InterruptedException {
-		System.out.println("Scanning");
+
 		if (translator.getRadioScanStatus() == RadioScan.STARTED) {
 			throw new IllegalStateException("Scan is still running, cannot initiate an other scan");
 		}
@@ -160,7 +161,7 @@ public class ArduinoSerialCmd {
 	}
 	public synchronized void  sendCommand(String command) throws IllegalStateException, IOException {		
 		logger.log(Level.CONFIG, "Sending command: " + command);
-		System.out.println("Sending command: " + command);
+		
 		serial.write(command);
 		try {
 			Thread.sleep(50);
@@ -180,7 +181,7 @@ public class ArduinoSerialCmd {
 
         	  try {
             	
-            	  System.out.println("Data retrieve form arduino: " + event.getAsciiString());
+//            	  System.out.println("Data retrieve form arduino: " + event.getAsciiString());/
             	  
             	 Command cmd =  translator.translateReceivedCmd(event.getAsciiString());
             	  
@@ -226,56 +227,5 @@ public class ArduinoSerialCmd {
 	}
 	
 	
-    /**
-     * This example program supports the following optional command arguments/options:
-     *   "--device (device-path)"                   [DEFAULT: /dev/ttyAMA0]
-     *   "--baud (baud-rate)"                       [DEFAULT: 38400]
-     *   "--data-bits (5|6|7|8)"                    [DEFAULT: 8]
-     *   "--parity (none|odd|even)"                 [DEFAULT: none]
-     *   "--stop-bits (1|2)"                        [DEFAULT: 1]
-     *   "--flow-control (none|hardware|software)"  [DEFAULT: none]
-     *
-     * @param args
-     * @throws InterruptedException
-     * @throws IOException
-     */
-    public static void main(String args[]) throws InterruptedException, IOException {
-    	System.out.println("Start");
-    	
-    	ArduinoSerialCmd s = ArduinoSerialCmd.getInstance();
-    	
-    	s.open();
-    	
-    	for(int i = 0 ; i < 9 ; i++) {
-    	System.out.println("Reading Ldr: " + s.readLdr());
-    	Thread.sleep(1000);
-    	}
-    	
-//    	System.out.println("Write time");
-//    	s.writeTime("11:33");
-//    	Thread.sleep(1000);
-//    	System.out.println("Timr off");
-//    	s.timeOff();
-//    	Thread.sleep(1000);
-//    	System.out.println("buzzer ON");
-//    	s.buzzer(true);
-//    	Thread.sleep(1000);
-//    	System.out.println("buzzer off");
-//    	s.buzzer(false);
-//    	Thread.sleep(1000);
-//    	System.out.println("Mosfet on");
-//    	s.turnSpeakerOn();
-//    	Thread.sleep(1000);
-//    	System.out.println("Mosfet off");
-//    	s.turnSpeakerOff();
-//    	Thread.sleep(1000);
-    	
-    	System.out.println("to finished press ctrl-c");
-    	while(true) {
-    		System.out.println("Reading Ldr: " + s.readLdr() + "   --- date: " + LocalTime.now());
-    		Thread.sleep(500);
-    	}
-    	
-    	
-    }
+   
 }

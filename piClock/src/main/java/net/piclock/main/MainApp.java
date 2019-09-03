@@ -64,6 +64,7 @@ import net.piclock.view.ConfigView;
 import net.piclock.view.ErrorView;
 import net.piclock.view.Mp3View;
 import net.piclock.view.RadioStationsView;
+import net.piclock.view.RadioView;
 import net.piclock.view.VolumeNew;
 import net.piclock.view.WeatherAlertView;
 import net.piclock.view.WeatherConfigView;
@@ -218,6 +219,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		forecastView = new WeatherForecastView();
 		weatherAlertView = new WeatherAlertView();	
 		radioStationsView = new RadioStationsView(lblRadioIcon);
+		RadioView radioView = new RadioView(lblRadioIcon); //TODO  test
 		mp3View				   = new Mp3View(lblMp3Icon);
 		
 		cardsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -398,7 +400,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		lblWeatherAlert.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("Clicked on the alert");
 				WeatherAlertView.goingBackPage = Constants.MAIN_VIEW;
 				
 				CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
@@ -432,6 +433,22 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		lblMp3Icon.setVisible(false);
 		themes.registerIconColor(lblMp3Icon, IconEnum.MP3_ICON);
 		alertIconsPanel.add(lblMp3Icon);
+		
+		lblMp3Icon.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				try{
+	
+					keepAliveIfScreenShutdown();
+					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+					cardLayout.show(cardsPanel, Constants.MP3_VIEW);
+
+				}catch (Exception ex){
+					String fmtEx = new FormatStackTrace(ex).getFormattedException();
+					eh.addError(ErrorType.GENERAL, new ErrorInfo(fmtEx));
+					logger.log(Level.SEVERE, "Error in mouse listener mp3 icon", ex);
+				}
+			}
+		});
 		
 		lblWiFiIcon = new JLabel();
 		lblWiFiIcon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
@@ -482,7 +499,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
 		cardsPanel.add(forecastView, Constants.WEATHER_FORECAST_VIEW);
 		cardsPanel.add(weatherAlertView, Constants.WEATHER_ALERT_VIEW);
-		cardsPanel.add(radioStationsView, Constants.RADIO_STATION_VIEW);
+//		cardsPanel.add(radioStationsView, Constants.RADIO_STATION_VIEW); //TODO test
+		cardsPanel.add(radioView, Constants.RADIO_STATION_VIEW); //TODO test
 		cardsPanel.add(webServerView, Constants.WEB_SERVER_VIEW);
 		
 		//settings

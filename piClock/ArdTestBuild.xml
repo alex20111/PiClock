@@ -9,7 +9,7 @@
     <target name="create_run_jar">
         <jar destfile="${dir.jarfile}/ArdTest.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-                <attribute name="Main-Class" value="net.piclock.arduino.ArduinoTestDriver"/>
+                <attribute name="Main-Class" value="net.piclock.tests.ArduinoTestDriver"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="C:/Users/ADMIN/git/PiClock/piClock/target/classes"/>

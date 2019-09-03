@@ -57,7 +57,8 @@ public class PiHandler {
 	
 	private  Thread wifiShutDown;
 	private  Thread screenAutoShutDown;
-	private  Thread checkConnection; 		
+	private  Thread checkConnection; 	
+	private  Thread radioThread;
 	
 	//commands to ard
 	private  String BUZZER = "buzzer";
@@ -69,6 +70,12 @@ public class PiHandler {
 	
 	private RadioStreaming streaming;
 	private Mp3Streaming mp3Stream;
+	
+	//radio
+	private boolean radioOn = false;
+	
+	//speaker
+	private boolean speakerOn = false;
 	
 	private PiHandler() {
 		Gpio.wiringPiSetup();
@@ -99,8 +106,6 @@ public class PiHandler {
 	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException, UnsupportedBusNumberException{
 		logger.log(Level.INFO,"turnOffScreen()");
 
-//		autoWifiShutDown(true);
-
 		setScreenOn(false);
 		setBrightness(Light.DARK);
 
@@ -111,8 +116,6 @@ public class PiHandler {
 	/*withWifiOn: then turn on the wifi on request*/
 	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.INFO,"Turning on screen. Wifi on option: " + withWifiOn);
-
-//		autoWifiShutDown(false);
 
 		//if screen is auto shutting down and there is a request by the LDR to turn it back on, kill it.
 		cancelScreenAutoShutdown();
@@ -170,7 +173,7 @@ public class PiHandler {
 	}
 	public Light getLDRstatus(){
 
-		int ldrVal = sendI2cCommand(LDR,null);		
+		int ldrVal = sendArduinoCommand(LDR,null);		
 		return Light.setLightLevel(ldrVal);
 	}
 	/**Turn on the alarm based on the selected buzzer
@@ -179,15 +182,16 @@ public class PiHandler {
 	 * @throws IOException 
 	 * @throws ExecuteException 
 	 * @throws InterruptedException **/
-	public void turnOnAlarm(Buzzer alarm, String text, int volume) throws   ExecuteException, IOException, InterruptedException{
+	public void turnOnAlarm(Buzzer alarm, String mp3FileName, int radioChannel, int volume) throws   ExecuteException, IOException, InterruptedException{
 		logger.log(Level.CONFIG,"Turning on: " + alarm.getName());		
 		
 		if (alarm == Buzzer.BUZZER){
 			buzzer(true);
 		}else if (alarm == Buzzer.RADIO){
-			playRadio(true, text, volume);
+//			playRadio(true, text, volume);
+			radioSetChannel(radioChannel, volume);
 		}else if (alarm == Buzzer.MP3){
-			playMp3(true, text, volume);
+			playMp3(true, mp3FileName, volume);
 		}
 	}
 	public void turnOffAlarm(Buzzer buzzerType) throws ExecuteException, IOException, InterruptedException{
@@ -196,17 +200,18 @@ public class PiHandler {
 		if (buzzerType == Buzzer.BUZZER){
 			buzzer(false);
 		}else if (buzzerType == Buzzer.RADIO){
-			playRadio(false, "", -1);
+//			playRadio(false, "", -1);
+			radioOff(false);
 		}else if (buzzerType == Buzzer.MP3){
 			playMp3(false, "", -1);
 		}
 	}
 	public void displayTM1637Time(String time){
 		
-		sendI2cCommand(TIME,time);
+		sendArduinoCommand(TIME,time);
 	}
 	public void turnOffTM1637Time(){
-		sendI2cCommand(TIME_OFF, null);
+		sendArduinoCommand(TIME_OFF, null);
 	}
 	
 	//turn off the screen automatically
@@ -456,7 +461,7 @@ public class PiHandler {
 			logger.log(Level.CONFIG, "Interrupted screenAutoShutDown");
 		}
 	}
-	private synchronized int sendI2cCommand(String command , String value){
+	private synchronized int sendArduinoCommand(String command , String value){
 		int retCd = -1;
 
 		try {
@@ -488,9 +493,9 @@ public class PiHandler {
 		logger.log(Level.CONFIG, "buzzer() : " + on);
 		
 		if (on){
-			sendI2cCommand(BUZZER, "true");
+			sendArduinoCommand(BUZZER, "true");
 		}else{
-			sendI2cCommand(BUZZER, "false");
+			sendArduinoCommand(BUZZER, "false");
 		}
 	}
 	/**play random mp3 on / off 
@@ -511,14 +516,16 @@ public class PiHandler {
 			mp3Stream = new Mp3Streaming(mp3File);
 			mp3Stream.play();
 			
-			cmd.turnSpeakerOn();
+			handleSpeakers(true);
+//			cmd.turnSpeakerOn();
 		}else {
 			if (mp3Stream != null) {
 				mp3Stream.writeCommand("q");
 				Thread.sleep(100);
 				mp3Stream.stop();
 			}
-			cmd.turnSpeakerOff();
+			handleSpeakers(false);
+//			cmd.turnSpeakerOff();
 			mp3Stream = null;
 		}
 
@@ -546,20 +553,105 @@ public class PiHandler {
 			streaming = new RadioStreaming(link);
 			streaming.play();
 			
-			cmd.turnSpeakerOn();
+			handleSpeakers(true);
+//			cmd.turnSpeakerOn();
 		}else {
 			if (streaming != null) {
 				streaming.writeCommand("q");
 				Thread.sleep(100);
 				streaming.stop();
 			}
-			cmd.turnSpeakerOff();
+			handleSpeakers(false);
+//			cmd.turnSpeakerOff();
 			streaming = null;
 		}
 
 		logger.log(Level.CONFIG, "playAlarmRadio() , end method. " );
 
-	}		
+	}
+	
+	/**
+	 * turn the radio on if not on and set the channel.
+	 * 
+	 * @param channel
+	 * @throws IOException 
+	 * @throws IllegalStateException 
+	 * @throws InterruptedException 
+	 */
+	public void radioSetChannel(int channel, int volume) throws IllegalStateException, IOException, InterruptedException {
+		logger.log(Level.CONFIG, "Setting channel: " + channel);
+
+		cmd.radioSelectChannel(channel);
+
+		if (!radioOn) {
+			toggleMusicSystem(true, false);
+			//turning on speakers
+//			cmd.turnSpeakerOn();
+			handleSpeakers(true);
+
+			adjustVolume(volume);
+
+			radioThread = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					logger.log(Level.CONFIG, "Starting radio thread");
+					int ret = 99;
+					try {
+						radioOn = true;
+						Exec exec = new Exec();
+
+						exec.addCommand("sudo");
+						exec.addCommand("./scripts/play.sh");
+						exec.timeout(5000);
+						ret = exec.run();
+
+					}catch(Exception ex) {
+						logger.log(Level.INFO, "Exception in radiothread", ex);
+						radioOn = false;
+					}
+					logger.log(Level.CONFIG, "Radio thread finished. " + ret);
+
+				}
+
+			});
+
+			radioThread.start();
+
+		}
+		logger.log(Level.CONFIG, "End of radioSetChannel, not blocking.. please remove after test");
+	}
+	
+	public List<String> radioScan() throws IllegalStateException, IOException, InterruptedException {
+		logger.log(Level.CONFIG, "Radio scan()");
+		
+		return cmd.scanForFmChanels();//TODO maybe add timeout as variable.
+	}
+	
+	public void radioOff(boolean toggle) throws ExecuteException, IOException {
+		logger.log(Level.CONFIG, "Turning off radio. Radio on? " + radioOn + " toggle: " + toggle);
+		Exec exec = new Exec();
+
+		exec.addCommand("sudo");
+		exec.addCommand("pkill");
+		exec.addCommand("arecord");
+		exec.timeout(5000);
+		int ret = exec.run();
+		
+		logger.log(Level.CONFIG, "Radio off return code: " + ret + "  message if provided: " +exec.getOutput());
+		
+		if (radioOn) {
+			//do not turn off speakers if the request is comming from a toggle
+			if (!toggle) {
+				handleSpeakers(false);
+			}
+			cmd.radioOff();
+		}
+		
+		radioOn = false;
+	}
+	
+	
 	private void turnWifiOff() throws InterruptedException{
 		logger.log(Level.INFO, "wifiOff() : wifiOn : " + wifiOn);
 						
@@ -586,7 +678,6 @@ public class PiHandler {
 			}
 		}
 		
-//		autoWifiShutDown(false);//TODO
 	}
 	/**
 	 * Check if the computer has an ip address.
@@ -679,31 +770,55 @@ public class PiHandler {
 	 * @param radioRequested
 	 * @param mp3Requested
 	 * @throws InterruptedException
+	 * @throws IOException 
+	 * @throws ExecuteException 
 	 */
-	private void toggleMusicSystem(boolean radioRequested, boolean mp3Requested) throws InterruptedException {
-		logger.log(Level.CONFIG, " Toggeling music system. Radio: " + radioRequested + "  MP3: " +mp3Requested);
-		
-		
+	private void toggleMusicSystem(boolean radioRequested, boolean mp3Requested) throws InterruptedException, ExecuteException, IOException {
+		logger.log(Level.CONFIG, " Toggeling music system. RadioRequested: " + radioRequested + "  MP3: " +mp3Requested);
+
+
 		//if radio requested, turn off MP3.
 		if (radioRequested) {
 			if (mp3Stream != null) {
-				
+
 				mp3Stream.writeCommand("q");
 				Thread.sleep(100);
 				mp3Stream.stop();
 				context.sendMessage(Constants.MUSIC_TOGGELED, new Message("mp3off"));
 			}
 		}else if (mp3Requested) {
-		//if MP3 requested, turn off Radio
-			if (streaming != null) {
-				logger.log(Level.CONFIG, "closing radio");
-				streaming.writeCommand("q");
-				Thread.sleep(100);
-				streaming.stop();
-				//send message that the radio was running and then turned off
+			//if MP3 requested, turn off Radio
+			if (radioOn) {
+				radioOff(true);
 				context.sendMessage(Constants.MUSIC_TOGGELED, new Message("radiooff"));
 			}
+
+
 		}
+
+	}
+	/**
+	 * handle the speaker on or off option to not turn them on or off uselessly.
+	 * @param turnOn
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+	private void handleSpeakers(boolean turnOn) throws IllegalStateException, IOException {
 		
+		if (turnOn) {
+			
+			if (!speakerOn) {
+				cmd.turnSpeakerOn();
+				speakerOn = true;
+			}			
+			
+		}else {
+			cmd.turnSpeakerOff();
+			speakerOn = false;
+		}
+	}
+
+	public boolean isRadioOn() {
+		return radioOn;
 	}
 }

@@ -10,13 +10,13 @@ public class BuzzerSelection {
 	private int  mp3Id = -1;
 	private int shutdownMin = -1;
 	private int selVolume =-1;
-	
+
 	public BuzzerSelection(Buzzer buzzer, int min) {
 		this.buzzer = buzzer;
-		
+
 		this.shutdownMin = min;
 	}
-	
+
 	public BuzzerSelection(Buzzer buzzer, int id , int min) {
 		this.buzzer = buzzer;
 		if (buzzer == Buzzer.RADIO) {
@@ -24,21 +24,28 @@ public class BuzzerSelection {
 		}else if (buzzer == Buzzer.MP3) {
 			this.mp3Id = id;
 		}	
-		
+
 		this.shutdownMin = min;
 	}
-	
-//	public BuzzerSelection(AlarmEntity alarm) {
-//		buzzer = Buzzer.valueOf(alarm.getAlarmSound());
-//		
-//		if (buzzer == Buzzer.RADIO) {
-//			this.radioId = alarm.getRadioId();
-//		}else if (buzzer == Buzzer.MP3) {
-//			this.mp3Id = alarm.getMp3Id();
-//		}
-//		this.shutdownMin = alarm.getAlarmShutdown();
-//	}
-	
+
+	/**
+	 * This is needed to set initial state after boot up so we won't get an npe .
+	 * @param alarm
+	 */
+	public BuzzerSelection(AlarmEntity alarm) {
+
+		if (alarm != null) {
+			buzzer = Buzzer.valueOf(alarm.getAlarmSound());
+
+			if (buzzer == Buzzer.RADIO) {
+				this.radioId = alarm.getRadioId();
+			}else if (buzzer == Buzzer.MP3) {
+				this.mp3Id = alarm.getMp3Id();
+			}
+			this.shutdownMin = alarm.getAlarmShutdown();
+		}
+	}
+
 	public Buzzer getBuzzer() {
 		return buzzer;
 	}
@@ -84,7 +91,6 @@ public class BuzzerSelection {
 
 
 
-	
-	
+
+
 }
- 
