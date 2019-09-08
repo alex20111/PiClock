@@ -452,7 +452,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 					}
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
-					cardLayout.show(cardsPanel, "main");
+					cardLayout.show(cardsPanel, Constants.MAIN_VIEW);
 
 				}catch(Exception ex){
 					JOptionPane.showMessageDialog(AlarmView.this, "Error in saving, see logs.", "Error Saving", JOptionPane.ERROR_MESSAGE);

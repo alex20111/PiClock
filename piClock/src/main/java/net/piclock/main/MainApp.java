@@ -3,11 +3,14 @@ package net.piclock.main;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -226,13 +229,13 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		setUndecorated(true);
 		
 		//TODO  remove to activate transparent cursor
-//		// Transparent 16 x 16 pixel cursor image.
-//		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-//		// Create a new blank cursor.
-//		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-//		    cursorImg, new Point(0, 0), "blank cursor");
-//		// Set the blank cursor to the JFrame.
-//		cardsPanel.setCursor(blankCursor);			
+		// Transparent 16 x 16 pixel cursor image.
+		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		// Create a new blank cursor.
+		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+		    cursorImg, new Point(0, 0), "blank cursor");
+		// Set the blank cursor to the JFrame.
+		cardsPanel.setCursor(blankCursor);			
 	
 		cardsPanel.setLayout(new CardLayout(0, 0));
 		

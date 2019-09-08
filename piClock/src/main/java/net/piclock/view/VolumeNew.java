@@ -159,6 +159,14 @@ public class VolumeNew extends JDialog {
 								RadioSql sql = new RadioSql();
 								RadioEntity r  = sql.loadRadioById(config.getRadioId());
 								handler.radioSetChannel(r.radioNameToChannel(), s.getSlider().getValue());
+								
+								try {
+									Thread.sleep(6000);
+								} catch (InterruptedException e) {
+									handler.radioOff(false);
+									Thread.currentThread().interrupt();
+								}
+								handler.radioOff(false);
 							}
 							System.out.println("sampleVolThrd, stopped");
 						} catch (Exception ex){

@@ -30,6 +30,7 @@ import net.miginfocom.swing.MigLayout;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
+import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.Mp3Sql;
@@ -65,6 +66,7 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 	private int mp3SelectedId = -1;
 	
 	private int lastVolume = -1;
+	private JButton btnVolume;
 	
 	private boolean mp3ScrInit = true;
 	private JTextField txtShutdown;
@@ -94,7 +96,7 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[grow][][grow]", "[][][][][][][][]"));
+		contentPanel.setLayout(new MigLayout("", "[grow][][grow]", "[][][][][][][][][grow][]"));
 
 		JLabel lblWakeUpAlarm = new JLabel("Wake Up Alarm Options");
 		lblWakeUpAlarm.setFont(new Font("Tahoma", Font.BOLD, 18));
@@ -141,6 +143,7 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 					if (selected ) { //if the button is selected and radios exist
 						if ( loadRadioList()) {
 							radioCmb.setVisible(true);
+							btnVolume.setVisible(true);
 							if(radioCmb.getSelectedIndex() > -1) {
 								radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
 							}
@@ -221,6 +224,22 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 		JLabel lblMinutes = new JLabel("minutes");
 		lblMinutes.setFont(new Font("Tahoma", Font.BOLD, 16));
 		panel.add(lblMinutes);
+		
+		 btnVolume = new JButton("Vol");
+		contentPanel.add(btnVolume, "cell 2 9,alignx right");
+		btnVolume.setVisible(false);
+		btnVolume.addActionListener(l -> {
+			
+			if (radioCmb != null && radioCmb.getSelectedItem() != null) {
+
+				VolumeConfig config = new VolumeConfig(lastVolume);
+				config.setRadioId(((RadioEntity)radioCmb.getSelectedItem()).getId());
+				config.setFromAlarm(true);
+				VolumeNew vol = new VolumeNew(config); 
+
+				vol.setVisible(true);
+			}
+		});
 
 		{
 			JPanel buttonPane = new JPanel();
@@ -244,6 +263,7 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 								//TODO add last volume for radio
 								if (radioCmb != null && radioCmb.getSelectedItem() != null) {
 									bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId(), shtDownMin );
+									bs.setSelVolume(lastVolume);
 									ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								}
 								close = true;
@@ -296,6 +316,7 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 		mp3ScrInit = true;
 		noMp3Selected = false;
 		radioCmb.setVisible(false);
+		btnVolume.setVisible(false);
 		lblMp3TrkName.setText("");
 
 		//set the button based on the alarm sound type
@@ -357,11 +378,13 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 			
 			radioCmb.setVisible(true);
 			btnRadio.setEnabled(true);
+			btnVolume.setVisible(true);
 			
 			return true;
 		}else {
 			radioCmb.setVisible(false);
 			btnRadio.setEnabled(false);
+			btnVolume.setVisible(false);
 
 		}
 

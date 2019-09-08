@@ -628,8 +628,8 @@ public class PiHandler {
 		return cmd.scanForFmChanels();//TODO maybe add timeout as variable.
 	}
 	
-	public void radioOff(boolean toggle) throws ExecuteException, IOException {
-		logger.log(Level.CONFIG, "Turning off radio. Radio on? " + radioOn + " toggle: " + toggle);
+	public void radioOff(boolean isToggelingBetweenRadioAndMp3) throws ExecuteException, IOException {
+		logger.log(Level.CONFIG, "Turning off radio. Radio on? " + radioOn + " isToggelingBetweenRadioAndMp3: " + isToggelingBetweenRadioAndMp3);
 		Exec exec = new Exec();
 
 		exec.addCommand("sudo");
@@ -642,7 +642,7 @@ public class PiHandler {
 		
 		if (radioOn) {
 			//do not turn off speakers if the request is comming from a toggle
-			if (!toggle) {
+			if (!isToggelingBetweenRadioAndMp3) {
 				handleSpeakers(false);
 			}
 			cmd.radioOff();

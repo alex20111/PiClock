@@ -12,26 +12,19 @@ THEME ICONS and TEXT customizition
 *** *** add function to turn off display when the checkbox in settings is re-enabled. (To turn off monitor when dark). Scenario: user checlk off the checkbox. then when night, check it on again. Then the scheen should shut down and the time display should turn on
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
 update piclock.ino scanning or remove it.
--Add volume option for radio in buzzer dialog.
 add volume icon in radio view. also there switching
-
-add new web page for backgrounds.
-
-
-
-	
+add new web page for backgrounds.	
 
 //TEST//
-Test new radio in alarm.
-Add util to remove radios from JList. Also test radio and MP3 toggle
+Test new radio in alarm and radio volume in buzzer option
 test network retry functionality. 
-Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. 
-test radio functionality
-test mp3 in alarm if it does not work. Rever tto buzzer
-play next mp3 when 1st one is finished. 
- 
+Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
+test radio functionality. still testing
+
 
 //DONE test//
+play next mp3 when 1st one is finished. 
+Add util to remove radios from JList. Also test radio and MP3 toggle
  if wifi is off and dark and in the config decide to change to on, turn on wifi then
 add checkbox to turn off wifi at night ,this will complement the auto shutdown.(Config screen). have both option to only turn off screen and not wifi or tun off screen and wifi.
 cannot re-enable wifi after unchecked in the setting when WIFI is off.. Need to be able to re-enable it in config when in night.
