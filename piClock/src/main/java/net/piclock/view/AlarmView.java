@@ -363,7 +363,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		BasicArrowButton back = new BasicArrowButton(BasicArrowButton.WEST);
 		back.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		back.setSize(45, 37);
-		back.setLocation(10, 415);
+		back.setLocation(46, 406);
 
 		back.addActionListener(new ActionListener() {
 

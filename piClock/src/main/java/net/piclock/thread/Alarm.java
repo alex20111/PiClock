@@ -79,8 +79,6 @@ public class Alarm implements Runnable, MessageListener{
 			if (buzzerDefaultUsed) {
 				buzzer = Buzzer.BUZZER;
 				handler.turnOffAlarm(buzzer);				
-				//				alarm.setAlarmSound(Buzzer.BUZZER.name());
-				//				new AlarmSql().update(alarm);
 			}else {
 				handler.turnOffAlarm(buzzer);
 			}

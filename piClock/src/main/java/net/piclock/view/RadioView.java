@@ -20,12 +20,14 @@ import net.miginfocom.swing.MigLayout;
 import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
+import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
 import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.theme.ThemeHandler;
 import net.piclock.util.VolumeIndicator;
 
 import java.awt.Color;
@@ -65,10 +67,11 @@ public class RadioView extends JPanel implements MessageListener{
 		handler = PiHandler.getInstance();
 		setOpaque(false);
 		
+		ThemeHandler t = (ThemeHandler) SwingContext.getInstance().getSharedObject(Constants.THEMES_HANDLER);
+		
 		prefs = (Preferences)SwingContext.getInstance().getSharedObject(Constants.PREFERENCES);
 
 		SwingContext.getInstance().addMessageChangeListener(Constants.MUSIC_TOGGELED, this);
-//		setSize(800, 480);
 		setLayout(new BorderLayout(0, 0));
 		JPanel titlePanel = new JPanel();
 		add(titlePanel, BorderLayout.NORTH);
@@ -77,6 +80,7 @@ public class RadioView extends JPanel implements MessageListener{
 		JLabel lblRadio = new JLabel("Radio");
 		lblRadio.setFont(new Font("Tahoma", Font.BOLD, 35));
 		titlePanel.add(lblRadio);
+		t.registerLabelTextColor(lblRadio, LabelEnums.RADIO_TITLE);
 
 		JPanel mainPanel = new JPanel();
 		add(mainPanel, BorderLayout.CENTER);
@@ -113,6 +117,8 @@ public class RadioView extends JPanel implements MessageListener{
 		labelRadioFrq = new JLabel("106.9");
 		labelRadioFrq.setFont(new Font("Tahoma", Font.BOLD, 70));
 		nowPlayingTitlepanel.add(labelRadioFrq, "cell 0 2 4 1,alignx center");
+		
+		t.registerLabelTextColor(labelRadioFrq, LabelEnums.RADIO_NOW_PLAYING);
 
 		JButton scanDown = new JButton("<");
 		scanDown.setPreferredSize(new Dimension(41, 30));
@@ -179,7 +185,7 @@ public class RadioView extends JPanel implements MessageListener{
 		btnAddStation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				DefaultListModel<RadioEntity> listModel = (DefaultListModel)stationList.getModel();
+				DefaultListModel<RadioEntity> listModel = (DefaultListModel<RadioEntity>)stationList.getModel();
 
 				boolean doesNotExist = true;
 				//verify if exist first
@@ -303,6 +309,7 @@ public class RadioView extends JPanel implements MessageListener{
 		loadListFromDb();
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void loadListFromDb() {
 		
 		try {

@@ -226,8 +226,10 @@ public class PiHandler {
 				try {
 					Thread.sleep(shutDownMillis);
 					try {
-						logger.log(Level.INFO, "autoShutDownScreen invoked, turning off screen");
-						turnOffScreen();
+						logger.log(Level.INFO, "autoShutDownScreen invoked, turning off screen. Screen on? " + screenOn);
+						if (screenOn) {
+							turnOffScreen();
+						}
 					} catch (Exception e) {
 						ErrorHandler eh = (ErrorHandler)context.getSharedObject(Constants.ERROR_HANDLER);
 		  				eh.addError(ErrorType.PI, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
@@ -622,11 +624,11 @@ public class PiHandler {
 		logger.log(Level.CONFIG, "End of radioSetChannel, not blocking.. please remove after test");
 	}
 	
-	public List<String> radioScan() throws IllegalStateException, IOException, InterruptedException {
-		logger.log(Level.CONFIG, "Radio scan()");
-		
-		return cmd.scanForFmChanels();//TODO maybe add timeout as variable.
-	}
+//	public List<String> radioScan() throws IllegalStateException, IOException, InterruptedException {
+//		logger.log(Level.CONFIG, "Radio scan()");
+//		
+//		return cmd.scanForFmChanels();//TODO maybe add timeout as variable.
+//	}
 	
 	public void radioOff(boolean isToggelingBetweenRadioAndMp3) throws ExecuteException, IOException {
 		logger.log(Level.CONFIG, "Turning off radio. Radio on? " + radioOn + " isToggelingBetweenRadioAndMp3: " + isToggelingBetweenRadioAndMp3);

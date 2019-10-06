@@ -15,7 +15,7 @@ import javax.swing.border.AbstractBorder;
 public class RoundedBorder extends AbstractBorder{
 
 	private static final long serialVersionUID = 1L;
-	private final Color color;
+	private Color color;
 	private final int gap;
 	private RoundRectangle2D borderRec;
 	private int thickness = 1;
@@ -68,5 +68,8 @@ public class RoundedBorder extends AbstractBorder{
 	}
 	public void setThickness(int t){
 		thickness = t;
+	}
+	public void setBorderColor(Color color) {
+		this.color = color;
 	}
 }

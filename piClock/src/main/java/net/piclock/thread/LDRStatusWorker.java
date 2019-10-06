@@ -81,15 +81,21 @@ public class LDRStatusWorker implements Runnable{
 			if (cycle == DayNightCycle.NIGHT ){
 
 				if (cycle != lastCycleStatus) {
-					//turn off screeen if screen is on.
-					if(p.isAutoOffScreen()){
-						handler.turnOffScreen();
-						handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
-					}
+					
 					ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.NIGHT);
 					ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 					themes.fireNightCycle();
 					lastCycleStatus = DayNightCycle.valueOf(cycle.name());
+				}
+				
+				
+				//turn off screeen if screen is on.
+				if(p.isAutoOffScreen() && handler.isScreenOn() && !handler.isAutoShutdownInProgress()){
+					handler.turnOffScreen();
+					handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
+				}else if (!p.isAutoOffScreen() && !handler.isScreenOn()){
+					handler.turnOnScreen(false, Light.DIM);
+					handler.turnOffTM1637Time();
 				}
 
 				//if we need to shutdown wifi and it is night 
@@ -105,18 +111,18 @@ public class LDRStatusWorker implements Runnable{
 			}else if (cycle == DayNightCycle.DAY ){
 
 				if (cycle != lastCycleStatus) {
-
-					handler.turnOnScreen(true, lightStatus);
-					handler.turnOffTM1637Time();
-
-
 					ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.DAY);
 					ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 					themes.fireDayCycle();
 					lastCycleStatus = DayNightCycle.valueOf(cycle.name());
 				}
+				
+				if (!handler.isScreenOn()) {
+					handler.turnOnScreen(false, lightStatus);
+					handler.turnOffTM1637Time();
+				}
 
-				if (!handler.isWifiOn()) {//does not matter if the option to turn off wifi is ON, when day and wifi dowon, turn it on.
+				if (!handler.isWifiOn()) {//does not matter if the option to turn off wifi is ON, when day and wifi dowon, turn it on. Since we only turn off wifi at night
 					handler.turnWifiOn();
 				}
 			}

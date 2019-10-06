@@ -3,26 +3,25 @@
 TODO:
 add splash screen  ok (maybe custom) - select 
 when refreshing wifi web password,add wait icon (Spinning)
-ALARM, add volume level for radio or mp3. --> WAIT until implementing new slider!!!
 add error for other function (Error types to display on screen)  IN progress (Package net.piclock.server - continue on)
 add daily log file creation.. a log for each day
-Possible problem: if we are waiting to turn the WIFI down because of radio and the LDR change from night to day. Then we don't need to shut down wifi anymore.
 THEME ICONS and TEXT customizition
-
-*** *** add function to turn off display when the checkbox in settings is re-enabled. (To turn off monitor when dark). Scenario: user checlk off the checkbox. then when night, check it on again. Then the scheen should shut down and the time display should turn on
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
 update piclock.ino scanning or remove it.
 add volume icon in radio view. also there switching
-add new web page for backgrounds.	
+add new web page for backgrounds.
+concurrentmodificationexception: When turning off the alarm by button press, we send the mesage to turn off the alarm. Since we already registeres the mp3 and radio stream error and no error happend, we remove them. But by the action of removing them we modify the map that the send message is already on and this cause a concurrent modification exception.	
 
 //TEST//
 Test new radio in alarm and radio volume in buzzer option
 test network retry functionality. 
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
-test radio functionality. still testing
 
 
 //DONE test//
+Test day of the week in alarm for border color between night and day
+*** *** add function to turn off display when the checkbox in settings is re-enabled. (To turn off monitor when dark). Scenario: user checlk off the checkbox. then when night, check it on again. Then the scheen should shut down and the time display should turn on
+test radio functionality. still testing
 play next mp3 when 1st one is finished. 
 Add util to remove radios from JList. Also test radio and MP3 toggle
  if wifi is off and dark and in the config decide to change to on, turn on wifi then
