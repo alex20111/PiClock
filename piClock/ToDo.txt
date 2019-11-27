@@ -9,14 +9,15 @@ THEME ICONS and TEXT customizition
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
 update piclock.ino scanning or remove it.
 add volume icon in radio view. also there switching
-add new web page for backgrounds.
-concurrentmodificationexception: When turning off the alarm by button press, we send the mesage to turn off the alarm. Since we already registeres the mp3 and radio stream error and no error happend, we remove them. But by the action of removing them we modify the map that the send message is already on and this cause a concurrent modification exception.	
+add new web page for backgrounds. In progress
+
+	
 
 //TEST//
 Test new radio in alarm and radio volume in buzzer option
 test network retry functionality. 
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
-
+concurrentmodificationexception: When turning off the alarm by button press, we send the mesage to turn off the alarm. Since we already registeres the mp3 and radio stream error and no error happend, we remove them. But by the action of removing them we modify the map that the send message is already on and this cause a concurrent modification exception.
 
 //DONE test//
 Test day of the week in alarm for border color between night and day

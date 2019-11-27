@@ -40,16 +40,21 @@ public class AlarmDayMouseSelector extends MouseAdapter implements PropertyChang
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		Color color = null;
+		
+		if (cycle == DayNightCycle.NIGHT) {
+			color = Color.WHITE;
+		}else {
+			color = Color.BLACK;
+		}
+		
+				
 		if(selected) {
 			label.setBorder(new EmptyBorder(0,0,0,0));
 			selected = false;
 		}else {
-			if (cycle == DayNightCycle.NIGHT) {
-				border.setBorderColor(Color.WHITE);
-			}else {
-				border.setBorderColor(Color.BLACK);
-			}
-			
+			border.setBorderColor(color);
+					
 			label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
 			selected = true;
 		}
@@ -62,16 +67,18 @@ public class AlarmDayMouseSelector extends MouseAdapter implements PropertyChang
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		logger.log(Level.CONFIG, "Property changed: " + evt.getPropertyName());
-		
+
 		cycle = (DayNightCycle)evt.getNewValue();
-		
-		if (cycle == DayNightCycle.DAY) {
-			border.setBorderColor(Color.BLACK);
-			label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
-		}else if(cycle == DayNightCycle.NIGHT) {
-			border.setBorderColor(Color.WHITE);
-			label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
+		if (selected) {
+			if (cycle == DayNightCycle.DAY) {
+				border.setBorderColor(Color.BLACK);
+				label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
+			}else if(cycle == DayNightCycle.NIGHT) {
+				border.setBorderColor(Color.WHITE);
+				label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
+			}
+
 		}
-		
+
 	}
 }

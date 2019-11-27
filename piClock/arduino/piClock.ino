@@ -126,7 +126,7 @@ void sendLdrDataFunc() {
 
   clearMsg();
 
-  itoa(value, bufferChar, 10);
+  itoa(value, bufferChar, 10); //int to char
 
   sendMsg[0] = '<';
   sendMsg[1] = 'l';

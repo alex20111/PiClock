@@ -34,8 +34,9 @@ public class ThreadManager {
 	
 	public int wthErrorCount = 0;
 	
-	private ThreadManager(){
-		scheduler = Executors.newScheduledThreadPool(5);
+	private ThreadManager(){		
+		scheduler = Executors.newScheduledThreadPool(10);
+		
 	}
 	public static ThreadManager getInstance(){
 		if (threadManager == null){
@@ -95,7 +96,7 @@ public class ThreadManager {
 	}
 	@SuppressWarnings("unchecked")
 	public void startWeatherThread(int initDelay, Preferences pref) {
-		logger.config("startWeatherThread");
+		logger.config("startWeatherThread. Pool size: " );
 		
 //		//verify if too much errors from the weather worker
 //		ErrorHandler eh =(ErrorHandler) SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
@@ -125,6 +126,7 @@ public class ThreadManager {
 			}		
 
 		}	
+		logger.log(Level.CONFIG, "Weather thread stopped. ");
 	}
 	public void startLdr() {
 		logger.log(Level.CONFIG, "startLdr");
@@ -158,5 +160,6 @@ public class ThreadManager {
 			}
 		}	
 		logger.config("sensorThread Thread finished");
+		
 	}
 }

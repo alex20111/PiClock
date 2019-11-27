@@ -605,7 +605,7 @@ public class PiHandler {
 
 						exec.addCommand("sudo");
 						exec.addCommand("./scripts/play.sh");
-						exec.timeout(5000);
+//						exec.timeout(5000);
 						ret = exec.run();
 
 					}catch(Exception ex) {

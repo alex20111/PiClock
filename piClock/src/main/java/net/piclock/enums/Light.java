@@ -1,7 +1,7 @@
 package net.piclock.enums;
 
 public enum Light {
-	DARK(255,234, 0), DIM(226,194, 5), LIGHT(186,126, 15), BRIGHT(118,60, 50), VERY_BRIGHT(52,0, 100), GREY_ZONE(0,0, 100), VERY_DIM(0,0,3); //very dim is only used when to turn the monitor back on with button.
+	DARK(255,243, 0), DIM(236,200, 8), LIGHT(192,126, 15), BRIGHT(118,77, 50), VERY_BRIGHT(69,0, 100), GREY_ZONE(0,0, 100), VERY_DIM(0,0,3); //very dim is only used when to turn the monitor back on with button.
 	
 	private int ldrHighLevel = -1;
 	private int ldrLowLevel = -1;
