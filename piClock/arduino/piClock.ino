@@ -55,8 +55,6 @@ boolean scanFm = false;
 int scanLastChannel = 0;
 int fmStation = 1069;  //106.9
 
-
-
 void setup() {
   pinMode(BTNA, INPUT);
   pinMode(LDR, INPUT);
@@ -64,7 +62,6 @@ void setup() {
   pinMode(SPEAKER_MOSFET, OUTPUT);
 
   digitalWrite(SPEAKER_MOSFET, HIGH);
-
 
   // Initialize the Radio
   radio.init();
@@ -270,6 +267,13 @@ void handleSerialData() {
           radio.setVolume(0);
         }
         break;
+      case 'u': //turn radio on or off
+        if (receivedChars[1] == '8') { //on
+           radio.init();
+        }else{
+           digitalWrite(RESET_PIN_RADIO, LOW);
+        }
+        break;
       default:
         // statements
         break;
@@ -282,6 +286,7 @@ void clearMsg() {
   for ( int i = 0; i < sizeof(sendMsg);  ++i )
     sendMsg[i] = (char)0;
 }
+
 
 void readButton1() {
 
@@ -306,7 +311,7 @@ void readButton1() {
         clearMsg();
         sendMsg[0] = '<';
         sendMsg[1] = 'a';
-        sendMsg[2] = 49;
+        sendMsg[2] = 49; //ascii for 1
         sendMsg[3] = '>';
 
         Serial.print(sendMsg);
@@ -364,34 +369,6 @@ void scanFmBand() {
   }
 
 
-  //  fmStation = radio.seekUp();
-  //
-  //  if (fmStation != scanLastChannel) {
-  //
-  //    clearMsg();
-  //
-  //    itoa(fmStation, bufferChar, 10);
-  //
-  //    sendMsg[0] = '<';
-  //    sendMsg[1] = 's';
-  //
-  //    uint8_t i = 0;
-  //    uint8_t idx = 2;
-  //    for (i = 0 ; i < strlen(bufferChar) ; i ++) {
-  //      sendMsg[idx] = bufferChar[i];
-  //      idx ++;
-  //    }
-  //
-  //    sendMsg[idx] = '>';
-  //
-  //    Serial.print(sendMsg);
-  //    Serial.flush();//that means do not wait and send info to caller
-  //
-  //    scanLastChannel = fmStation;
-  //  } else {
-  //    scanFm = false;
-  //  }
-
 }
 void setRadioChannel() {
   char channelBuffer[5];
@@ -404,11 +381,7 @@ void setRadioChannel() {
     channelBuffer [4] = receivedChars[6];
   }
 
-
   fmStation = atoi(channelBuffer);
-
-  //  Serial.print(channelBuffer);
-  //  Serial.print(fmStation);
 
   radio.setFrequency(fmStation);
 }
