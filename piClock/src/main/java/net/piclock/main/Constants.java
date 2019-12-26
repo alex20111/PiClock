@@ -47,6 +47,8 @@ public class Constants {
 	//alarm
 	public static final String BUZZER_CHANGED = "AlarmTypeChanged";
 	public static final String TURN_OFF_ALARM = "TurnOffAlarm";
+	public static final String UPDATE_ALARMS = "UPDATE_ALARMS";
+	public static final String REMOVE_TRIGGER = "REMOVE_TRIGGER";	
 	
 	public static final String NA_ICON = "cloudNa.png";
 	
@@ -59,7 +61,7 @@ public class Constants {
 	public static String ERROR_BROADCAST = "errorBroadcast";
 	
 	//DB
-	public static final String DB_URL = "./PiClock";
+	public static final String DB_URL = "./PiClock;DB_CLOSE_DELAY=120";
 	public static final String DB_USER = "PiClock";
 	public static final String DB_PASS = "12345PiClock";
 	

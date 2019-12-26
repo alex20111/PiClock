@@ -3,6 +3,7 @@ package net.piclock.thread;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +16,7 @@ import net.piclock.bean.ErrorType;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.entity.Mp3Entity;
 import net.piclock.db.entity.RadioEntity;
+import net.piclock.db.sql.AlarmSql;
 import net.piclock.db.sql.Mp3Sql;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.AlarmRepeat;
@@ -28,11 +30,12 @@ import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
 
-public class Alarm implements Runnable, MessageListener{
+
+public class AlarmTriggered implements Runnable, MessageListener{
 
 	private static final Logger logger = Logger.getLogger( Alarm.class.getName() );
 
-	private AlarmEntity alarm;	
+	private static AlarmEntity alarm;	
 	private static boolean alarmTriggered = false;
 	private SwingContext ct;
 	private static PiHandler handler = PiHandler.getInstance();	
@@ -41,12 +44,12 @@ public class Alarm implements Runnable, MessageListener{
 
 	private  Thread alarmAutoOff; 
 
-	public Alarm(AlarmEntity alarmEnt){
-		
+	public AlarmTriggered(AlarmEntity alarmEnt){
+		logger.log(Level.INFO, "Alarm class created for:  " + alarm);
 		alarm = alarmEnt;
 		ct = SwingContext.getInstance();
 		buzzerDefaultUsed = false;
-		logger.log(Level.INFO, "Alarm class created for:  " + alarm);
+
 	}
 	@Override
 	public void run() {
@@ -265,3 +268,45 @@ public class Alarm implements Runnable, MessageListener{
 	}
 
 }
+
+
+
+
+
+
+//implements Runnable {
+//
+//	private AlarmEntity ar = null;
+//	private AlarmSql sql = null;
+//	
+//	public AlarmTriggered(AlarmEntity ae){
+//		this.ar = ae;		
+//		sql = new AlarmSql();
+//	}	
+//
+//	@Override
+//	public void run() {
+//		System.out.println("Loadding and init wifi: " + LocalDateTime.now());
+//
+//		try {
+//			Thread.sleep(10000);
+//
+//			//check if still active on the DB before sounding alarm.. if not just quitely fade into the night
+//			//TODO
+//			if (sql.isAlarmActive(ar.getId())){
+//
+//				System.out.println("Blaring alarm: "  + LocalDateTime.now());
+//
+//			}
+//			Message m = new Message();
+//			m.addIntToMessageList(ar.getId());
+//
+//			SwingContext.getInstance().sendMessage(Constants.REMOVE_TRIGGER, m);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//			Thread.currentThread().interrupt();
+//		}catch(Exception ex){
+//			ex.printStackTrace();
+//		}
+//	}
+//}

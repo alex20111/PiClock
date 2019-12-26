@@ -11,12 +11,17 @@ import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import javafx.scene.control.ComboBox;
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
@@ -28,6 +33,8 @@ import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.thread.ScreenAutoClose;
+import net.piclock.util.FormatStackTrace;
 import net.piclock.util.VolumeIndicator;
 
 import java.awt.Color;
@@ -35,6 +42,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 
 public class RadioView extends JPanel implements MessageListener{
@@ -66,6 +74,8 @@ public class RadioView extends JPanel implements MessageListener{
 		this.lblRadioIcon = radioIcon;
 		handler = PiHandler.getInstance();
 		setOpaque(false);
+		
+		
 		
 		ThemeHandler t = (ThemeHandler) SwingContext.getInstance().getSharedObject(Constants.THEMES_HANDLER);
 		
@@ -224,6 +234,13 @@ public class RadioView extends JPanel implements MessageListener{
 		JButton btnBack = new JButton("<");
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					ScreenAutoClose.stop();
+				} catch (InterruptedException e1) {
+					ErrorHandler eh = (ErrorHandler)SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
+	  				eh.addError(ErrorType.RADIO, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
+					logger.log(Level.INFO ,  "Cannot stop scren auto close", e);
+				}
 				JPanel contentPane = (JPanel)SwingContext.getInstance().getSharedObject(Constants.CARD_PANEL);
 				CardLayout cardLayout = (CardLayout) contentPane.getLayout(); 
 				cardLayout.show(contentPane, Constants.MAIN_VIEW);				
@@ -231,16 +248,18 @@ public class RadioView extends JPanel implements MessageListener{
 		});
 		btnBack.setPreferredSize(new Dimension(41, 30));
 		btnBack.setFont(new Font("Tahoma", Font.BOLD, 13));
-		mainPanel.add(btnBack, "cell 0 4,aligny center");
+		mainPanel.add(btnBack, "cell 0 4,aligny top");
 
 		JButton btnDelStation = new JButton("X");
 		btnDelStation.addActionListener(new ActionListener() {
+			@SuppressWarnings("rawtypes")
 			public void actionPerformed(ActionEvent e) {
 				try {
 
 					int idx = stationList.getSelectedIndex();
 
 					if (idx > -1) {
+						@SuppressWarnings("unchecked")
 						DefaultListModel<RadioEntity> listModel = (DefaultListModel)stationList.getModel();
 						RadioEntity toDel = listModel.get(idx);
 
@@ -280,6 +299,13 @@ public class RadioView extends JPanel implements MessageListener{
 		mainPanel.add(btnVolume, "cell 1 3,alignx center");
 		btnVolume.setVisible(false);
 		
+		JLabel sleep = new JLabel("Off:");
+		sleep.setFont(new Font("Tahoma", Font.BOLD, 16));
+		mainPanel.add(sleep, "cell 1 0,alignx right,aligny top");
+		JComboBox<Integer> timeToSleep = new JComboBox<>();
+		timeToSleep.addItem(1);
+		mainPanel.add(timeToSleep, "cell 1 0,alignx right,aligny top");
+		
 		stationList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -309,11 +335,14 @@ public class RadioView extends JPanel implements MessageListener{
 		loadListFromDb();
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void loadListFromDb() {
 		
 		try {
+			
+			
 			RadioSql sql = new RadioSql();
+			sql.CreateRadioTable();
 			List<RadioEntity> radios = sql.loadAllRadios();
 			DefaultListModel<RadioEntity> listModel = (DefaultListModel)stationList.getModel();
 			
@@ -323,7 +352,7 @@ public class RadioView extends JPanel implements MessageListener{
 				listModel.addElement(station);
 			}
 
-		} catch (IllegalStateException |  ClassNotFoundException | SQLException e) {
+		} catch (IllegalStateException |  ClassNotFoundException | SQLException | IOException e) {
 			logger.log(Level.CONFIG, "Error in loadList", e);
 		}
 		

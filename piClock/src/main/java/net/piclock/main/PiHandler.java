@@ -200,7 +200,6 @@ public class PiHandler {
 		if (buzzerType == Buzzer.BUZZER){
 			buzzer(false);
 		}else if (buzzerType == Buzzer.RADIO){
-//			playRadio(false, "", -1);
 			radioOff(false);
 		}else if (buzzerType == Buzzer.MP3){
 			playMp3(false, "", -1);
@@ -581,18 +580,17 @@ public class PiHandler {
 	 * @throws InterruptedException 
 	 */
 	public void radioSetChannel(int channel, int volume) throws IllegalStateException, IOException, InterruptedException {
-		logger.log(Level.CONFIG, "Setting channel: " + channel);
-
-		cmd.radioSelectChannel(channel);
+		logger.log(Level.CONFIG, "Setting channel: " + channel);		
 
 		if (!radioOn) {
 			toggleMusicSystem(true, false);
 			//turning on speakers
-//			cmd.turnSpeakerOn();
 			handleSpeakers(true);
 
 			adjustVolume(volume);
 
+			cmd.turnOnRadio();
+			
 			radioThread = new Thread(new Runnable() {
 
 				@Override
@@ -621,14 +619,12 @@ public class PiHandler {
 			radioThread.start();
 
 		}
+		
+		cmd.radioSelectChannel(channel);
+		
 		logger.log(Level.CONFIG, "End of radioSetChannel, not blocking.. please remove after test");
 	}
 	
-//	public List<String> radioScan() throws IllegalStateException, IOException, InterruptedException {
-//		logger.log(Level.CONFIG, "Radio scan()");
-//		
-//		return cmd.scanForFmChanels();//TODO maybe add timeout as variable.
-//	}
 	
 	public void radioOff(boolean isToggelingBetweenRadioAndMp3) throws ExecuteException, IOException {
 		logger.log(Level.CONFIG, "Turning off radio. Radio on? " + radioOn + " isToggelingBetweenRadioAndMp3: " + isToggelingBetweenRadioAndMp3);
@@ -647,7 +643,7 @@ public class PiHandler {
 			if (!isToggelingBetweenRadioAndMp3) {
 				handleSpeakers(false);
 			}
-			cmd.radioOff();
+			cmd.turnOffRadio();
 		}
 		
 		radioOn = false;
@@ -733,7 +729,7 @@ public class PiHandler {
 		if (startAutoShutdown) {
 			//wait 3 minute before shutting down WIFI
 			wifiShutDown = new Thread(new Runnable() {
-				int delay = 180000;
+				int delay = 300000;
 				@Override
 				public void run() {
 					try {
@@ -792,6 +788,7 @@ public class PiHandler {
 			//if MP3 requested, turn off Radio
 			if (radioOn) {
 				radioOff(true);
+				
 				context.sendMessage(Constants.MUSIC_TOGGELED, new Message("radiooff"));
 			}
 

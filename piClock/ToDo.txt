@@ -2,24 +2,30 @@
 
 TODO:
 add splash screen  ok (maybe custom) - select 
-when refreshing wifi web password,add wait icon (Spinning)
 add error for other function (Error types to display on screen)  IN progress (Package net.piclock.server - continue on)
 add daily log file creation.. a log for each day
 THEME ICONS and TEXT customizition
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
-update piclock.ino scanning or remove it.
-add volume icon in radio view. also there switching
-add new web page for backgrounds. In progress
-
+add volume icon in radio view. also there switchin
+finish background html page. 
+finish alarm html page
 	
 
 //TEST//
-Test new radio in alarm and radio volume in buzzer option
+
 test network retry functionality. 
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
 concurrentmodificationexception: When turning off the alarm by button press, we send the mesage to turn off the alarm. Since we already registeres the mp3 and radio stream error and no error happend, we remove them. But by the action of removing them we modify the map that the send message is already on and this cause a concurrent modification exception.
+make radio screen go back to main screen after 2 minutes.
+Test alarm buttons / add new multiple alarm.
+Test add new web page for backgrounds. In progress
+Test Radio on/off function and long term functions
+test alarm html on the server
 
 //DONE test//
+for weather, make whole panel at the top clickable.
+increase wifi timeout to 5 min.
+Test new radio in alarm and radio volume in buzzer option
 Test day of the week in alarm for border color between night and day
 *** *** add function to turn off display when the checkbox in settings is re-enabled. (To turn off monitor when dark). Scenario: user checlk off the checkbox. then when night, check it on again. Then the scheen should shut down and the time display should turn on
 test radio functionality. still testing

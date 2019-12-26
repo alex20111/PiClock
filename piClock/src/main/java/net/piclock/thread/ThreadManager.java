@@ -1,9 +1,7 @@
 package net.piclock.thread;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
+import java.time.temporal.ChronoField;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -13,7 +11,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 
-import net.piclock.db.entity.AlarmEntity;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
@@ -49,30 +46,37 @@ public class ThreadManager {
 		return threadManager;
 	}
 
-	public void startAlarm(AlarmEntity alarm){
+	public void startAlarm(){
 		//calculate initial delay
-		logger.log(Level.CONFIG, "startAlarm: " + alarm);
-		LocalDateTime currentDate = LocalDateTime.now();
-		LocalDateTime alarmTime = LocalDateTime.now();
 		
-		int hours = Integer.parseInt(alarm.getHour());
-		int minutes = Integer.parseInt(alarm.getMinutes());
+//		LocalDateTime currentDate = LocalDateTime.now();
+//		LocalDateTime alarmTime = LocalDateTime.now();
+//		
+//		int hours = Integer.parseInt(alarm.getHour());
+//		int minutes = Integer.parseInt(alarm.getMinutes());
+//		
+//		if ( hours > alarmTime.getHour()  ||
+//				hours == alarmTime.getHour() && minutes > alarmTime.getMinute()){
+//			//time after current time
+//			alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0);
+//		}else{
+//			//time before current time, set date for next day.
+//			alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0).plusDays(1);
+//		}
+//
+//		//remove 1 min to allow system to perform something before triggering the alarm		
+//		long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime) - 60000;
+//		
+//		logger.log(Level.CONFIG, "Alarm Delay starting: " + initDelay + " " + new Date(new Date().getTime() + initDelay));
+		AlarmMonitorThread amt = new AlarmMonitorThread();
+		LocalDateTime now = LocalDateTime.now();
+		int millis = now.get(ChronoField.MILLI_OF_SECOND);
 		
-		if ( hours > alarmTime.getHour()  ||
-				hours == alarmTime.getHour() && minutes > alarmTime.getMinute()){
-			//time after current time
-			alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0);
-		}else{
-			//time before current time, set date for next day.
-			alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0).plusDays(1);
-		}
-
-		//remove 1 min to allow system to perform something before triggering the alarm		
-		long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime) - 60000;
+		long delay = (1000-millis);
 		
-		logger.log(Level.CONFIG, "Alarm Delay starting: " + initDelay + " " + new Date(new Date().getTime() + initDelay));
+		logger.log(Level.CONFIG, "startAlarm. Delay: " + delay);
 		
-		alarmThread = scheduler.scheduleAtFixedRate(new Alarm(alarm), initDelay, 86400000, TimeUnit.MILLISECONDS);
+		alarmThread = scheduler.scheduleAtFixedRate(amt, delay, 1000, TimeUnit.MILLISECONDS);
 	}
 	public void stopAlarm(){
 		logger.log(Level.CONFIG, "stopAlarm");
@@ -135,7 +139,7 @@ public class ThreadManager {
 	
 	public void startClock (JLabel clockLabel, JLabel weekDateLable, long delay) {
 		logger.log(Level.CONFIG, "startClock");
-		scheduler.scheduleAtFixedRate(new Clock(clockLabel, weekDateLable), delay, 60000, TimeUnit.MILLISECONDS);
+		scheduler.scheduleAtFixedRate(new Clock(clockLabel, weekDateLable), delay, 2000, TimeUnit.MILLISECONDS);
 	}
 	@SuppressWarnings("unchecked")
 	public void startSensorThread() {

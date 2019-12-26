@@ -140,15 +140,23 @@ public class CmdTranslator {
 		return cmd.toString();
 
 	}
-	public String generateSelectChannelCmd(String channel, boolean on){
+	public String generateSelectChannelCmd(int channel){
 		StringBuilder cmd = new StringBuilder();
 		cmd.append(START_CHAR);
 		cmd.append(Command.SELECT_RADIO_CH.getCmd());
-		cmd.append( (on ? ON : OFF) );
-		if (on) {
-			cmd.append(channel );
-		}
+		cmd.append( ON);	
+		cmd.append(channel );
 		cmd.append(STOP_CHAR);
+		return cmd.toString();
+	}
+	
+	public String generateOnOrOffRadio(boolean on){
+		StringBuilder cmd = new StringBuilder();
+		cmd.append(START_CHAR);
+		cmd.append(Command.ON_OFF_RADIO.getCmd());
+		cmd.append( (on ? ON : OFF) );
+		cmd.append(STOP_CHAR);
+
 		return cmd.toString();
 	}
 

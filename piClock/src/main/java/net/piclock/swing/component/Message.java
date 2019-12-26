@@ -8,15 +8,21 @@ import java.util.List;
 public class Message {
 	
 	private String propertyName = "";
-	private List<Object> messageList;
+
+	private List messageList;
 	private LocalDateTime dateTime;
 
-	public  Message(List<Object> messageList) {
+	public  Message(List  messageList) {
 		this.messageList = messageList;
 		dateTime = LocalDateTime.now();
 	}
 	public  Message(Object... messageList ) {
 		this.messageList = Arrays.asList(messageList);
+		dateTime = LocalDateTime.now();
+	}	
+	public  Message(Object messageObject) {
+		this.messageList = new ArrayList();
+		this.messageList.add(messageObject);
 		dateTime = LocalDateTime.now();
 	}	
 	public  Message() {
@@ -55,10 +61,10 @@ public class Message {
 	public void setPropertyName(String propertyName) {
 		this.propertyName = propertyName;
 	}
-	public List<Object> getMessageList() {
+	public List getMessageList() {
 		return messageList;
 	}
-	public void setMessageList(List<Object> messageList) {
+	public void setMessageList(List messageList) {
 		this.messageList = messageList;
 	}
 	public LocalDateTime getDateTime() {

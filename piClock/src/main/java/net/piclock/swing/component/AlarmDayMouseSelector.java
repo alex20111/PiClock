@@ -40,15 +40,8 @@ public class AlarmDayMouseSelector extends MouseAdapter implements PropertyChang
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Color color = null;
+		Color color = setColor();
 		
-		if (cycle == DayNightCycle.NIGHT) {
-			color = Color.WHITE;
-		}else {
-			color = Color.BLACK;
-		}
-		
-				
 		if(selected) {
 			label.setBorder(new EmptyBorder(0,0,0,0));
 			selected = false;
@@ -80,5 +73,28 @@ public class AlarmDayMouseSelector extends MouseAdapter implements PropertyChang
 
 		}
 
+	}
+	public void select() {
+		Color color = setColor();
+		border.setBorderColor(color);
+		
+		label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
+		selected = true;
+		
+	}
+	public void deSelect() {
+		label.setBorder(new EmptyBorder(0,0,0,0));
+		selected = false;
+	}
+	
+	private Color setColor() {
+		Color color = null;
+		if (cycle == DayNightCycle.NIGHT) {
+			color = Color.WHITE;
+		}else {
+			color = Color.BLACK;
+		}
+		
+		return color;
 	}
 }

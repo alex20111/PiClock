@@ -20,16 +20,18 @@ public class AlarmEntity {
 	public static final String MP3_ID 		= "alarm_mp3_id";
 	public static final String VOLUME		= "alarm_volume";
 	public static final String ALARM_SHUTDOWN = "alarm_sh_timer"; //in minutes
+	public static final String ORDER 		 = "alarm_order"; //in minutes
 	
 	private int id 			= -1;
-	private String hour 	= "";
-	private String minutes 	= "";
+	private String hour 	= "00";
+	private String minutes 	= "00";
 	private String alarmSound   = "BUZZER";
 	private boolean active 	= false;
 	private int radioId 	= -1;
 	private int mp3Id 		= -1;
 	private int volume 		= 0;
 	private int alarmShutdown = -1;
+	private int alarmOrder = -1;
 	private List<AlarmRepeat> alarmRepeat = new ArrayList<AlarmRepeat>();  // rang  -> all week , only week end, only mondays.
 	
 	public AlarmEntity(){}
@@ -42,6 +44,7 @@ public class AlarmEntity {
 		this.active = rs.getBoolean(ACTIVE);
 		this.radioId = rs.getInt(RADIO_ID);
 		this.mp3Id = rs.getInt(MP3_ID);
+		this.alarmOrder = rs.getInt(ORDER);
 		
 		String repeat = rs.getString(REPEAT);
 		if (repeat != null && repeat.length() > 0){
@@ -149,11 +152,19 @@ public class AlarmEntity {
 		this.alarmShutdown = alarmShutdown;
 	}
 
+	public int getAlarmOrder() {
+		return alarmOrder;
+	}
+
+	public void setAlarmOrder(int alarmOrder) {
+		this.alarmOrder = alarmOrder;
+	}
+
 	@Override
 	public String toString() {
 		return "AlarmEntity [id=" + id + ", hour=" + hour + ", minutes=" + minutes + ", alarmSound=" + alarmSound
 				+ ", active=" + active + ", radioId=" + radioId + ", mp3Id=" + mp3Id + ", volume=" + volume
-				+ ", alarmShutdown=" + alarmShutdown + ", alarmRepeat=" + alarmRepeat + "]";
+				+ ", alarmShutdown=" + alarmShutdown + ", alarmOrder=" + alarmOrder + ", alarmRepeat=" + alarmRepeat + "]";
 	}
 
 

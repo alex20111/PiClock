@@ -1,0 +1,75 @@
+ <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 >Alarm</h1>      
+      </div>
+	   <form method="post"> <!-- alex -->
+	  <div>
+		<input type="submit" class="btn btn-primary" name="btn1Alarm" value="1" id="btn1">   <!-- alex -->
+		<input type="submit" class="btn btn-primary" name="btn2Alarm" value="2" id="btn2">   <!-- alex -->
+		<input type="submit" class="btn btn-primary" name="btn3Alarm" value="3" id="btn3">   <!-- alex -->
+		<input type="submit" class="btn btn-primary" name="btn4Alarm" value="4" id="btn4">   <!-- alex -->
+		<input type="submit" class="btn btn-primary" name="btn5Alarm" value="5" id="btn5">   <!-- alex -->
+	  </div>
+	  
+	   <div class="row">
+		<div class="col-md-4 order-md-2 mb-4">					 
+			<div class="display-1 mb-1">
+				%-alarm-%
+			</div>
+			%-buzzerdisplay-%
+	
+			%-repeatDisplay-%
+			<div class="mb-4">
+				Active: %-alarmActive-%
+
+			</div>			
+		 		
+			<h4> Update Alarm </h4>	
+			<hr/>				
+			
+			
+			 %-alarmFormMessage-%
+				<div class="form-group">
+					<label for="timeInput"><b>Time:</b></label>	
+					%-timeInput-%						
+				</div>
+				<div class="form-group">
+					<label for="alarmTypeId"><b>Buzzer type:</b></label>	
+					<select class="form-control" name="buzzerType" id="alarmTypeId"> 
+					 %-buzzOption-%
+					</select>					
+				</div>
+				<div class="form-group" style="%-hideShowMusic-%" id="musicDivId">
+					<label for="musicSelectedId"><b>MP3/Radio selection:</b></label>	
+					<select class="form-control" name="musicSelected" id="musicSelectedId"> 
+						%-buzzerMusicSel-%
+					</select>
+				</div>
+				<div class="form-group" style="%-hideShowVolume-%" id="volumeDivId">
+					<label for="volumeId"><b>Volume:</b></label>
+					<select class="form-control" name="volume" id="volumeId"> 
+						%-volumeDisplay-%
+					</select>
+				</div>
+				
+				<div class="form-group form-check">
+					%-checkboxes-%
+				</div>
+	
+		
+			<!--https://tempusdominus.github.io/bootstrap-4/Usage/ -->
+			
+				<input type="submit" class="btn btn-primary" name="btnSave" value="Save">  
+		 
+		</div>
+	 </div>
+      </form>  <!-- alex -->
+    </main>
+  </div>
+</div>
+
+<script src="/js/jquery-3.4.1.min.js" ></script>
+<script src="/js/alarmScript.js" ></script>
+%-customScript-%
+
+<!-- end -->

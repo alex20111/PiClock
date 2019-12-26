@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -66,7 +65,7 @@ import net.piclock.view.AlarmView;
 import net.piclock.view.ConfigView;
 import net.piclock.view.ErrorView;
 import net.piclock.view.Mp3View;
-import net.piclock.view.RadioStationsView;
+//import net.piclock.view.RadioStationsView;
 import net.piclock.view.RadioView;
 import net.piclock.view.VolumeNew;
 import net.piclock.view.WeatherAlertView;
@@ -115,7 +114,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	private WeatherForecastView forecastView;
 	private WeatherConfigView  weatherConfig;
 	private WeatherAlertView weatherAlertView;
-	private RadioStationsView radioStationsView;
+//	private RadioStationsView radioStationsView;
 	private AlarmView av;
 	private WebServerView webServerView;
 	private Mp3View mp3View;
@@ -221,14 +220,13 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		weatherConfig = new WeatherConfigView();
 		forecastView = new WeatherForecastView();
 		weatherAlertView = new WeatherAlertView();	
-		radioStationsView = new RadioStationsView(lblRadioIcon);
-		RadioView radioView = new RadioView(lblRadioIcon); //TODO  test
+//		radioStationsView = new RadioStationsView(lblRadioIcon);
+		RadioView radioView = new RadioView(lblRadioIcon);
 		mp3View				   = new Mp3View(lblMp3Icon);
 		
 		cardsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setUndecorated(true);
 		
-		//TODO  remove to activate transparent cursor
 		// Transparent 16 x 16 pixel cursor image.
 		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 		// Create a new blank cursor.
@@ -336,6 +334,13 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		lblCurrentweather = new JLabel("<html><div style='width: 100px;word-wrap: break-word;text-align: center'>Not available</html>");
 		lblCurrentweather.setFont(new Font("Tahoma", Font.BOLD, 30));
 		lblCurrentweather.setForeground(Color.WHITE);
+		lblCurrentweather.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				
+				weatherMouseAction();
+			}
+		});
+		
 		themes.registerLabelTextColor(lblCurrentweather, LabelEnums.CURRENT_WEATHER);
 		weatherPanel.add(lblCurrentweather, "cell 1 0,alignx center");
 		
@@ -348,22 +353,14 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		lblWeatherIcon.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				
-				logger.log(Level.CONFIG, "Fetching weather from the weather Icon. Is weather activated? " + prefs.isWeatherActivated());
+				weatherMouseAction();
+			}
+		});
+		
+		weatherPanel.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
 				
-				if (prefs.isWeatherActivated()){
-
-					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
-					cardLayout.show(cardsPanel, Constants.WEATHER_FORECAST_VIEW);	
-
-					//test if it's been more than 3 min since the weather refreshed
-					Date lastUpdated = (Date) ct.getSharedObject(Constants.WEATHER_LST_UPD);
-					if (lastUpdated == null || (new Date().getTime() - lastUpdated.getTime()) > 180000){
-						forecastView.displayLoading();
-
-						fetchForecast(0);
-					}
-					ScreenAutoClose.start(cardsPanel, 45, TimeUnit.SECONDS);
-				}
+				weatherMouseAction();
 			}
 		});
 		
@@ -419,6 +416,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			public void mouseClicked(MouseEvent e) {
 				try{
 					keepAliveIfScreenShutdown();
+					ScreenAutoClose.stop();
+					ScreenAutoClose.start(cardsPanel, 2, TimeUnit.MINUTES);
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.RADIO_STATION_VIEW);
 
@@ -432,7 +431,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		alertIconsPanel.add(lblRadioIcon);
 		
-		lblMp3Icon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right //TODO
+		lblMp3Icon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right 
 		lblMp3Icon.setVisible(false);
 		themes.registerIconColor(lblMp3Icon, IconEnum.MP3_ICON);
 		alertIconsPanel.add(lblMp3Icon);
@@ -474,6 +473,20 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		themes.registerLabelTextColor(lblTempShade, LabelEnums.TEMP_SHADE);
 		weatherPanel.add(lblTempShade, "cell 5 0,alignx right");
 		
+		lblTempShade.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				
+				weatherMouseAction();
+			}
+		});
+		lblTempSun.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				
+				weatherMouseAction();
+			}
+		});
+		
+		
 		av = new AlarmView(cardsPanel, prefs , lblAlarmIcon);
 		webServerView = new WebServerView(lblWebserverIcon);	
 		
@@ -502,7 +515,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
 		cardsPanel.add(forecastView, Constants.WEATHER_FORECAST_VIEW);
 		cardsPanel.add(weatherAlertView, Constants.WEATHER_ALERT_VIEW);
-//		cardsPanel.add(radioStationsView, Constants.RADIO_STATION_VIEW); //TODO test
+//		cardsPanel.add(radioStationsView, Constants.RADIO_STATION_VIEW); 
 		cardsPanel.add(radioView, Constants.RADIO_STATION_VIEW); //TODO test
 		cardsPanel.add(webServerView, Constants.WEB_SERVER_VIEW);
 		
@@ -517,7 +530,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 
 		AlarmEntity ae = new AlarmSql().loadActiveAlarm();
 		if (ae != null && ae.isActive()){
-			lblAlarmIcon.setVisible(true);
+			lblAlarmIcon.setVisible(true);  //TODO - alarm icon based on any active alarm
 		}			
 		
 		themes.loadSunnyBackdrop(); //start the theme	
@@ -555,20 +568,20 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	
 	private void clock(){		
 		
-		SimpleDateFormat sdfDate = new SimpleDateFormat("EEE, MMM d");
-		Date dt = new Date();
-		clockLabel.setText(sdfTime.format(dt));
-		weekDateLable.setText(sdfDate.format(dt));
+//		SimpleDateFormat sdfDate = new SimpleDateFormat("EEE, MMM d");
+//		Date dt = new Date();
+//		clockLabel.setText(sdfTime.format(dt));
+//		weekDateLable.setText(sdfDate.format(dt));
+//		
+//		Calendar dtf = Calendar.getInstance();
+//		dtf.setTime(dt);
+//		dtf.add(Calendar.MINUTE, 1);
+//		dtf.set(Calendar.SECOND, 00);
+//		dtf.set(Calendar.MILLISECOND, 00);
+//		
+//		long delay = dtf.getTimeInMillis() - dt.getTime();
 		
-		Calendar dtf = Calendar.getInstance();
-		dtf.setTime(dt);
-		dtf.add(Calendar.MINUTE, 1);
-		dtf.set(Calendar.SECOND, 00);
-		dtf.set(Calendar.MILLISECOND, 00);
-		
-		long delay = dtf.getTimeInMillis() - dt.getTime();
-		
-		tm.startClock(clockLabel, weekDateLable, delay);
+		tm.startClock(clockLabel, weekDateLable, 0);
 		
 	}
 	/**
@@ -622,6 +635,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			public void actionPerformed(ActionEvent e) {
 				try{
 					keepAliveIfScreenShutdown();
+					ScreenAutoClose.stop();
+					ScreenAutoClose.start(cardsPanel, 2, TimeUnit.MINUTES);
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.RADIO_STATION_VIEW);
 
@@ -959,5 +974,25 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			}
 		}
 		
+	}
+	private void weatherMouseAction() {
+
+		logger.log(Level.CONFIG, "Fetching weather from the weather Icon. Is weather activated? " + prefs.isWeatherActivated());
+
+		if (prefs.isWeatherActivated()){
+
+			CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+			cardLayout.show(cardsPanel, Constants.WEATHER_FORECAST_VIEW);	
+
+			//test if it's been more than 3 min since the weather refreshed
+			Date lastUpdated = (Date) ct.getSharedObject(Constants.WEATHER_LST_UPD);
+			if (lastUpdated == null || (new Date().getTime() - lastUpdated.getTime()) > 180000){
+				forecastView.displayLoading();
+
+				fetchForecast(0);
+			}
+			ScreenAutoClose.start(cardsPanel, 45, TimeUnit.SECONDS);
+		}
+
 	}
 }

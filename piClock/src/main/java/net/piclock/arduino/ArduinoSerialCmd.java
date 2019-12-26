@@ -12,7 +12,6 @@ import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
 
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,52 +27,52 @@ import java.util.logging.Logger;
  * @author Robert Savage
  */
 public class ArduinoSerialCmd {
-	
+
 	private static final Logger logger = Logger.getLogger( ArduinoSerialCmd.class.getName() );
 
 	private static ArduinoSerialCmd arduinoSerialCmd;
 	private Serial serial;
 	private SerialConfig config;
 	private ErrorHandler eh;
-	
+
 	private CmdTranslator translator;
-	
+
 	private List<ButtonChangeListener> btnListeners = new ArrayList<ButtonChangeListener>();
-	
+
 	private final BlockingQueue<Integer> ldrQueue =  new ArrayBlockingQueue<>(1);
 	private final BlockingQueue<List<String>> scanQueue =  new ArrayBlockingQueue<>(1);
-	
+
 	private ArduinoSerialCmd() throws UnsupportedBoardType, IOException, InterruptedException {
 		serial = SerialFactory.createInstance();
 		config = new SerialConfig();
 		config.device("/dev/ttyUSB0")
-        .baud(Baud._9600)
-        .dataBits(DataBits._8)
-        .parity(Parity.NONE)
-        .stopBits(StopBits._1)
-        .flowControl(FlowControl.NONE);
-		
+		.baud(Baud._9600)
+		.dataBits(DataBits._8)
+		.parity(Parity.NONE)
+		.stopBits(StopBits._1)
+		.flowControl(FlowControl.NONE);
+
 		translator = new CmdTranslator();
-		
+
 		startListener();
-		
+
 		open();
-		
-		 eh = new ErrorHandler();
-			
+
+		eh = new ErrorHandler();
+
 		eh = (ErrorHandler) SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);	
 	}
 
-	
+
 	public void open() throws IOException {
 		serial.open(config);
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {}
 	}
-	
+
 	public static ArduinoSerialCmd getInstance() throws UnsupportedBoardType, IOException, InterruptedException {
-		
+
 		if (arduinoSerialCmd == null) {
 			synchronized (ArduinoSerialCmd.class) {
 				if(arduinoSerialCmd == null) {
@@ -83,33 +82,33 @@ public class ArduinoSerialCmd {
 		}
 		return arduinoSerialCmd;
 	}
-	
+
 	public int readLdr() throws IllegalStateException, IOException, InterruptedException {
 		sendCommand(translator.generateLDRCmd());
 		int ldrVal = -1;
-			try{
-				ldrVal = ldrQueue.poll(4000, TimeUnit.MILLISECONDS); 
-			}catch(Exception ex) {
-				String fmtEx = new FormatStackTrace(ex).getFormattedException();
-				eh.addError(ErrorType.ARDUINO, new ErrorInfo(fmtEx));
-				logger.log(Level.INFO, "LDR retrieve value timeout or null: ", ex);
-			}
+		try{
+			ldrVal = ldrQueue.poll(4000, TimeUnit.MILLISECONDS); 
+		}catch(Exception ex) {
+			String fmtEx = new FormatStackTrace(ex).getFormattedException();
+			eh.addError(ErrorType.ARDUINO, new ErrorInfo(fmtEx));
+			logger.log(Level.INFO, "LDR retrieve value timeout or null: ", ex);
+		}
 		return ldrVal;
 
-		
+
 	}
 	public void writeTime(String time) throws IllegalStateException, IOException {
 		String modTime = time.substring(0, 2) + time.substring(3, time.length());
 		logger.log(Level.CONFIG, "Sending time: " + modTime);		
 		sendCommand(translator.generateTimeCmd(modTime));
-		
+
 	}
 	public void buzzer(boolean on) throws IllegalStateException, IOException {
 		sendCommand(translator.generateBuzzerCmd(on));
 	}
 	public void turnSpeakerOn() throws IllegalStateException, IOException {
 		sendCommand(translator.generateMosfetCmd(true));
-		
+
 	}
 	public void turnSpeakerOff() throws IllegalStateException, IOException {
 		sendCommand(translator.generateMosfetCmd(false));
@@ -118,6 +117,13 @@ public class ArduinoSerialCmd {
 	public void timeOff() throws IllegalStateException, IOException {
 		sendCommand(translator.generateTimeOffCmd());
 	}
+	public void turnOnRadio() throws IllegalStateException, IOException {
+		sendCommand(translator.generateOnOrOffRadio(true));
+	}
+	public void turnOffRadio() throws IllegalStateException, IOException {
+		sendCommand(translator.generateOnOrOffRadio(false));
+	}
+
 	@Deprecated
 	public List<String> scanForFmChanels() throws IllegalStateException, IOException, InterruptedException {
 
@@ -125,7 +131,7 @@ public class ArduinoSerialCmd {
 			throw new IllegalStateException("Scan is still running, cannot initiate an other scan");
 		}
 		sendCommand(translator.generateScanFM());
-		
+
 		List<String> data = new ArrayList<>();
 		try {
 			data = scanQueue.poll(30, TimeUnit.SECONDS);
@@ -135,17 +141,9 @@ public class ArduinoSerialCmd {
 			translator.setScan(RadioScan.NONE);
 			logger.log(Level.INFO, "scan station retrieve value timeout or null: ", ex);
 		}
-		
+
 		return data;
-		
-	}
-	/**
-	 * Turn radio off
-	 * @throws IllegalStateException
-	 * @throws IOException
-	 */
-	public void radioOff() throws IllegalStateException, IOException {
-		setRadioChannel(-1, false);
+
 	}
 	/**
 	 * select a radio channel
@@ -154,14 +152,14 @@ public class ArduinoSerialCmd {
 	 * @throws IOException
 	 */
 	public void radioSelectChannel(int channel) throws IllegalStateException, IOException {
-		setRadioChannel(channel, true);
+		sendCommand(translator.generateSelectChannelCmd(channel));
 	}
-	private  void setRadioChannel(int channel, boolean on ) throws IllegalStateException, IOException {
-		sendCommand(translator.generateSelectChannelCmd(String.valueOf(channel), on));
-	}
+	/**
+	 *Send command to arduino
+	 */
 	public synchronized void  sendCommand(String command) throws IllegalStateException, IOException {		
 		logger.log(Level.CONFIG, "Sending command: " + command);
-		
+
 		serial.write(command);
 		try {
 			Thread.sleep(50);
@@ -173,59 +171,59 @@ public class ArduinoSerialCmd {
 	public void removeButtonListener(ButtonChangeListener btn) {
 		btnListeners.remove(btn);
 	}
-	
+
 	private synchronized void startListener() {
 		serial.addListener(new SerialDataEventListener() {
-          @Override
-          public void dataReceived(SerialDataEvent event) {
+			@Override
+			public void dataReceived(SerialDataEvent event) {
 
-        	  try {
-            	
-//            	  System.out.println("Data retrieve form arduino: " + event.getAsciiString());/
-            	  
-            	 Command cmd =  translator.translateReceivedCmd(event.getAsciiString());
-            	  
-            	  if (translator.isCommandComplete()) {
-            		  if (cmd == Command.LDR) {
-            			  ldrQueue.put(translator.getLdrValue());
-            		  }else if (cmd == Command.BTN) {
-            			  ButtonState state;
-            			  if (translator.getButtonValue() == 1) {
-            				  state = ButtonState.HIGH;
-            			  }else {
-            				  state = ButtonState.LOW;
-            			  }
-            			  fireBtnChangeEvent(state);
-            		  }else if (cmd == Command.READY) {
-            			  logger.log(Level.INFO, "!!! ARDUINO ready !!!");
-            		  }else if (cmd == Command.SCAN_RADIO && translator.getRadioScanStatus() ==  RadioScan.FINISHED) {
-            			  
-            			  translator.setScan(RadioScan.NONE);
-//            			System.out.println("Station list: " + translator.getStations());
-            			scanQueue.put(translator.getStations());
-            		  }
-            	  }
+				try {
 
-              } catch (IOException  | InterruptedException e ) {
-            	  String fmtEx = new FormatStackTrace(e).getFormattedException();
-  				eh.addError(ErrorType.ARDUINO, new ErrorInfo(fmtEx));
-                  logger.log(Level.SEVERE, "Error in arduino listener", e);
-              } 
-			
-          }
-      });
+					//            	  System.out.println("Data retrieve form arduino: " + event.getAsciiString());/
+
+					Command cmd =  translator.translateReceivedCmd(event.getAsciiString());
+
+					if (translator.isCommandComplete()) {
+						if (cmd == Command.LDR) {
+							ldrQueue.put(translator.getLdrValue());
+						}else if (cmd == Command.BTN) {
+							ButtonState state;
+							if (translator.getButtonValue() == 1) {
+								state = ButtonState.HIGH;
+							}else {
+								state = ButtonState.LOW;
+							}
+							fireBtnChangeEvent(state);
+						}else if (cmd == Command.READY) {
+							logger.log(Level.INFO, "!!! ARDUINO ready !!!");
+						}else if (cmd == Command.SCAN_RADIO && translator.getRadioScanStatus() ==  RadioScan.FINISHED) {
+
+							translator.setScan(RadioScan.NONE);
+							//            			System.out.println("Station list: " + translator.getStations());
+							scanQueue.put(translator.getStations());
+						}
+					}
+
+				} catch (IOException  | InterruptedException e ) {
+					String fmtEx = new FormatStackTrace(e).getFormattedException();
+					eh.addError(ErrorType.ARDUINO, new ErrorInfo(fmtEx));
+					logger.log(Level.SEVERE, "Error in arduino listener", e);
+				} 
+
+			}
+		});
 	}
-	
+
 	private synchronized void fireBtnChangeEvent(ButtonState buttonState) {
 
 		Iterator<ButtonChangeListener> listeners = btnListeners.iterator();
 		while( listeners.hasNext() ) {
 			ButtonChangeListener bl =  (ButtonChangeListener) listeners.next();			
-				bl.stateChanged( buttonState );
-			
+			bl.stateChanged( buttonState );
+
 		}
 	}
-	
-	
-   
+
+
+
 }

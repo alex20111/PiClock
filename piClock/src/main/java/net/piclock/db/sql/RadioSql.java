@@ -33,7 +33,7 @@ public class RadioSql {
 //				PkCriteria crt = new PkCriteria();
 //				crt.autoIncrement();
 				List<ColumnType> columns = new ArrayList<ColumnType>();					
-				columns.add(new ColumnType(RadioEntity.ID, true).INT().setPkCriteria(new PkCriteria().autoIncrement()));
+				columns.add(new ColumnType(RadioEntity.ID, true).INT().setPKCriteria(new PkCriteria().autoIncrement()));
 				columns.add(new ColumnType(RadioEntity.RADIO_NAME, false).VarChar(200));
 				columns.add(new ColumnType(RadioEntity.RADIO_LINK, false).VarChar(500));
 				columns.add(new ColumnType(RadioEntity.TRACK_NBR, false).TinyInt());

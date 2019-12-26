@@ -35,4 +35,16 @@
 		<page_part name="addMp3.html"/>
 		<page_part name="footer.html"/>		
 	</page>
+		<page name="alarmView">
+		<page_part name="header.html"/>
+		<page_part name="sideMenu.html"/>
+		<page_part name="alarm.html"/>
+		<page_part name="footer.html"/>		
+	</page>
+		<page name="themePage">
+		<page_part name="header.html"/>
+		<page_part name="sideMenu.html"/>
+		<page_part name="Background.html"/>
+		<page_part name="footer.html"/>		
+	</page>
 </base>

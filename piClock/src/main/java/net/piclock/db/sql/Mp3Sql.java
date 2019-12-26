@@ -28,7 +28,7 @@ public class Mp3Sql {
 
 			if (!exist) {
 				List<ColumnType> columns = new ArrayList<ColumnType>();					
-				columns.add(new ColumnType(Mp3Entity.ID, true).INT().setPkCriteria(new PkCriteria().autoIncrement()));
+				columns.add(new ColumnType(Mp3Entity.ID, true).INT().setPKCriteria(new PkCriteria().autoIncrement()));
 				columns.add(new ColumnType(Mp3Entity.MP3_GENRE, false).INT());
 				columns.add(new ColumnType(Mp3Entity.MP3_GENRE_DESC, false).VarChar(500));
 				columns.add(new ColumnType(Mp3Entity.MP3_ARTIST, false).VarChar(200));

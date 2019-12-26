@@ -455,7 +455,7 @@ public class Mp3Handler extends HttpBase{
 		String cookieName = "cookiename";
 		
 		CookieValue cookieValue= new CookieValue();
-		CookieHandler ch = getSession().getCookies();
+		CookieHandler ch = getHttpSession().getCookies();
 		
 		for(String cname : ch){
 			if (cookieName.equals(cname)){
@@ -469,7 +469,7 @@ public class Mp3Handler extends HttpBase{
 	}
 	public void setCookieValue(CookieValue cookie){
 		String cookieName = "cookiename";
-		CookieHandler ch = getSession().getCookies();
+		CookieHandler ch = getHttpSession().getCookies();
 		ch.set(cookieName, cookie.toString(), 365 * 20);
 	}
 }
