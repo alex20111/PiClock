@@ -1,4 +1,5 @@
 package net.piclock.thread;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.piclock.db.entity.AlarmEntity;
+import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.Message;
@@ -24,12 +26,15 @@ public class AlarmMonitorThread implements Runnable, MessageListener{
 	private Trigger alarmTrig = null;	
 	private Thread currAlarmThread = null;	
 
-	public AlarmMonitorThread(){
+	public AlarmMonitorThread() throws ClassNotFoundException, SQLException{
 		logger.info("--> Starting alarm monitor thread");
 		//register event
 		SwingContext.getInstance().addMessageChangeListener( Constants.UPDATE_ALARMS, this);
 		SwingContext.getInstance().addMessageChangeListener( Constants.REMOVE_TRIGGER, this);
 		alarmTrig = new Trigger(LocalDateTime.now());
+		
+		alarms = new AlarmSql().loadAllAlarms();
+		logger.config("Loaded all alarms: " + alarms);
 	}
 
 	@Override
@@ -88,8 +93,9 @@ public class AlarmMonitorThread implements Runnable, MessageListener{
 			if (message.getPropertyName().equals(Constants.UPDATE_ALARMS)){				
 //				alarms.clear();
 				AlarmEntity a = (AlarmEntity)message.getFirstMessage();
-//				List<Object> h = (List<Object>)message.getMessageList().get(0);
+
 				logger.info("Updating alarm list: " + a);
+				logger.info("Alarm active? " + (currAlarmThread != null && currAlarmThread.isAlive() ? " true " : " false " ));
 				
 				int idx = -1;
 				for(int i = 0 ; i < alarms.size() ; i++) {
@@ -106,22 +112,25 @@ public class AlarmMonitorThread implements Runnable, MessageListener{
 					alarms.add(a);
 				}
 				
-//				for(Object o : h){
-//					alarms.add((AlarmEntity)o);
-//				}		
+
 				logger.info("---> New Alarm List: " + alarms);
 				alarmTrig = new Trigger(LocalDateTime.now());//clear the triggers
-			}
-			else if (message.getPropertyName().equals(Constants.REMOVE_TRIGGER)){
-				System.out.println("Mesage remove trigger");
-				alarmTrig.setActive(false);
-
+				//stop the alarm if started
 				if (currAlarmThread != null && currAlarmThread.isAlive()){
 					currAlarmThread.interrupt();
 				}
 			}
+			else if (message.getPropertyName().equals(Constants.REMOVE_TRIGGER)){
+				logger.config("Mesage remove trigger. Alarm Active? " + currAlarmThread.isAlive());
+				alarmTrig.setActive(false);
+
+				if (currAlarmThread != null && currAlarmThread.isAlive()){
+					logger.config("Alarm therad still active, interrupting");
+					currAlarmThread.interrupt();
+				}
+			}
 		}catch(Throwable tr){
-			logger.log(Level.SEVERE, "Error in message",tr );
+			logger.log(Level.SEVERE, "Error in message",tr ); //TODO add display error
 		}
 		updateList = false;
 	}

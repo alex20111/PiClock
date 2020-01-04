@@ -63,6 +63,9 @@ public class Alarm implements Runnable, MessageListener{
 			}
 		}		
 
+		//remove active alarm
+		ct.sendMessage(Constants.REMOVE_TRIGGER, new Message("remove"));
+		
 		logger.log(Level.INFO, "Alarm class exited");
 
 	}
@@ -184,7 +187,8 @@ public class Alarm implements Runnable, MessageListener{
 				handler.turnOnAlarm(buzzer, mp3Filename, radioChannel, alarm.getVolume());
 
 			}catch (InterruptedException ie) {					
-				logger.log(Level.CONFIG, "Current thread interrupted");
+				logger.log(Level.CONFIG, "Current ALARM thread interrupted");
+				turnOffAlarmSound();
 				Thread.currentThread().interrupt();
 				resetVar();
 			}

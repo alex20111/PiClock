@@ -19,7 +19,7 @@ SI4703   radio(RESET_PIN_RADIO, SDIO);    ///< Create an instance of a SI4703 ch
 TM1637Display display(CLK, DIO);
 
 //serial variables
-const byte numChars = 8;
+const byte numChars = 9;
 char receivedChars[numChars];
 boolean newData = false;
 
@@ -53,7 +53,7 @@ unsigned long debounceDelay = 50;    // the debounce time; increase if the out
 //radio
 boolean scanFm = false;
 int scanLastChannel = 0;
-int fmStation = 1069;  //106.9
+int fmStation = 10690;  //106.9
 
 void setup() {
   pinMode(BTNA, INPUT);
@@ -62,15 +62,6 @@ void setup() {
   pinMode(SPEAKER_MOSFET, OUTPUT);
 
   digitalWrite(SPEAKER_MOSFET, HIGH);
-
-  // Initialize the Radio
-  radio.init();
-
-  radio.setBandFrequency(RADIO_BAND_FM, fmStation); // 5. preset.
-
-  radio.setMono(false);
-  radio.setMute(true);
-  radio.setVolume(1);
 
   Serial.begin(9600);
   Serial.print(F("<ready>"));//send ready signal to calluer
@@ -143,16 +134,17 @@ void sendLdrDataFunc() {
 // print time and turn on display if off
 void printTime() {
 
-  char timeBuffer[4];
+  char timeBuffer[5];
   timeBuffer [0] = receivedChars[1];
   timeBuffer [1] = receivedChars[2];
   timeBuffer [2] = receivedChars[3];
   timeBuffer [3] = receivedChars[4];
+  timeBuffer [4] = '\0';
 
   militaryTime = atoi(timeBuffer);
 
   display.setBrightness(level, true);
-  display.showNumberDecEx(militaryTime, (0x80 >> 1), true);
+  display.showNumberDecEx(militaryTime, (0x80 >> 1), false, 4, 0);
 
 }
 void turnTimeDisplayOff() {
@@ -258,20 +250,23 @@ void handleSerialData() {
         break;
       case 'r':
         if (receivedChars[1] == '8') {
-          radio.setMute(false);
-          radio.setVolume(2);
+                     setRadioChannel();
 
-          setRadioChannel();
         } else {
           radio.setMute(true);
           radio.setVolume(0);
+
         }
         break;
       case 'u': //turn radio on or off
         if (receivedChars[1] == '8') { //on
-           radio.init();
-        }else{
-           digitalWrite(RESET_PIN_RADIO, LOW);
+          radio.init();
+          radio.setBandFrequency(RADIO_BAND_FM, fmStation);
+          radio.setMute(false);
+          radio.setVolume(1);
+        } else {
+          digitalWrite(RESET_PIN_RADIO, LOW);
+
         }
         break;
       default:
@@ -371,7 +366,7 @@ void scanFmBand() {
 
 }
 void setRadioChannel() {
-  char channelBuffer[5];
+  char channelBuffer[6];
   channelBuffer [0] = receivedChars[2];
   channelBuffer [1] = receivedChars[3];
   channelBuffer [2] = receivedChars[4];
@@ -379,9 +374,17 @@ void setRadioChannel() {
 
   if (strlen(receivedChars) > 6 ) { // 8990 = 4, 10690 = 5 so r88990 = 6 and r810690 = 7
     channelBuffer [4] = receivedChars[6];
+    channelBuffer [5] = '\0';
+  } else {
+    channelBuffer [4] = '\0';
   }
-
+//Serial.println(channelBuffer);
+//Serial.println(receivedChars);
   fmStation = atoi(channelBuffer);
+//  Serial.println(fmStation);
 
   radio.setFrequency(fmStation);
+
+
+
 }

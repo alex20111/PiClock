@@ -13,16 +13,17 @@ finish alarm html page
 
 //TEST//
 
-test network retry functionality. 
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
 concurrentmodificationexception: When turning off the alarm by button press, we send the mesage to turn off the alarm. Since we already registeres the mp3 and radio stream error and no error happend, we remove them. But by the action of removing them we modify the map that the send message is already on and this cause a concurrent modification exception.
-make radio screen go back to main screen after 2 minutes.
+test volume location
 Test alarm buttons / add new multiple alarm.
 Test add new web page for backgrounds. In progress
 Test Radio on/off function and long term functions
 test alarm html on the server
 
 //DONE test//
+make radio screen go back to main screen after 2 minutes.
+test alarm icon to see if appear or disapear when any alarm are active.
 for weather, make whole panel at the top clickable.
 increase wifi timeout to 5 min.
 Test new radio in alarm and radio volume in buzzer option

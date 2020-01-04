@@ -4,8 +4,12 @@ package net.piclock.thread;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Trigger {
+	
+	private static final Logger logger = Logger.getLogger( Trigger.class.getName() );
 
 	private LocalDateTime dateTime;
 	private boolean active = false;
@@ -39,7 +43,8 @@ public class Trigger {
 			//reset
 			dateTime = date;
 			alarmIds.clear();
-			System.out.println("Reset date");
+			active = false;
+			logger.log(Level.CONFIG, "resetting trigger for alarms");
 		}
 	}	
 	public boolean containsAlarmId(Integer alarmId){

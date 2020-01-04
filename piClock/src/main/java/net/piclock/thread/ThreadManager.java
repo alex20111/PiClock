@@ -68,6 +68,7 @@ public class ThreadManager {
 //		long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime) - 60000;
 //		
 //		logger.log(Level.CONFIG, "Alarm Delay starting: " + initDelay + " " + new Date(new Date().getTime() + initDelay));
+		try {
 		AlarmMonitorThread amt = new AlarmMonitorThread();
 		LocalDateTime now = LocalDateTime.now();
 		int millis = now.get(ChronoField.MILLI_OF_SECOND);
@@ -77,6 +78,9 @@ public class ThreadManager {
 		logger.log(Level.CONFIG, "startAlarm. Delay: " + delay);
 		
 		alarmThread = scheduler.scheduleAtFixedRate(amt, delay, 1000, TimeUnit.MILLISECONDS);
+		}catch (Exception ex) {
+			logger.log(Level.SEVERE, "Error starting alarm thread. ", ex);
+		}
 	}
 	public void stopAlarm(){
 		logger.log(Level.CONFIG, "stopAlarm");

@@ -1,7 +1,8 @@
 package net.piclock.thread;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import javax.swing.JLabel;
 
@@ -12,9 +13,13 @@ public class Clock implements Runnable {
 
 	private JLabel clockLabel;
 	private JLabel weekDateLable;
-	private SimpleDateFormat sdfDate = new SimpleDateFormat("EEE, MMM d");
-	private SimpleDateFormat sdfTime = new SimpleDateFormat(Constants.HOUR_MIN);
+	
+	private DateTimeFormatter longDt = DateTimeFormatter.ofPattern("EEE, MMM d");
+	private DateTimeFormatter shortDt = DateTimeFormatter.ofPattern(Constants.HOUR_MIN);
+	
+	
 	private PiHandler handler = PiHandler.getInstance();
+	private LocalDateTime prevDate = null;
 	
 	public Clock(JLabel clockLabel, JLabel weekDateLable){
 		this.clockLabel = clockLabel;
@@ -22,13 +27,14 @@ public class Clock implements Runnable {
 	}
 	@Override
 	public void run() {
-		Date dt = new Date();
-		String time = sdfTime.format(dt);
+		LocalDateTime dt = LocalDateTime.now();
+		String time = dt.format(shortDt); //sdfTime.format(dt);
 		clockLabel.setText(time);
-		weekDateLable.setText(sdfDate.format(dt));
+		weekDateLable.setText(dt.format(longDt));//sdfDate.format(dt));
 		
-		if (!handler.isScreenOn()){
+		if (!handler.isScreenOn() && (prevDate == null || dt.truncatedTo(ChronoUnit.MINUTES).isAfter(prevDate.truncatedTo(ChronoUnit.MINUTES)))){
 			handler.displayTM1637Time(time);
+			prevDate = dt;
 		}
 		
 	}

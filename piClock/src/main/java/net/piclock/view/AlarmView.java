@@ -11,7 +11,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
@@ -141,7 +140,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			minutes = Integer.parseInt(alarmEnt.getMinutes());
 			Message msg = new Message(alarmEnt);
 
-			ct.sendMessage(Constants.UPDATE_ALARMS, msg);
+//			ct.sendMessage(Constants.UPDATE_ALARMS, msg);
 		}else {
 			//new alarm
 			alarmEnt = new AlarmEntity();
@@ -366,7 +365,13 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 				try{
 					saving();
-
+					
+					//check if any alarm are active.
+					if (sql.isAnyAlarmActive()) {
+						lblAlarmIcon.setVisible(true);
+					}else {
+						lblAlarmIcon.setVisible(false);
+					}
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.MAIN_VIEW);
 
@@ -679,9 +684,12 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		lblHours.setText(alarmEnt.getHour());
 		minutes = Integer.parseInt(alarmEnt.getMinutes());
 		lblMinutes.setText(alarmEnt.getMinutes());
+		logger.log(Level.CONFIG, "Toggle button status: " + tglbtnOnOff.isSelected());
 
 		if (alarmEnt != null) {
 			if (alarmEnt.isActive() && !tglbtnOnOff.isSelected()){
+				tglbtnOnOff.doClick();
+			}else if (!alarmEnt.isActive() && tglbtnOnOff.isSelected()) {
 				tglbtnOnOff.doClick();
 			}
 
@@ -801,12 +809,12 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			alarmEnt.setAlarmShutdown(buzzerSelection.getShutdownMin());
 
 			if (tglbtnOnOff.isSelected()){
-				lblAlarmIcon.setVisible(true);
+//				lblAlarmIcon.setVisible(true);
 				alarmEnt.setActive(true);
 
 			}else {
 				alarmEnt.setActive(false);
-				lblAlarmIcon.setVisible(false);
+//				lblAlarmIcon.setVisible(false);
 			}
 
 			if (add) {

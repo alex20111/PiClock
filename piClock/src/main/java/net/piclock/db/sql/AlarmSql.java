@@ -187,6 +187,33 @@ public class AlarmSql {
 
 
 	}
+	public boolean isAnyAlarmActive() throws SQLException, ClassNotFoundException {
+		
+		boolean active = false;
+		
+		DBConnection con = null;
+	
+		try {
+			con = getConnection();
+
+			ResultSet rs = con.createSelectQuery("SELECT " + AlarmEntity.ID + " FROM " + AlarmEntity.TBL_NM + " where " + AlarmEntity.ACTIVE + " =  :activeId ")
+					.setParameter("activeId", true)
+					.getSelectResultSet();
+			
+			if (rs!=null) {
+				while(rs.next()) {
+					active = true;
+					break;
+			
+				}
+			}
+		}finally {
+			con.close();
+		}
+		
+			
+		return active;
+	}
 	/**
 	 * Load all the active alarms.
 	 * @return

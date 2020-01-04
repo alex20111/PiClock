@@ -152,7 +152,7 @@ public class ArduinoSerialCmd {
 	 * @throws IOException
 	 */
 	public void radioSelectChannel(int channel) throws IllegalStateException, IOException {
-		sendCommand(translator.generateSelectChannelCmd(channel));
+		sendCommand(translator.generateSelectChannelCmd(channel* 10));
 	}
 	/**
 	 *Send command to arduino
