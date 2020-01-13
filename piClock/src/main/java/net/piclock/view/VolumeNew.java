@@ -82,8 +82,7 @@ public class VolumeNew extends JDialog {
 				okButton.setPreferredSize(new Dimension(57, 23));
 				okButton.addActionListener(l -> {
 
-					if (config.isFromAlarm()){
-						System.out.println("Volume Class - send vol for ala: " + s.getSlider().getValue());
+					if (config.isFromAlarm()){						
 
 						if (sampleVolThrd != null && sampleVolThrd.isAlive()){
 							sampleVolThrd.interrupt();
@@ -101,6 +100,7 @@ public class VolumeNew extends JDialog {
 					}
 
 					this.setVisible(false);
+					dispose();
 				});
 				buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 				okButton.setActionCommand("OK");
