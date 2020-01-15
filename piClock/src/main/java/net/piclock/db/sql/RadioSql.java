@@ -26,12 +26,9 @@ public class RadioSql {
 			ResultSet rs = con.createSelectQuery(RadioEntity.checkIfTableExist()).getSelectResultSet();
 			
 			exist = rs.next();
-			
-			System.out.println("Exist:  " + exist);
-			
+		
+		
 			if (!exist) {
-//				PkCriteria crt = new PkCriteria();
-//				crt.autoIncrement();
 				List<ColumnType> columns = new ArrayList<ColumnType>();					
 				columns.add(new ColumnType(RadioEntity.ID, true).INT().setPKCriteria(new PkCriteria().autoIncrement()));
 				columns.add(new ColumnType(RadioEntity.RADIO_NAME, false).VarChar(200));

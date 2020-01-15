@@ -52,8 +52,8 @@ import net.piclock.bean.SortMp3ByName;
 import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.Mp3Entity;
 import net.piclock.db.sql.Mp3Sql;
+import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
-import net.piclock.main.PiHandler;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.PopupSlider;
@@ -430,7 +430,6 @@ public class Mp3View extends JPanel implements MessageListener {
 				handler.playMp3(false, "", -1);
 				fireVolumeIconChange(false);
 				lblMp3MainIcon.setVisible(false);
-				System.out.println("MP screen -BTN  STOP Used");
 			} catch (IllegalStateException | InterruptedException | IOException e1) {
 
 				logger.log(Level.SEVERE, "Error in stopping music", e1);
@@ -648,7 +647,6 @@ public class Mp3View extends JPanel implements MessageListener {
 
 				if (btnStop.isEnabled()){
 					//this usually means that it was playing.. stop it
-					System.out.println("Stopping current music!!!!");
 					btnStop.doClick();
 				}
 

@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
 import net.piclock.enums.Light;
-import net.piclock.main.PiHandler;
+import net.piclock.handlers.PiHandler;
 
 public class MonitorButtonHandler implements ButtonChangeListener {
 

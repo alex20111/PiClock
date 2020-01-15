@@ -29,20 +29,20 @@ public class BackgroundHandler extends HttpBase implements HttpHandler{
 	private  String BACKGROUND_PAGE = "themePage";
 
 	private String btnSave = "";
-	private String dirPath = "img\\";
+	private String dirPath = "/home/pi/piClock/img/";
 
 	private  String SUNNY 		= "sunny-day-background.jpg";
 	private  String SUNNY_NIGHT = "clear-sky-night.jpg";
 	private  String CLOUDY 		= "clouds.jpg";
 	private  String CLOUDY_NIGHT = "cloudy-night.jpg";		
-	private  String RAIN 		= "rain.jpg";
-	private  String RAIN_NIGHT 	= "rainNight.jpg";
+	private  String RAIN 		= "rain-orig-480.jpg";
+	private  String RAIN_NIGHT 	= "rain-night.jpg";
 	private  String FOG 		= "fog.jpg";
-	private  String FOG_NIGHT 	= "fogNight.jpg";
+	private  String FOG_NIGHT 	= "fog-night.jpg";
 	private  String THUNDER 	= "thunder.jpg";
-	private  String THUNDER_NIGHT 	= "thunderNight.jpg";
-	private  String SNOW 		= "snow.jpg";
-	private  String SNOW_NIGHT 	= "snowNight.jpg";
+	private  String THUNDER_NIGHT 	= "thunder-night.jpg";
+	private  String SNOW 		= "snowing.jpg";
+	private  String SNOW_NIGHT 	= "snowy-night.png";
 
 
 	private String message = "";

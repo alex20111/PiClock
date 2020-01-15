@@ -114,7 +114,6 @@ public class WeatherConfigView extends JPanel {
 			public void itemStateChanged(ItemEvent e) {
 
 				if (isNotStarting && e.getStateChange() == ItemEvent.SELECTED) {
-					System.out.println(e.getStateChange());
 
 					lblError.setVisible(false);
 
@@ -309,7 +308,6 @@ public class WeatherConfigView extends JPanel {
 			Host provider = Host.valueOf(prefs.getWeatherProvider().trim());
 
 			if (provider == Host.envCanada){
-				System.out.println("canada");
 				//set provider
 				cmbProvider.setSelectedItem(Host.envCanada);
 				//load city						

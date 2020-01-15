@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,8 +23,12 @@ import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
+import net.piclock.view.RadioView;
 
 public class Alarmhandler extends HttpBase implements HttpHandler{
+	
+	private static final Logger logger = Logger.getLogger( Alarmhandler.class.getName() );
+	
 	private  String ALARM_PAGE = "alarmView";
 	
 	private final String TIME24HOURS_PATTERN =  "([01]?[0-9]|2[0-3]):[0-5][0-9]";
@@ -66,6 +72,7 @@ public class Alarmhandler extends HttpBase implements HttpHandler{
 	@Override 
 	public Response handleRequest() {
 		
+		logger.log(Level.CONFIG,"Loading alarm!!");
 		try{			
 			loadAlarm(); 
 			
@@ -120,14 +127,15 @@ public class Alarmhandler extends HttpBase implements HttpHandler{
 					values.put("customScript", customJs);
 					webPage =	StaticPageHandler.processPage(webPageFiles, values);
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.log(Level.SEVERE,"Error in alarm handler", e);
+					
 				}
 			}else{
 				webPage = "Web page not found";
 			}	
 			return Response.newFixedLengthResponse(webPage);
 		}catch (Exception ex){
-			ex.printStackTrace();
+			logger.log(Level.SEVERE,"Unexpected Error in alarm handler", ex);
 			return Response.newFixedLengthResponse("Unexpected error");
 		}
 	}

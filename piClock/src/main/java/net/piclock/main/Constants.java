@@ -4,7 +4,9 @@ import java.text.DecimalFormat;
 
 public class Constants {
 	
-	public static final String ALARM_BTN_HANDLER = "alarmBtnHandler";
+//	public static final String ALARM_BTN_HANDLER = "alarmBtnHandler";
+	
+	public static final String SCREEN_ENV = "Screen_environment";
 
 	public static final String MAIN_VIEW 			= "main";
 	public static final String WEATHER_CONFIG_VIEW = "weatherConfig";

@@ -24,8 +24,9 @@ public class AlarmDayMouseSelector extends MouseAdapter implements PropertyChang
 	private RoundedBorder border;
 	private SwingContext sc;
 	private DayNightCycle cycle = DayNightCycle.DAY;
+	private boolean alarmDayUpdated = false;
 	
-	public AlarmDayMouseSelector(JLabel label, boolean initSelected) {
+	public AlarmDayMouseSelector(JLabel label, boolean initSelected, boolean alarmDayUpdated) {
 		sc = SwingContext.getInstance(); 
 		sc.addPropertyChangeListener(Constants.DAY_NIGHT_CYCLE, this);
 		
@@ -36,6 +37,7 @@ public class AlarmDayMouseSelector extends MouseAdapter implements PropertyChang
 		if (selected) {
 			label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
 		}
+		this.alarmDayUpdated = alarmDayUpdated;
 	}
 	
 	@Override
@@ -50,6 +52,10 @@ public class AlarmDayMouseSelector extends MouseAdapter implements PropertyChang
 					
 			label.setBorder(new CompoundBorder(border, new EmptyBorder(0,0,0,0)));
 			selected = true;
+		}
+		
+		if (!alarmDayUpdated) {
+			alarmDayUpdated = true;
 		}
 	}
 	

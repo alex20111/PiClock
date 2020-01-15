@@ -75,7 +75,7 @@ public class MiniWebServer  {
 			server.addHandler("/radio", rp);
 			server.addHandler("/wifi", wifi);
 			server.addHandler("/mp3", mp3);
-			server.addHandler("/alarm", ah);
+			server.addHandler("/alarmView", ah);
 			server.addHandler("/background", bh);
 			server.addFileFolder("css");
 			server.addFileFolder("js"); 
@@ -85,7 +85,6 @@ public class MiniWebServer  {
 			createTables();
 
 		}else{
-			System.out.println("error");
 			throw new IOException("Server already running");
 		}
 	}	

@@ -114,12 +114,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 		alarmEnt = sql.loadAlarmByOrderNbr(1);
 
-		//add listener for button
-		AlarmBtnHandler btnHandler = new AlarmBtnHandler();
-		ct.putSharedObject(Constants.ALARM_BTN_HANDLER, btnHandler);
-		ArduinoSerialCmd cm = ArduinoSerialCmd.getInstance();
-		cm.addButtonListener(btnHandler);
-
 		setLayout(null);
 		setOpaque(false);
 
@@ -138,7 +132,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		if (alarmEnt != null) {
 			hours = Integer.parseInt(alarmEnt.getHour());
 			minutes = Integer.parseInt(alarmEnt.getMinutes());
-			Message msg = new Message(alarmEnt);
+//			Message msg = new Message(alarmEnt);
 
 //			ct.sendMessage(Constants.UPDATE_ALARMS, msg);
 		}else {
@@ -461,7 +455,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		}
 
 		JLabel lblDaySunday = new JLabel("S");
-		sunday = new AlarmDayMouseSelector(lblDaySunday, ar.contains(AlarmRepeat.SUNDAY) ? true : false);
+		sunday = new AlarmDayMouseSelector(lblDaySunday, ar.contains(AlarmRepeat.SUNDAY) ? true : false, alarmInfoChanged);
 		lblDaySunday.setFont(new Font("Tahoma", Font.BOLD, 16));
 		//		lblDaySunday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDaySunday.addMouseListener(sunday);
@@ -472,7 +466,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayMonday = new JLabel("M");
 		//		lblDayMonday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayMonday.setFont(new Font("Tahoma", Font.BOLD, 16));
-		monday = new AlarmDayMouseSelector(lblDayMonday, ar.contains(AlarmRepeat.MONDAY) ? true : false);
+		monday = new AlarmDayMouseSelector(lblDayMonday, ar.contains(AlarmRepeat.MONDAY) ? true : false, alarmInfoChanged);
 		lblDayMonday.addMouseListener(monday);
 		lblDayMonday.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayMonday.setBounds(55,125,41,38);
@@ -481,7 +475,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayTue = new JLabel("T");
 		//		lblDayTue.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayTue.setFont(new Font("Tahoma", Font.BOLD, 16));
-		tuesday = new AlarmDayMouseSelector(lblDayTue, ar.contains(AlarmRepeat.TUESDAY) ? true : false);
+		tuesday = new AlarmDayMouseSelector(lblDayTue, ar.contains(AlarmRepeat.TUESDAY) ? true : false, alarmInfoChanged);
 		lblDayTue.addMouseListener(tuesday);
 		lblDayTue.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayTue.setBounds(55,165,41,38);
@@ -490,7 +484,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayWed = new JLabel("W");
 		//		lblDayWed.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayWed.setFont(new Font("Tahoma", Font.BOLD, 16));
-		wednesday = new AlarmDayMouseSelector(lblDayWed, ar.contains(AlarmRepeat.WEDNESDAY) ? true : false);
+		wednesday = new AlarmDayMouseSelector(lblDayWed, ar.contains(AlarmRepeat.WEDNESDAY) ? true : false, alarmInfoChanged);
 		lblDayWed.addMouseListener(wednesday);
 		lblDayWed.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayWed.setBounds(55,205,41,38);
@@ -499,7 +493,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayThu = new JLabel("T");
 		lblDayThu.setFont(new Font("Tahoma", Font.BOLD, 16));
 		//		lblDayThu.setBorder(new RoundedBorder(Color.BLACK, 40));
-		thursday = new AlarmDayMouseSelector(lblDayThu, ar.contains(AlarmRepeat.THURSDAY) ? true : false);
+		thursday = new AlarmDayMouseSelector(lblDayThu, ar.contains(AlarmRepeat.THURSDAY) ? true : false, alarmInfoChanged);
 		lblDayThu.addMouseListener(thursday);
 		lblDayThu.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayThu.setBounds(55,245,41,38);
@@ -508,7 +502,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayFriday = new JLabel("F");
 		lblDayFriday.setFont(new Font("Tahoma", Font.BOLD, 16));
 		//		lblDayFriday.setBorder(new RoundedBorder(Color.BLACK, 40));
-		friday = new AlarmDayMouseSelector(lblDayFriday, ar.contains(AlarmRepeat.FRIDAY) ? true : false);
+		friday = new AlarmDayMouseSelector(lblDayFriday, ar.contains(AlarmRepeat.FRIDAY) ? true : false,alarmInfoChanged);
 		lblDayFriday.addMouseListener(friday);
 		lblDayFriday.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayFriday.setBounds(55,285,41,38);
@@ -517,7 +511,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDaySat = new JLabel("S");
 		lblDaySat.setFont(new Font("Tahoma", Font.BOLD, 16));
 		//		lblDaySat.setBorder(new RoundedBorder(Color.BLACK, 40));
-		saturday = new AlarmDayMouseSelector(lblDaySat, ar.contains(AlarmRepeat.SATURDAY) ? true : false);
+		saturday = new AlarmDayMouseSelector(lblDaySat, ar.contains(AlarmRepeat.SATURDAY) ? true : false, alarmInfoChanged);
 		lblDaySat.addMouseListener(saturday);
 		lblDaySat.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDaySat.setBounds(55,325,41,38);

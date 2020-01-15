@@ -70,7 +70,6 @@ class SliderPopupListener extends MouseAdapter {
 
 		if (sliderOrientation == JSlider.HORIZONTAL){
 			pt.y = -size.height;
-			System.out.println("PT4: " + pt + " thumbYCoord: " + thumbYCoord );
 		}else{      
 			pt.x = xCoord - 70; //(Distance from the thumb.)
 		}

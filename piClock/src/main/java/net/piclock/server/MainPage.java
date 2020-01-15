@@ -35,7 +35,6 @@ public class MainPage extends HttpBase implements HttpHandler{
 			webPage = "Web page not found";
 		}	
 		
-		System.out.println("------------end---------------");
 		return Response.newFixedLengthResponse(webPage);
 	}
 	@Override

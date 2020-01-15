@@ -7,21 +7,25 @@ add daily log file creation.. a log for each day
 THEME ICONS and TEXT customizition
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
 add volume icon in radio view. also there switchin
-finish background html page. 
 finish alarm html page
+split piHandler that it know if using the Pi 7 inch screen or the hyperpixel screen with arduino.  //IN PROGRESS
+color code alarm button to define if active or not (Green for active , red for inactive)
 	
 
 //TEST//
-
+add shutdown for radio.
+alarm , save when updating days of the week.--NOPE
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
-concurrentmodificationexception: When turning off the alarm by button press, we send the mesage to turn off the alarm. Since we already registeres the mp3 and radio stream error and no error happend, we remove them. But by the action of removing them we modify the map that the send message is already on and this cause a concurrent modification exception.
-test volume location
-Test alarm buttons / add new multiple alarm.
 Test add new web page for backgrounds. In progress
 Test Radio on/off function and long term functions
 test alarm html on the server
 
 //DONE test//
+re-order icons on the left to have the wifi always at the top.
+test volume location
+finish background html page. 
+concurrentmodificationexception: When turning off the alarm by button press, we send the mesage to turn off the alarm. Since we already registeres the mp3 and radio stream error and no error happend, we remove them. But by the action of removing them we modify the map that the send message is already on and this cause a concurrent modification exception.
+Test alarm buttons / add new multiple alarm.
 make radio screen go back to main screen after 2 minutes.
 test alarm icon to see if appear or disapear when any alarm are active.
 for weather, make whole panel at the top clickable.

@@ -17,7 +17,6 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import javafx.scene.control.ComboBox;
 import net.miginfocom.swing.MigLayout;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
@@ -26,8 +25,8 @@ import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.LabelEnums;
+import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
-import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
@@ -40,6 +39,8 @@ import net.piclock.util.VolumeIndicator;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -65,6 +66,9 @@ public class RadioView extends JPanel implements MessageListener{
 	private JLabel lblRadioIcon;
 	private Preferences prefs;
 	private JButton btnVolume ;
+	private JComboBox<Integer> timeToSleep;
+	
+	private Thread radioShutDown = null;
 
 	/**
 	 * Create the panel.
@@ -74,8 +78,7 @@ public class RadioView extends JPanel implements MessageListener{
 		this.lblRadioIcon = radioIcon;
 		handler = PiHandler.getInstance();
 		setOpaque(false);
-		
-		
+				
 		
 		ThemeHandler t = (ThemeHandler) SwingContext.getInstance().getSharedObject(Constants.THEMES_HANDLER);
 		
@@ -111,9 +114,9 @@ public class RadioView extends JPanel implements MessageListener{
 		nowPlayingPanel.setLayout(new BorderLayout(0, 0));
 		nowPlayingPanel.setOpaque(false);
 
-		JPanel presetPanel = new JPanel();
-		nowPlayingPanel.add(presetPanel, BorderLayout.SOUTH);
-		presetPanel.setOpaque(false);
+//		JPanel presetPanel = new JPanel();
+//		nowPlayingPanel.add(presetPanel, BorderLayout.SOUTH);
+//		presetPanel.setOpaque(false);
 
 		JPanel nowPlayingTitlepanel = new JPanel();
 		nowPlayingPanel.add(nowPlayingTitlepanel, BorderLayout.NORTH);
@@ -299,12 +302,43 @@ public class RadioView extends JPanel implements MessageListener{
 		mainPanel.add(btnVolume, "cell 1 3,alignx center");
 		btnVolume.setVisible(false);
 		
-		JLabel sleep = new JLabel("Off:");
-		sleep.setFont(new Font("Tahoma", Font.BOLD, 16));
-		mainPanel.add(sleep, "cell 1 0,alignx right,aligny top");
-		JComboBox<Integer> timeToSleep = new JComboBox<>();
+		JPanel shutDownPanel = new JPanel();
+		shutDownPanel.setOpaque(false);
+		mainPanel.add(shutDownPanel, "flowx,cell 1 0,growx");
+		shutDownPanel.setLayout(new MigLayout("", "[grow][][][]", "[]"));
+		
+		JLabel sleep = new JLabel("Auto Off:");
+		shutDownPanel.add(sleep, "cell 1 0");
+		sleep.setFont(new Font("Tahoma", Font.BOLD, 18));
+		timeToSleep = new JComboBox<>();
+		timeToSleep.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		shutDownPanel.add(timeToSleep, "cell 2 0");
+		timeToSleep.addItem(0);
 		timeToSleep.addItem(1);
-		mainPanel.add(timeToSleep, "cell 1 0,alignx right,aligny top");
+		timeToSleep.addItem(5);		
+		timeToSleep.addItem(10);
+		timeToSleep.addItem(15);
+		timeToSleep.addItem(20);
+		timeToSleep.addItem(25);
+		timeToSleep.addItem(30);
+		timeToSleep.addItem(35);
+		timeToSleep.addItem(40);
+		timeToSleep.addItem(45);
+		timeToSleep.addItem(50);
+		timeToSleep.addItem(55);
+		timeToSleep.addItem(60);
+		timeToSleep.addItem(70);
+		timeToSleep.addItem(80);
+		
+		timeToSleep.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED && handler.isRadioOn()) {
+					handleRadioShutDown();				
+				}
+			}
+		});
 		
 		stationList.addMouseListener(new MouseAdapter() {
 			@Override
@@ -373,6 +407,7 @@ public class RadioView extends JPanel implements MessageListener{
 				btnPlay.setText("Stop");
 				btnVolume.setVisible(true);
 				fireVolumeIconChange(true);
+				handleRadioShutDown();
 			}else {
 				handler.radioOff(false);
 
@@ -380,6 +415,7 @@ public class RadioView extends JPanel implements MessageListener{
 				btnPlay.setText("Play");
 				btnVolume.setVisible(false);
 				fireVolumeIconChange(false);
+				shutDownThread();
 			}
 
 		} catch (Exception e) {
@@ -402,6 +438,45 @@ public class RadioView extends JPanel implements MessageListener{
 			viNew.setRadioPlaying(displayOn);
 			SwingContext.getInstance().putSharedObject(Constants.RADIO_VOLUME_ICON_TRIGGER, viNew);
 			
+		}
+	}
+	
+	private void handleRadioShutDown() {
+
+		shutDownThread();
+
+		int minutes = (Integer)timeToSleep.getSelectedItem();
+
+		if (minutes > 0) {
+
+			radioShutDown = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					logger.log(Level.CONFIG, "radio shut down: Auto Off start in run. Shutdown time: " + minutes);
+					try {
+						Thread.sleep(minutes * 60 * 1000);
+						if (handler.isRadioOn()) {
+							btnPlay.doClick();
+						}
+						logger.log(Level.INFO, "autoAlarmShutOff: Turning off alarm automatically.");
+
+					}catch(InterruptedException i) {
+						Thread.currentThread().interrupt();
+					}
+					logger.log(Level.CONFIG, "radio shut down: end run method");
+				}		
+			});
+			radioShutDown.start();
+		}
+
+		
+
+	}
+	private void shutDownThread() {
+		if (radioShutDown != null && radioShutDown.isAlive()) {
+			radioShutDown.interrupt();
+			logger.log(Level.CONFIG, "handleRadioShutDown not null and interrupted");
 		}
 	}
 

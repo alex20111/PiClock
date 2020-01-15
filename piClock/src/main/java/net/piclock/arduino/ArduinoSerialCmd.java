@@ -30,7 +30,7 @@ public class ArduinoSerialCmd {
 
 	private static final Logger logger = Logger.getLogger( ArduinoSerialCmd.class.getName() );
 
-	private static ArduinoSerialCmd arduinoSerialCmd;
+//	private static ArduinoSerialCmd arduinoSerialCmd;
 	private Serial serial;
 	private SerialConfig config;
 	private ErrorHandler eh;
@@ -42,7 +42,7 @@ public class ArduinoSerialCmd {
 	private final BlockingQueue<Integer> ldrQueue =  new ArrayBlockingQueue<>(1);
 	private final BlockingQueue<List<String>> scanQueue =  new ArrayBlockingQueue<>(1);
 
-	private ArduinoSerialCmd() throws UnsupportedBoardType, IOException, InterruptedException {
+	public ArduinoSerialCmd() throws UnsupportedBoardType, IOException, InterruptedException {
 		serial = SerialFactory.createInstance();
 		config = new SerialConfig();
 		config.device("/dev/ttyUSB0")
@@ -71,17 +71,17 @@ public class ArduinoSerialCmd {
 		} catch (InterruptedException e) {}
 	}
 
-	public static ArduinoSerialCmd getInstance() throws UnsupportedBoardType, IOException, InterruptedException {
-
-		if (arduinoSerialCmd == null) {
-			synchronized (ArduinoSerialCmd.class) {
-				if(arduinoSerialCmd == null) {
-					arduinoSerialCmd = new ArduinoSerialCmd();
-				}
-			}
-		}
-		return arduinoSerialCmd;
-	}
+//	public static ArduinoSerialCmd getInstance() throws UnsupportedBoardType, IOException, InterruptedException {
+//
+//		if (arduinoSerialCmd == null) {
+//			synchronized (ArduinoSerialCmd.class) {
+//				if(arduinoSerialCmd == null) {
+//					arduinoSerialCmd = new ArduinoSerialCmd();
+//				}
+//			}
+//		}
+//		return arduinoSerialCmd;
+//	}
 
 	public int readLdr() throws IllegalStateException, IOException, InterruptedException {
 		sendCommand(translator.generateLDRCmd());
@@ -179,8 +179,6 @@ public class ArduinoSerialCmd {
 
 				try {
 
-					//            	  System.out.println("Data retrieve form arduino: " + event.getAsciiString());/
-
 					Command cmd =  translator.translateReceivedCmd(event.getAsciiString());
 
 					if (translator.isCommandComplete()) {
@@ -199,7 +197,6 @@ public class ArduinoSerialCmd {
 						}else if (cmd == Command.SCAN_RADIO && translator.getRadioScanStatus() ==  RadioScan.FINISHED) {
 
 							translator.setScan(RadioScan.NONE);
-							//            			System.out.println("Station list: " + translator.getStations());
 							scanQueue.put(translator.getStations());
 						}
 					}

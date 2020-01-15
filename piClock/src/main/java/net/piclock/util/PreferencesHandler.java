@@ -8,11 +8,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import net.piclock.enums.ScreenType;
 import net.piclock.main.Preferences;
 
 public class PreferencesHandler {
 
 	//default config
+	private final static String SCREEN_TYPE     = "SCREEN_TYPE";
 	private final static String WIFI_SSID 		= "WIFI_SSID";
 	private final static String WIFI_PASS 		= "WIFI_PASS";
 	private final static String AUTO_SCREEN_OFF = "AUTO_SCREEN_OFF";
@@ -44,6 +46,7 @@ public class PreferencesHandler {
 			output = new FileOutputStream(prefFileName);
 
 			//default config
+			prop.setProperty(SCREEN_TYPE, String.valueOf(prefs.getScreenType()));
 			prop.setProperty(AUTO_SCREEN_OFF, String.valueOf(prefs.isAutoOffScreen()));
 			prop.setProperty(WIFI_OFF, String.valueOf(prefs.isWifiOff()));
 			prop.setProperty(WIFI_SSID,prefs.getWifi());
@@ -95,6 +98,7 @@ public class PreferencesHandler {
 			prop.load(input);
 			userPrefs = new Preferences();
 			//default config AUTO_SCREEN_CYCLE
+			userPrefs.setScreenType(prop.getProperty(SCREEN_TYPE, ScreenType.HYPERPIXEL40.name()));
 			userPrefs.setAutoOffScreen(Boolean.valueOf(prop.getProperty(AUTO_SCREEN_OFF, "true")));
 			userPrefs.setWifiOff(Boolean.valueOf(prop.getProperty(WIFI_OFF, "true")));
 			userPrefs.setWifi(prop.getProperty(WIFI_SSID, ""));

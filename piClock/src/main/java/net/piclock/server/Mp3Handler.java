@@ -79,7 +79,6 @@ public class Mp3Handler extends HttpBase{
 			Map<String, String> values = new HashMap<String, String>();
 
 			if (mode.isPresent() && mode.get().equals("add")){
-//				System.out.println("Mode add. btnSendFile " + btnSendFile);	
 
 				if (btnSendFile.isPresent() && !btnSendFile.get().isEmpty()){
 					if (mp3File.isPresent() && !mp3File.get().isEmpty()){
@@ -106,13 +105,11 @@ public class Mp3Handler extends HttpBase{
 				values.put("message1",message);
 				webPageFiles = getWebPageOnDisk(addPageName);
 			}else{
-//				System.out.println("Mode view");
 				if (mode.isPresent() && mode.get().equals("delete")){
-//					System.out.println("Delete : " + delMp3);
+
 					deleteMp3();
 					
 				}else if(mode.isPresent() && mode.get().equals("deleteall"))	{
-//					System.out.println("deleta all: " + mode.get() + " catg: " + mp3Catg.get());
 					deleteAllMp3();
 				}
 				
@@ -291,11 +288,9 @@ public class Mp3Handler extends HttpBase{
 				message = generateSuccessMessage("File successfully uploaded");
 				
 			}else if (mp3File.get().indexOf(".mp3") > 0){	
-				System.out.println("MP#: IN");
+
 				saveFiles(mp3Folder);
 				String fileName = getFileName();
-				
-				System.out.println("MP#: FILE name: " + fileName);
 				
 				addToDB(new File(mp3Folder + File.separatorChar +  fileName));
 				
@@ -425,7 +420,7 @@ public class Mp3Handler extends HttpBase{
 				sql.deleteMultiple(mp3Ids);
 				
 				successDelete.add(delMp3.getMp3Name());
-//				System.out.println("fileDeleted: " + fileDeleted);
+
 			} catch (IOException | SQLException e) {
 				errorsDelete.add("Error deleting mp3: " + delMp3.getMp3Name());
 				e.printStackTrace();

@@ -1,4 +1,4 @@
-package net.piclock.main;
+package net.piclock.handlers;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,22 +15,23 @@ import java.util.logging.Logger;
 import org.apache.commons.exec.ExecuteException;
 
 import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
+//import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.SoftPwm;
 
 import home.fileutils.FileUtils;
 import home.misc.Exec;
-import net.piclock.arduino.ArduinoSerialCmd;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ListenerNotFoundException;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
+import net.piclock.button.AlarmBtnHandler;
 import net.piclock.button.MonitorButtonHandler;
 import net.piclock.enums.Buzzer;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
+import net.piclock.main.Preferences;
 import net.piclock.enums.Light;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
@@ -46,7 +47,8 @@ public class PiHandler {
 
 	private static PiHandler piHandler;
 	
-	private ArduinoSerialCmd cmd;
+	private DeviceHandler device = null;
+
 	private SwingContext context;
 	
 	private  boolean screenOn = true;
@@ -78,13 +80,18 @@ public class PiHandler {
 	private boolean speakerOn = false;
 	
 	private PiHandler() {
-		Gpio.wiringPiSetup();
-		SoftPwm.softPwmCreate(24, 70, 100);
-		
-		monitorBtnHandler = new MonitorButtonHandler();
+
 		try {
-			cmd = ArduinoSerialCmd.getInstance();
-			cmd.addButtonListener(monitorBtnHandler);
+			device = new DeviceHandler();
+
+			Gpio.wiringPiSetup();
+			SoftPwm.softPwmCreate(24, 70, 100);
+
+			//buttons
+			monitorBtnHandler = new MonitorButtonHandler();
+			device.addButtonListener(monitorBtnHandler);
+			device.addButtonListener(new AlarmBtnHandler());
+
 			context = SwingContext.getInstance();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "Error in PiHandler", ex);
@@ -103,7 +110,7 @@ public class PiHandler {
 		return piHandler;
 	}	
 
-	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException, UnsupportedBusNumberException{
+	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException{
 		logger.log(Level.INFO,"turnOffScreen()");
 
 		setScreenOn(false);
@@ -173,7 +180,7 @@ public class PiHandler {
 	}
 	public Light getLDRstatus(){
 
-		int ldrVal = sendArduinoCommand(LDR,null);		
+		int ldrVal = sendCommand(LDR,null);		
 		return Light.setLightLevel(ldrVal);
 	}
 	/**Turn on the alarm based on the selected buzzer
@@ -188,7 +195,6 @@ public class PiHandler {
 		if (alarm == Buzzer.BUZZER){
 			buzzer(true);
 		}else if (alarm == Buzzer.RADIO){
-//			playRadio(true, text, volume);
 			radioSetChannel(radioChannel, volume);
 		}else if (alarm == Buzzer.MP3){
 			playMp3(true, mp3FileName, volume);
@@ -207,10 +213,10 @@ public class PiHandler {
 	}
 	public void displayTM1637Time(String time){
 		
-		sendArduinoCommand(TIME,time);
+		sendCommand(TIME,time);
 	}
 	public void turnOffTM1637Time(){
-		sendArduinoCommand(TIME_OFF, null);
+		sendCommand(TIME_OFF, null);
 	}
 	
 	//turn off the screen automatically
@@ -462,22 +468,27 @@ public class PiHandler {
 			logger.log(Level.CONFIG, "Interrupted screenAutoShutDown");
 		}
 	}
-	private synchronized int sendArduinoCommand(String command , String value){
+	private synchronized int sendCommand(String command , String value){
 		int retCd = -1;
 
 		try {
 
 			if (command.equals(TIME)){
-				cmd.writeTime(value);
+//				cmd.writeTime(value);
+				device.writeTime(value);
 			}else if(command.equals(LDR)) {
-				retCd = cmd.readLdr();
+//				retCd = cmd.readLdr();
+				retCd = device.readLdr();
 			}else if(command.equals(TIME_OFF)) {
-				cmd.timeOff();
+//				cmd.timeOff();
+				device.turnOffTimeScreen();
 			}else if(command.equals(BUZZER)) {
 				if ( value.equals("true")) {
-					cmd.buzzer(true);
+					device.buzzerOn();
+//					cmd.buzzer(true);
 				}else {
-					cmd.buzzer(false);
+					device.buzzerOff();
+//					cmd.buzzer(false);
 				}
 			}
 
@@ -494,9 +505,9 @@ public class PiHandler {
 		logger.log(Level.CONFIG, "buzzer() : " + on);
 		
 		if (on){
-			sendArduinoCommand(BUZZER, "true");
+			sendCommand(BUZZER, "true");
 		}else{
-			sendArduinoCommand(BUZZER, "false");
+			sendCommand(BUZZER, "false");
 		}
 	}
 	/**play random mp3 on / off 
@@ -568,7 +579,6 @@ public class PiHandler {
 		}
 
 		logger.log(Level.CONFIG, "playAlarmRadio() , end method. " );
-
 	}
 	
 	/**
@@ -589,7 +599,7 @@ public class PiHandler {
 
 			adjustVolume(volume);
 
-			cmd.turnOnRadio();
+			device.turnOnRadio();
 			
 			radioThread = new Thread(new Runnable() {
 
@@ -603,7 +613,6 @@ public class PiHandler {
 
 						exec.addCommand("sudo");
 						exec.addCommand("./scripts/play.sh");
-//						exec.timeout(5000);
 						ret = exec.run();
 
 					}catch(Exception ex) {
@@ -611,16 +620,14 @@ public class PiHandler {
 						radioOn = false;
 					}
 					logger.log(Level.CONFIG, "Radio thread finished. " + ret);
-
 				}
 
 			});
 
 			radioThread.start();
-
 		}
 		
-		cmd.radioSelectChannel(channel);
+		device.selectRadioChannel(channel);
 		
 		logger.log(Level.CONFIG, "End of radioSetChannel, not blocking.. please remove after test");
 	}
@@ -643,12 +650,11 @@ public class PiHandler {
 			if (!isToggelingBetweenRadioAndMp3) {
 				handleSpeakers(false);
 			}
-			cmd.turnOffRadio();
+			device.turnOffRadio();
 		}
 		
 		radioOn = false;
-	}
-	
+	}	
 	
 	private void turnWifiOff() throws InterruptedException{
 		logger.log(Level.INFO, "wifiOff() : wifiOn : " + wifiOn);
@@ -674,8 +680,7 @@ public class PiHandler {
   				eh.addError(ErrorType.PI, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 				logger.log(Level.SEVERE, "wifiOff() : Error shutting wifi : " , e1);
 			}
-		}
-		
+		}		
 	}
 	/**
 	 * Check if the computer has an ip address.
@@ -718,8 +723,7 @@ public class PiHandler {
 		int ext = e.run();
 
 		logger.log(Level.CONFIG, "refreshWifi(), ext: " + ext + "  output: " + e.getOutput());
-	}
-	
+	}	
 	
 	public void autoWifiShutDown(boolean startAutoShutdown) throws InterruptedException {
 		logger.log(Level.CONFIG, "autoWifiShutDown");
@@ -774,7 +778,6 @@ public class PiHandler {
 	private void toggleMusicSystem(boolean radioRequested, boolean mp3Requested) throws InterruptedException, ExecuteException, IOException {
 		logger.log(Level.CONFIG, " Toggeling music system. RadioRequested: " + radioRequested + "  MP3: " +mp3Requested);
 
-
 		//if radio requested, turn off MP3.
 		if (radioRequested) {
 			if (mp3Stream != null) {
@@ -791,10 +794,7 @@ public class PiHandler {
 				
 				context.sendMessage(Constants.MUSIC_TOGGELED, new Message("radiooff"));
 			}
-
-
 		}
-
 	}
 	/**
 	 * handle the speaker on or off option to not turn them on or off uselessly.
@@ -807,12 +807,12 @@ public class PiHandler {
 		if (turnOn) {
 			
 			if (!speakerOn) {
-				cmd.turnSpeakerOn();
+				device.turnSpeakerOn();
 				speakerOn = true;
 			}			
 			
 		}else {
-			cmd.turnSpeakerOff();
+			device.turnSpeakerOff();
 			speakerOn = false;
 		}
 	}

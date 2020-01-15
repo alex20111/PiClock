@@ -18,8 +18,8 @@ import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
 import net.piclock.enums.CheckWifiStatus;
+import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
-import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
@@ -128,8 +128,6 @@ public class WifiHandler extends HttpBase implements PropertyChangeListener{
 		check = Optional.empty();
 		btnDisconnect = Optional.empty();
 
-		System.out.println("params: " + params);
-		
 		if (params.get("wifiName") != null && params.get("wifiName").size() > 0){
 			wifiName = params.get("wifiName").get(0);
 		}

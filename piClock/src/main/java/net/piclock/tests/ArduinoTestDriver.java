@@ -14,8 +14,7 @@ public class ArduinoTestDriver {
 	public static void main(String args[]) throws InterruptedException, IOException {
     	System.out.println("Start");
         	
-    	ArduinoSerialCmd s = ArduinoSerialCmd.getInstance();
-    	
+    	ArduinoSerialCmd s = new ArduinoSerialCmd();   	
 //    	s.open();
     	
     	Thread.sleep(2000);

@@ -111,7 +111,7 @@ public class Mp3Sql {
 
 	public List<Mp3GenreFilter> getAllAvailableGenre() throws ClassNotFoundException, SQLException{
 		//get the available genre from the DB.
-		System.out.println("getAllAvailableGenre  " );
+
 		DBConnection con = null;
 		Set<Mp3GenreFilter> filters = new HashSet<Mp3GenreFilter>();
 		try {
@@ -142,7 +142,7 @@ public class Mp3Sql {
 	}
 
 	public List<Mp3Entity> loadAllMp3ByGenre(Mp3GenreFilter filter) throws SQLException, ClassNotFoundException {
-		System.out.println("loadAllMp3ByCatg -------------------->  " + filter);
+
 		DBConnection con = null;
 		List<Mp3Entity> mp3s = new ArrayList<Mp3Entity>();
 		try {

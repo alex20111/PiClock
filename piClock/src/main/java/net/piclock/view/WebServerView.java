@@ -14,8 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
-import net.piclock.main.PiHandler;
 import net.piclock.server.MiniWebServer;
 import net.piclock.swing.component.SwingContext;
 
@@ -98,7 +98,7 @@ public class WebServerView extends JPanel {
 		bodyPanel.add(btnBack, "cell 0 7");
 	}
 	private void back(){
-		System.out.println("Back");
+
 		SwingContext context = SwingContext.getInstance();
 		JPanel cards = (JPanel)context.getSharedObject(Constants.CARD_PANEL);
 		CardLayout cl = (CardLayout)(cards.getLayout());

@@ -6,8 +6,8 @@ import java.time.temporal.ChronoUnit;
 
 import javax.swing.JLabel;
 
+import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
-import net.piclock.main.PiHandler;
 
 public class Clock implements Runnable {
 

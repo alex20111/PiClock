@@ -1,8 +1,11 @@
 package net.piclock.main;
 
+import net.piclock.enums.ScreenType;
+
 public class Preferences {
 
 	//general settings
+	private String screenType = ScreenType.HYPERPIXEL40.name();
 	private String wifi = "";
 	private String wifiPass = "";
 	private boolean autoOffScreen = true; //turn on off screen
@@ -128,6 +131,12 @@ public class Preferences {
 	}
 	public void setWifiOff(boolean wifiOff) {
 		this.wifiOff = wifiOff;
+	}
+	public String getScreenType() {
+		return screenType;
+	}
+	public void setScreenType(String screenType) {
+		this.screenType = screenType;
 	}
 	@Override
 	public String toString() {

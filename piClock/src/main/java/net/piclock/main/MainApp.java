@@ -50,6 +50,7 @@ import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.enums.IconEnum;
 import net.piclock.enums.LabelEnums;
+import net.piclock.handlers.PiHandler;
 import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeEnum;
@@ -165,6 +166,10 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	public MainApp() throws Exception {
 		logger.info("Start Program");	
 		
+		//preferences
+		prefs = PreferencesHandler.read();	
+		ct.putSharedObject(Constants.PREFERENCES, prefs);
+		
 		ErrorView ev = new ErrorView();
 		
 		tm = ThreadManager.getInstance();
@@ -193,11 +198,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		setBackground(Color.BLUE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize( 800, 480);	
-		
-		//preferences
-		prefs = PreferencesHandler.read();	
-		ct.putSharedObject(Constants.PREFERENCES, prefs);
-		
+	
 		themes = new ThemeHandler();
 		ct.putSharedObject(Constants.THEMES_HANDLER, themes);
 		themes.loadTheme(ThemeEnum.defaultTheme);		
@@ -373,6 +374,12 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		alertIconsPanel.setOpaque(false);
 		alertIconsPanel.setLayout(new BoxLayout(alertIconsPanel, BoxLayout.Y_AXIS));
 		
+		lblWiFiIcon = new JLabel();
+		lblWiFiIcon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
+		lblWiFiIcon.setVisible(false);
+		themes.registerIconColor(lblWiFiIcon, IconEnum.WIFI_ON_ICON);
+		alertIconsPanel.add(lblWiFiIcon);	
+		
 		lblAlarmIcon = new JLabel();
 		lblAlarmIcon.setBorder(new EmptyBorder(5,10,0,0));//top,left,bottom,right
 		lblAlarmIcon.setVisible(false);
@@ -452,11 +459,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			}
 		});
 		
-		lblWiFiIcon = new JLabel();
-		lblWiFiIcon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
-		lblWiFiIcon.setVisible(false);
-		themes.registerIconColor(lblWiFiIcon, IconEnum.WIFI_ON_ICON);
-		alertIconsPanel.add(lblWiFiIcon);			
 		
 		clock();
 		

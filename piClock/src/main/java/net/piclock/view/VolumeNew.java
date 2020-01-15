@@ -19,8 +19,8 @@ import net.piclock.db.entity.Mp3Entity;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.Mp3Sql;
 import net.piclock.db.sql.RadioSql;
+import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
-import net.piclock.main.PiHandler;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.PopupSlider;
@@ -65,7 +65,7 @@ public class VolumeNew extends JDialog {
 		
 		setModalityType(ModalityType.APPLICATION_MODAL);
 //		setSize(100, 430);
-		setBounds(400, 0, 110, 430);
+		setBounds(390, 0, 115, 400);
 //		setLocation(400, 0);
 //		setLocationRelativeTo(null);		
 		
@@ -141,7 +141,7 @@ public class VolumeNew extends JDialog {
 					@Override
 					public void run() {
 						try {
-							System.out.println("sampleVolThrd, started");
+							
 							if (config.getMp3Id() > 0){
 								Mp3Entity m;
 
@@ -170,7 +170,7 @@ public class VolumeNew extends JDialog {
 								}
 								handler.radioOff(false);
 							}
-							System.out.println("sampleVolThrd, stopped");
+							
 						} catch (Exception ex){
 							logger.log(Level.SEVERE, "Error in sampling music", ex);
 						}
