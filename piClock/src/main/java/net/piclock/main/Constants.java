@@ -50,7 +50,8 @@ public class Constants {
 	public static final String BUZZER_CHANGED = "AlarmTypeChanged";
 	public static final String TURN_OFF_ALARM = "TurnOffAlarm";
 	public static final String UPDATE_ALARMS = "UPDATE_ALARMS";
-	public static final String REMOVE_TRIGGER = "REMOVE_TRIGGER";	
+	public static final String REMOVE_TRIGGER = "REMOVE_TRIGGER";
+	public static final String ALA_SAY_WEEK_UPD = "day of the week updated";	
 	
 	public static final String NA_ICON = "cloudNa.png";
 	

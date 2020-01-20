@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -244,6 +246,16 @@ public class AlarmSql {
 		if (alarms.size() > 5) {
 			throw new SQLException("Number of alarms exceede the maximum number of 5. Alarm size: " + alarms.size());
 		}
+		
+		//sort them 
+		Comparator<AlarmEntity> c = new Comparator<AlarmEntity>() {
+		    @Override
+		    public int compare(AlarmEntity o1, AlarmEntity o2) {
+		        return new Integer(o1.getAlarmOrder()).compareTo(new Integer(o2.getAlarmOrder()));
+		    }
+		};
+		
+		Collections.sort(alarms, c);
 
 		return alarms;
 	}

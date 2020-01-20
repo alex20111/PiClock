@@ -14,7 +14,7 @@ color code alarm button to define if active or not (Green for active , red for i
 
 //TEST//
 add shutdown for radio.
-alarm , save when updating days of the week.--NOPE
+alarm , save when updating days of the week.--NOPE  _RE TEST
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
 Test add new web page for backgrounds. In progress
 Test Radio on/off function and long term functions

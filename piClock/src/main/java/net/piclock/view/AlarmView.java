@@ -31,11 +31,9 @@ import javax.swing.plaf.metal.MetalToggleButtonUI;
 import com.pi4j.io.gpio.exception.UnsupportedBoardType;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
-import net.piclock.arduino.ArduinoSerialCmd;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
-import net.piclock.button.AlarmBtnHandler;
 import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.AlarmRepeat;
@@ -46,12 +44,13 @@ import net.piclock.main.Preferences;
 import net.piclock.swing.component.AlarmDayMouseSelector;
 import net.piclock.swing.component.BuzzerSelection;
 import net.piclock.swing.component.Message;
+import net.piclock.swing.component.MessageListener;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.thread.ThreadManager;
 import net.piclock.util.FormatStackTrace;
 
-public class AlarmView extends JPanel implements PropertyChangeListener {
+public class AlarmView extends JPanel implements PropertyChangeListener, MessageListener {
 
 	private static final long serialVersionUID = -8991056994673610266L;
 
@@ -89,8 +88,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private ThreadManager tm;
 
 	private AlarmEntity alarmEnt;//alarm for the current screen
-	
+
 	private JLabel lblAlarmIcon = null;
+	private Color active = Color.GREEN;
+	private Color inActive = Color.RED;
 
 	/**
 	 * Create the panel.
@@ -103,7 +104,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	 */
 	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException, UnsupportedBusNumberException, UnsupportedBoardType, InterruptedException {		
 		logger.config("Starting alarmView");
-		
+
 		lblAlarmIcon = lblAlarm;
 
 		tm = ThreadManager.getInstance();
@@ -132,9 +133,9 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		if (alarmEnt != null) {
 			hours = Integer.parseInt(alarmEnt.getHour());
 			minutes = Integer.parseInt(alarmEnt.getMinutes());
-//			Message msg = new Message(alarmEnt);
+			//			Message msg = new Message(alarmEnt);
 
-//			ct.sendMessage(Constants.UPDATE_ALARMS, msg);
+			//			ct.sendMessage(Constants.UPDATE_ALARMS, msg);
 		}else {
 			//new alarm
 			alarmEnt = new AlarmEntity();
@@ -359,7 +360,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 
 				try{
 					saving();
-					
+
 					//check if any alarm are active.
 					if (sql.isAnyAlarmActive()) {
 						lblAlarmIcon.setVisible(true);
@@ -429,6 +430,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		ct.putSharedObject(Constants.BUZZER_OPTION_PANEL, wakeUpAlarmOptions);
 
 		alarmSelectButtons();
+
+		ct.addMessageChangeListener(Constants.ALA_SAY_WEEK_UPD, this);
 	}
 
 	public void setAlarmNotToggled() {
@@ -455,7 +458,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		}
 
 		JLabel lblDaySunday = new JLabel("S");
-		sunday = new AlarmDayMouseSelector(lblDaySunday, ar.contains(AlarmRepeat.SUNDAY) ? true : false, alarmInfoChanged);
+		sunday = new AlarmDayMouseSelector(lblDaySunday, ar.contains(AlarmRepeat.SUNDAY) ? true : false);
 		lblDaySunday.setFont(new Font("Tahoma", Font.BOLD, 16));
 		//		lblDaySunday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDaySunday.addMouseListener(sunday);
@@ -466,7 +469,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayMonday = new JLabel("M");
 		//		lblDayMonday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayMonday.setFont(new Font("Tahoma", Font.BOLD, 16));
-		monday = new AlarmDayMouseSelector(lblDayMonday, ar.contains(AlarmRepeat.MONDAY) ? true : false, alarmInfoChanged);
+		monday = new AlarmDayMouseSelector(lblDayMonday, ar.contains(AlarmRepeat.MONDAY) ? true : false);
 		lblDayMonday.addMouseListener(monday);
 		lblDayMonday.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayMonday.setBounds(55,125,41,38);
@@ -475,7 +478,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayTue = new JLabel("T");
 		//		lblDayTue.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayTue.setFont(new Font("Tahoma", Font.BOLD, 16));
-		tuesday = new AlarmDayMouseSelector(lblDayTue, ar.contains(AlarmRepeat.TUESDAY) ? true : false, alarmInfoChanged);
+		tuesday = new AlarmDayMouseSelector(lblDayTue, ar.contains(AlarmRepeat.TUESDAY) ? true : false);
 		lblDayTue.addMouseListener(tuesday);
 		lblDayTue.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayTue.setBounds(55,165,41,38);
@@ -484,7 +487,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayWed = new JLabel("W");
 		//		lblDayWed.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayWed.setFont(new Font("Tahoma", Font.BOLD, 16));
-		wednesday = new AlarmDayMouseSelector(lblDayWed, ar.contains(AlarmRepeat.WEDNESDAY) ? true : false, alarmInfoChanged);
+		wednesday = new AlarmDayMouseSelector(lblDayWed, ar.contains(AlarmRepeat.WEDNESDAY) ? true : false);
 		lblDayWed.addMouseListener(wednesday);
 		lblDayWed.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayWed.setBounds(55,205,41,38);
@@ -493,7 +496,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayThu = new JLabel("T");
 		lblDayThu.setFont(new Font("Tahoma", Font.BOLD, 16));
 		//		lblDayThu.setBorder(new RoundedBorder(Color.BLACK, 40));
-		thursday = new AlarmDayMouseSelector(lblDayThu, ar.contains(AlarmRepeat.THURSDAY) ? true : false, alarmInfoChanged);
+		thursday = new AlarmDayMouseSelector(lblDayThu, ar.contains(AlarmRepeat.THURSDAY) ? true : false);
 		lblDayThu.addMouseListener(thursday);
 		lblDayThu.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayThu.setBounds(55,245,41,38);
@@ -502,7 +505,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDayFriday = new JLabel("F");
 		lblDayFriday.setFont(new Font("Tahoma", Font.BOLD, 16));
 		//		lblDayFriday.setBorder(new RoundedBorder(Color.BLACK, 40));
-		friday = new AlarmDayMouseSelector(lblDayFriday, ar.contains(AlarmRepeat.FRIDAY) ? true : false,alarmInfoChanged);
+		friday = new AlarmDayMouseSelector(lblDayFriday, ar.contains(AlarmRepeat.FRIDAY) ? true : false);
 		lblDayFriday.addMouseListener(friday);
 		lblDayFriday.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDayFriday.setBounds(55,285,41,38);
@@ -511,7 +514,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		JLabel lblDaySat = new JLabel("S");
 		lblDaySat.setFont(new Font("Tahoma", Font.BOLD, 16));
 		//		lblDaySat.setBorder(new RoundedBorder(Color.BLACK, 40));
-		saturday = new AlarmDayMouseSelector(lblDaySat, ar.contains(AlarmRepeat.SATURDAY) ? true : false, alarmInfoChanged);
+		saturday = new AlarmDayMouseSelector(lblDaySat, ar.contains(AlarmRepeat.SATURDAY) ? true : false);
 		lblDaySat.addMouseListener(saturday);
 		lblDaySat.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDaySat.setBounds(55,325,41,38);
@@ -525,7 +528,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		add(lblDayFriday);
 		add(lblDaySat);
 	}	
-	private void alarmSelectButtons() {
+	private void alarmSelectButtons() throws ClassNotFoundException, SQLException {
 		final JButton btnOne = new JButton("1");
 		final JButton btnTwo = new JButton("2");
 		final JButton btnThree = new JButton("3");
@@ -533,7 +536,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 		final JButton btnFive = new JButton("5");
 
 		setSelected(btnOne);
-		
+
 		btnOne.setFont(new Font("Tahoma", Font.BOLD, 20));
 		btnOne.setBounds(235, 406, 50, 40);
 		btnOne.addActionListener(new ActionListener() {
@@ -544,14 +547,20 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
 					}
-					
-					setSelected(btnOne);
-					returnBtnDefault(btnTwo, btnThree, btnFour, btnFive);
 					alarmEnt = sql.loadAlarmByOrderNbr(1);
 					if (alarmEnt == null) {
 						alarmEnt = new AlarmEntity();
 						alarmEnt.setAlarmOrder(1);
 					}
+
+					if(alarmEnt.isActive()) {
+						btnOne.setName("active");
+					}else {
+						btnOne.setName("disabled");
+					}
+
+					setSelected(btnOne);
+					returnBtnDefault(btnTwo, btnThree, btnFour, btnFive);
 					populateAlarmFields();
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
@@ -569,18 +578,24 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					//verify if we need to save the previous alarm
-					
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
-					}					
-					
-					setSelected(btnTwo);
-					returnBtnDefault(btnOne, btnThree, btnFour, btnFive);
+					}		
+
 					alarmEnt = sql.loadAlarmByOrderNbr(2);
 					if (alarmEnt == null) {
 						alarmEnt = new AlarmEntity();
 						alarmEnt.setAlarmOrder(2);
 					}
+
+					if(alarmEnt.isActive()) {  //TODO
+						btnTwo.setName("active");
+					}else {
+						btnTwo.setName("inactive");
+					}
+
+					setSelected(btnTwo);
+					returnBtnDefault(btnOne, btnThree, btnFour, btnFive);
 					populateAlarmFields();
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
@@ -589,7 +604,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			}
 		});
 		add(btnTwo);
-
 
 		btnThree.setFont(new Font("Tahoma", Font.BOLD, 20));
 		btnThree.setBounds(353, 406, 50, 40);
@@ -601,7 +615,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
 					}
-					
+
 					setSelected(btnThree);
 					returnBtnDefault(btnTwo, btnOne, btnFour, btnFive);
 					alarmEnt = sql.loadAlarmByOrderNbr(3);
@@ -628,7 +642,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
 					}
-					
+
 					setSelected(btnFour);
 					returnBtnDefault(btnTwo, btnThree, btnOne, btnFive);
 					alarmEnt = sql.loadAlarmByOrderNbr(4);
@@ -640,11 +654,9 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
 				} 
-
 			}
 		});
 		add(btnFour);
-
 
 		btnFive.setFont(new Font("Tahoma", Font.BOLD, 20));
 		btnFive.setBounds(473, 406, 50, 40);
@@ -656,7 +668,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
 					}
-					
+
 					setSelected(btnFive);
 					returnBtnDefault(btnTwo, btnThree, btnFour, btnOne);
 					alarmEnt = sql.loadAlarmByOrderNbr(5);
@@ -672,6 +684,64 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			}
 		});
 		add(btnFive);
+		
+		//color paint buttons starting from btn2
+		List<AlarmEntity> al = sql.loadAllActiveAlarm();
+		if (al.size() > 0) {
+			for(AlarmEntity a : al) {
+				if (a.getAlarmOrder() == 1) {
+					if (a.isActive()) {
+						setBtnActiveInactiveName(btnOne, true);						
+					}else {
+						setBtnActiveInactiveName(btnOne, false);						
+					}
+				}else if (a.getAlarmOrder() == 2) {
+					if (a.isActive()) {
+						btnTwo.setBackground(active);
+						btnTwo.setName("active");
+					}else {
+						btnTwo.setBackground(inActive);
+						btnTwo.setName("inactive");
+					}
+				}else if (a.getAlarmOrder() == 3) {
+					if (a.isActive()) {
+						btnThree.setBackground(active);
+						btnThree.setName("active");
+					}else {
+						btnThree.setBackground(inActive);
+						btnThree.setName("inactive");
+					}
+				}else if (a.getAlarmOrder() == 4) {
+					if (a.isActive()) {
+						btnFour.setBackground(active);
+						btnFour.setName("active");
+					}else {
+						btnFour.setBackground(inActive);
+						btnFour.setName("inactive");
+					}
+				}else if (a.getAlarmOrder() == 5) {
+					if (a.isActive()) {
+						btnFive.setBackground(active);
+						btnFive.setName("active");
+					}else {
+						btnFive.setBackground(inActive);
+						btnFive.setName("inactive");
+					}
+				}
+			}
+		}else {
+			btnOne.setName("inactive");
+			btnTwo.setBackground(inActive);
+			btnTwo.setName("inactive");
+			btnThree.setBackground(inActive);
+			btnThree.setName("inactive");
+			btnFour.setBackground(inActive);
+			btnFour.setName("inactive");
+			btnFive.setBackground(inActive);
+			btnFive.setName("inactive");
+		}
+
+
 	}
 	private void populateAlarmFields() {
 		hours = Integer.parseInt(alarmEnt.getHour());
@@ -731,7 +801,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			}
 		}
 
-		//		dayDaysToSelect(alarmEnt, theme);
 	}
 	private void setSelected(JButton btn) {
 		btn.setForeground(new Color(255, 255, 255));
@@ -741,11 +810,22 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 	private void returnBtnDefault(JButton... btnList) {
 		for (JButton btn : btnList) {
 			btn.setForeground(null);
-			btn.setBackground(null);
+			if ("active".equals(btn.getName())) {
+				btn.setBackground(Color.GREEN);
+			}else {
+				btn.setBackground(Color.RED);
+			}
 			btn.setBorder(null);
 		}
 	}
-	
+	private void setBtnActiveInactiveName(JButton btn , boolean active) {
+		if (active) {
+			btn.setName("active");
+		}else {
+			btn.setName("inactive");
+		}
+	}
+
 	private void saving() throws ClassNotFoundException, SQLException {
 		logger.log(Level.CONFIG,"Alarm alarmInfoChanged: " + alarmInfoChanged);
 
@@ -803,12 +883,12 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			alarmEnt.setAlarmShutdown(buzzerSelection.getShutdownMin());
 
 			if (tglbtnOnOff.isSelected()){
-//				lblAlarmIcon.setVisible(true);
+				//				lblAlarmIcon.setVisible(true);
 				alarmEnt.setActive(true);
 
 			}else {
 				alarmEnt.setActive(false);
-//				lblAlarmIcon.setVisible(false);
+				//				lblAlarmIcon.setVisible(false);
 			}
 
 			if (add) {
@@ -823,9 +903,17 @@ public class AlarmView extends JPanel implements PropertyChangeListener {
 			ct.sendMessage(Constants.UPDATE_ALARMS, msg);
 
 			logger.log(Level.INFO, "Alarm " + (add ? "Added: " : "Updated:" )  + alarmEnt);
-			
+
 			alarmInfoChanged = false;
 
 		}
+	}
+
+	@Override
+	public void message(Message message) {
+		if (Constants.ALA_SAY_WEEK_UPD.contentEquals(message.getPropertyName())) {
+			alarmInfoChanged = true;
+		}
+
 	}
 }

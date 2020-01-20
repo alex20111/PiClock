@@ -23,7 +23,6 @@ import net.piclock.db.entity.AlarmEntity;
 import net.piclock.db.sql.AlarmSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
-import net.piclock.view.RadioView;
 
 public class Alarmhandler extends HttpBase implements HttpHandler{
 	
@@ -133,8 +132,9 @@ public class Alarmhandler extends HttpBase implements HttpHandler{
 			}else{
 				webPage = "Web page not found";
 			}	
+			logger.log(Level.CONFIG, "Web page response: " + webPage);
 			return Response.newFixedLengthResponse(webPage);
-		}catch (Exception ex){
+		}catch (Throwable ex){
 			logger.log(Level.SEVERE,"Unexpected Error in alarm handler", ex);
 			return Response.newFixedLengthResponse("Unexpected error");
 		}
@@ -521,11 +521,13 @@ public class Alarmhandler extends HttpBase implements HttpHandler{
 			customJs = customScript(5);
 		}else{			
 			
+			
 			AlarmEntity alarmSession = (AlarmEntity)getSession().get(SAVED_VIEWING_ALARM);
 			
 			if (alarmSession != null){
 				//1st load alarm
 				alarm = alarmSession; 
+				logger.log(Level.CONFIG, "Else switch - session present ");
 		
 			}else{
 				List<AlarmEntity> alarmEnt = new AlarmSql().loadAllAlarms();
@@ -537,7 +539,7 @@ public class Alarmhandler extends HttpBase implements HttpHandler{
 				}				
 
 				getSession().set(SAVED_VIEWING_ALARM, alarm);
-
+				logger.log(Level.CONFIG, "Else swich session not present. Alarm:  " + alarm);
 			}			
 			
 		}		
