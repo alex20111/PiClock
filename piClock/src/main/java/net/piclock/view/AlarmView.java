@@ -74,6 +74,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 	private AlarmSql sql;
 
 	private  boolean alarmInfoChanged = false;
+	private boolean btnNotAutoClicked = true;
 	private BuzzerSelection buzzerSelection;
 
 	//days of the week label
@@ -92,6 +93,8 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 	private JLabel lblAlarmIcon = null;
 	private Color active = Color.GREEN;
 	private Color inActive = Color.RED;
+	
+	private JButton btnSelected;
 
 	/**
 	 * Create the panel.
@@ -133,9 +136,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 		if (alarmEnt != null) {
 			hours = Integer.parseInt(alarmEnt.getHour());
 			minutes = Integer.parseInt(alarmEnt.getMinutes());
-			//			Message msg = new Message(alarmEnt);
-
-			//			ct.sendMessage(Constants.UPDATE_ALARMS, msg);
 		}else {
 			//new alarm
 			alarmEnt = new AlarmEntity();
@@ -186,7 +186,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 				keepRunning = true;
 				alarmInfoChanged = true;
 
-
 				timeCounter = new Thread(new Runnable(){
 
 					@Override
@@ -224,7 +223,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 		lblHours.setBounds(193, 121, 130, 145);
 		add(lblHours);
 		theme.registerLabelTextColor(lblHours, LabelEnums.ALARM_HOUR);
-
 
 		lblMinutes = new JLabel(String.valueOf(minutes));
 		lblMinutes.setHorizontalAlignment(SwingConstants.CENTER);
@@ -266,7 +264,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 				timeCounter.interrupt();
 			}
 		});
-
 
 		btnHourMinus.setBounds(240, 326, 55, 40);
 		add(btnHourMinus);
@@ -330,22 +327,31 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 				// return true or false according 
 				// to the selection or deselection  of the button 
 				boolean selected = abstractButton.getModel().isSelected();				
-
-				alarmInfoChanged = true;
+				
+				if (btnNotAutoClicked){
+					alarmInfoChanged = true;
+				}
 				if (!selected){
-					tglbtnOnOff.setText("Alarm OFF");  //TODO TGL [roblem !!!!!!!!!!!!!
+					tglbtnOnOff.setText("Alarm OFF");  
 					tglbtnOnOff.setBackground(Color.RED);
+					if (btnSelected != null) {		
+						btnSelected.setName("inactive");
+					}
 
 				}else{
-					tglbtnOnOff.setText("Alarm ON");				
-
+					tglbtnOnOff.setText("Alarm ON");
+					if (btnSelected != null) {				
+						btnSelected.setName("active");
+					}
 				}			
 			}
 		});
 		add(tglbtnOnOff);
 
 		if (alarmEnt != null && alarmEnt.isActive()){
+			btnNotAutoClicked = false;
 			tglbtnOnOff.doClick();
+			btnNotAutoClicked= true;
 		}
 
 		BasicArrowButton back = new BasicArrowButton(BasicArrowButton.WEST);
@@ -403,9 +409,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 			public void actionPerformed(ActionEvent e) {
 
 				try {
-
 					wakeUpAlarmOptions.setBuzzerType(alarmEnt);
-
 					wakeUpAlarmOptions.setVisible(true);
 
 				}catch(Exception ex) {
@@ -440,7 +444,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
-
 		buzzerSelection = (BuzzerSelection)evt.getNewValue();
 
 		logger.log(Level.CONFIG, "PropChange: " + buzzerSelection);
@@ -448,7 +451,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 		btnBuzzer.setText(buzzerSelection.getBuzzer().name());
 
 		alarmInfoChanged = true;
-
 	}
 	private void dayDaysToSelect(AlarmEntity alarm, ThemeHandler theme) {	
 
@@ -460,14 +462,12 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 		JLabel lblDaySunday = new JLabel("S");
 		sunday = new AlarmDayMouseSelector(lblDaySunday, ar.contains(AlarmRepeat.SUNDAY) ? true : false);
 		lblDaySunday.setFont(new Font("Tahoma", Font.BOLD, 16));
-		//		lblDaySunday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDaySunday.addMouseListener(sunday);
 		lblDaySunday.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDaySunday.setBounds(55,85,41,38);
 		theme.registerLabelTextColor(lblDaySunday, LabelEnums.ALARM_SUNDAY);
 
 		JLabel lblDayMonday = new JLabel("M");
-		//		lblDayMonday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayMonday.setFont(new Font("Tahoma", Font.BOLD, 16));
 		monday = new AlarmDayMouseSelector(lblDayMonday, ar.contains(AlarmRepeat.MONDAY) ? true : false);
 		lblDayMonday.addMouseListener(monday);
@@ -476,7 +476,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 		theme.registerLabelTextColor(lblDayMonday, LabelEnums.ALARM_MON);
 
 		JLabel lblDayTue = new JLabel("T");
-		//		lblDayTue.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayTue.setFont(new Font("Tahoma", Font.BOLD, 16));
 		tuesday = new AlarmDayMouseSelector(lblDayTue, ar.contains(AlarmRepeat.TUESDAY) ? true : false);
 		lblDayTue.addMouseListener(tuesday);
@@ -485,7 +484,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 		theme.registerLabelTextColor(lblDayTue, LabelEnums.ALARM_TU);
 
 		JLabel lblDayWed = new JLabel("W");
-		//		lblDayWed.setBorder(new RoundedBorder(Color.BLACK, 40));
 		lblDayWed.setFont(new Font("Tahoma", Font.BOLD, 16));
 		wednesday = new AlarmDayMouseSelector(lblDayWed, ar.contains(AlarmRepeat.WEDNESDAY) ? true : false);
 		lblDayWed.addMouseListener(wednesday);
@@ -495,7 +493,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 
 		JLabel lblDayThu = new JLabel("T");
 		lblDayThu.setFont(new Font("Tahoma", Font.BOLD, 16));
-		//		lblDayThu.setBorder(new RoundedBorder(Color.BLACK, 40));
 		thursday = new AlarmDayMouseSelector(lblDayThu, ar.contains(AlarmRepeat.THURSDAY) ? true : false);
 		lblDayThu.addMouseListener(thursday);
 		lblDayThu.setHorizontalAlignment(SwingConstants.CENTER);
@@ -504,7 +501,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 
 		JLabel lblDayFriday = new JLabel("F");
 		lblDayFriday.setFont(new Font("Tahoma", Font.BOLD, 16));
-		//		lblDayFriday.setBorder(new RoundedBorder(Color.BLACK, 40));
 		friday = new AlarmDayMouseSelector(lblDayFriday, ar.contains(AlarmRepeat.FRIDAY) ? true : false);
 		lblDayFriday.addMouseListener(friday);
 		lblDayFriday.setHorizontalAlignment(SwingConstants.CENTER);
@@ -529,21 +525,22 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 		add(lblDaySat);
 	}	
 	private void alarmSelectButtons() throws ClassNotFoundException, SQLException {
-		final JButton btnOne = new JButton("1");
-		final JButton btnTwo = new JButton("2");
-		final JButton btnThree = new JButton("3");
-		final JButton btnFour = new JButton("4");
-		final JButton btnFive = new JButton("5");
-
-		setSelected(btnOne);
-
-		btnOne.setFont(new Font("Tahoma", Font.BOLD, 20));
-		btnOne.setBounds(235, 406, 50, 40);
-		btnOne.addActionListener(new ActionListener() {
+		
+		JButton btnAlarms[] = new JButton[5];		
+		btnAlarms[0] = new JButton("1");
+		btnAlarms[1] = new JButton("2");
+		btnAlarms[2] = new JButton("3");
+		btnAlarms[3] = new JButton("4");
+		btnAlarms[4] = new JButton("5");
+		
+		btnAlarms[0].setFont(new Font("Tahoma", Font.BOLD, 20));
+		btnAlarms[0].setBounds(235, 406, 50, 40);
+		btnAlarms[0].addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					btnSelected = null;
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
 					}
@@ -551,32 +548,28 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 					if (alarmEnt == null) {
 						alarmEnt = new AlarmEntity();
 						alarmEnt.setAlarmOrder(1);
-					}
+					}				
 
-					if(alarmEnt.isActive()) {
-						btnOne.setName("active");
-					}else {
-						btnOne.setName("disabled");
-					}
-
-					setSelected(btnOne);
-					returnBtnDefault(btnTwo, btnThree, btnFour, btnFive);
+					setSelected(btnAlarms[0]);
+					returnBtnDefault(btnAlarms[1], btnAlarms[2], btnAlarms[3], btnAlarms[4]);
 					populateAlarmFields();
+					
+					btnSelected = btnAlarms[0];
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
 				} 
-
 			}
 		});
-		add(btnOne);
+		add(btnAlarms[0]);
 
-		btnTwo.setFont(new Font("Tahoma", Font.BOLD, 20));
-		btnTwo.setBounds(295, 406, 50, 40);
-		btnTwo.addActionListener(new ActionListener() {
+		btnAlarms[1].setFont(new Font("Tahoma", Font.BOLD, 20));
+		btnAlarms[1].setBounds(295, 406, 50, 40);
+		btnAlarms[1].addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					btnSelected = null;
 					//verify if we need to save the previous alarm
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
@@ -586,162 +579,127 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 					if (alarmEnt == null) {
 						alarmEnt = new AlarmEntity();
 						alarmEnt.setAlarmOrder(2);
-					}
+					}					
 
-					if(alarmEnt.isActive()) {  //TODO
-						btnTwo.setName("active");
-					}else {
-						btnTwo.setName("inactive");
-					}
-
-					setSelected(btnTwo);
-					returnBtnDefault(btnOne, btnThree, btnFour, btnFive);
+					setSelected(btnAlarms[1]);
+					returnBtnDefault(btnAlarms[0], btnAlarms[2], btnAlarms[3], btnAlarms[4]);
 					populateAlarmFields();
+					
+					btnSelected = btnAlarms[1]
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
 				} 
-
 			}
 		});
-		add(btnTwo);
+		add(btnAlarms[1]);
 
-		btnThree.setFont(new Font("Tahoma", Font.BOLD, 20));
-		btnThree.setBounds(353, 406, 50, 40);
-		btnThree.addActionListener(new ActionListener() {
+		btnAlarms[2].setFont(new Font("Tahoma", Font.BOLD, 20));
+		btnAlarms[2].setBounds(353, 406, 50, 40);
+		btnAlarms[2].addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					btnSelected = null;
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
 					}
 
-					setSelected(btnThree);
-					returnBtnDefault(btnTwo, btnOne, btnFour, btnFive);
+					setSelected(btnAlarms[2]);
+					returnBtnDefault(btnAlarms[1], btnAlarms[0], btnAlarms[3], btnAlarms[4]);
 					alarmEnt = sql.loadAlarmByOrderNbr(3);
 					if (alarmEnt == null) {
 						alarmEnt = new AlarmEntity();
 						alarmEnt.setAlarmOrder(3);
 					}
 					populateAlarmFields();
+					
+					btnSelected = btnAlarms[2];
+					
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
 				} 
-
 			}
 		});
-		add(btnThree);
+		add(btnAlarms[2]);
 
-		btnFour.setFont(new Font("Tahoma", Font.BOLD, 20));
-		btnFour.setBounds(413, 406, 50, 40);
-		btnFour.addActionListener(new ActionListener() {
+		btnAlarms[3].setFont(new Font("Tahoma", Font.BOLD, 20));
+		btnAlarms[3].setBounds(413, 406, 50, 40);
+		btnAlarms[3].addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					btnSelected = null;
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
 					}
 
-					setSelected(btnFour);
-					returnBtnDefault(btnTwo, btnThree, btnOne, btnFive);
+					setSelected(btnAlarms[3]);
+					returnBtnDefault(btnAlarms[1], btnAlarms[2], btnAlarms[0], btnAlarms[4]);
 					alarmEnt = sql.loadAlarmByOrderNbr(4);
 					if (alarmEnt == null) {
 						alarmEnt = new AlarmEntity();
 						alarmEnt.setAlarmOrder(4);
 					}
 					populateAlarmFields();
+					
+					btnSelected = btnAlarms[3];
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
 				} 
 			}
 		});
-		add(btnFour);
+		add(btnAlarms[3]);
 
-		btnFive.setFont(new Font("Tahoma", Font.BOLD, 20));
-		btnFive.setBounds(473, 406, 50, 40);
-		btnFive.addActionListener(new ActionListener() {
+		btnAlarms[4].setFont(new Font("Tahoma", Font.BOLD, 20));
+		btnAlarms[4].setBounds(473, 406, 50, 40);
+		btnAlarms[4].addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					btnSelected = null;
 					if (alarmEnt != null && alarmInfoChanged) {
 						saving();
 					}
 
-					setSelected(btnFive);
-					returnBtnDefault(btnTwo, btnThree, btnFour, btnOne);
+					setSelected(btnAlarms[4]);
+					returnBtnDefault(btnAlarms[1], btnAlarms[2], btnAlarms[3], btnAlarms[0]);
 					alarmEnt = sql.loadAlarmByOrderNbr(5);
 					if (alarmEnt == null) {
 						alarmEnt = new AlarmEntity();
 						alarmEnt.setAlarmOrder(5);
 					}
 					populateAlarmFields();
+					
+					btnSelected = btnAlarms[4];
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
 				} 
-
 			}
 		});
-		add(btnFive);
+		add(btnAlarms[4]);
 		
-		//color paint buttons starting from btn2
+		//color paint buttons 
 		List<AlarmEntity> al = sql.loadAllActiveAlarm();
-		if (al.size() > 0) {
-			for(AlarmEntity a : al) {
-				if (a.getAlarmOrder() == 1) {
-					if (a.isActive()) {
-						setBtnActiveInactiveName(btnOne, true);						
-					}else {
-						setBtnActiveInactiveName(btnOne, false);						
-					}
-				}else if (a.getAlarmOrder() == 2) {
-					if (a.isActive()) {
-						btnTwo.setBackground(active);
-						btnTwo.setName("active");
-					}else {
-						btnTwo.setBackground(inActive);
-						btnTwo.setName("inactive");
-					}
-				}else if (a.getAlarmOrder() == 3) {
-					if (a.isActive()) {
-						btnThree.setBackground(active);
-						btnThree.setName("active");
-					}else {
-						btnThree.setBackground(inActive);
-						btnThree.setName("inactive");
-					}
-				}else if (a.getAlarmOrder() == 4) {
-					if (a.isActive()) {
-						btnFour.setBackground(active);
-						btnFour.setName("active");
-					}else {
-						btnFour.setBackground(inActive);
-						btnFour.setName("inactive");
-					}
-				}else if (a.getAlarmOrder() == 5) {
-					if (a.isActive()) {
-						btnFive.setBackground(active);
-						btnFive.setName("active");
-					}else {
-						btnFive.setBackground(inActive);
-						btnFive.setName("inactive");
-					}
-				}
+		for(int i = 0 ; i < 5 ; i ++) {				
+			try {
+				AlarmEntity ae = al.get(i);
+				if (ae.isActive()) {
+					setBtnActiveInactiveName(btnAlarms[i], true);
+					btnAlarms[i].setBackground(active);
+				}else {
+					setBtnActiveInactiveName(btnAlarms[i], false);	
+					btnAlarms[i].setBackground(inActive);
+				}		
+			}catch (IndexOutOfBoundsException ie) {
+				setBtnActiveInactiveName(btnAlarms[i], false);
+				btnAlarms[i].setBackground(inActive);
 			}
-		}else {
-			btnOne.setName("inactive");
-			btnTwo.setBackground(inActive);
-			btnTwo.setName("inactive");
-			btnThree.setBackground(inActive);
-			btnThree.setName("inactive");
-			btnFour.setBackground(inActive);
-			btnFour.setName("inactive");
-			btnFive.setBackground(inActive);
-			btnFive.setName("inactive");
 		}
-
-
+		
+		setSelected(btnAlarms[0]);
 	}
 	private void populateAlarmFields() {
 		hours = Integer.parseInt(alarmEnt.getHour());
@@ -752,9 +710,13 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 
 		if (alarmEnt != null) {
 			if (alarmEnt.isActive() && !tglbtnOnOff.isSelected()){
+				btnNotAutoClicked = false;
 				tglbtnOnOff.doClick();
+				btnNotAutoClicked = true;
 			}else if (!alarmEnt.isActive() && tglbtnOnOff.isSelected()) {
+				btnNotAutoClicked = false;
 				tglbtnOnOff.doClick();
+				btnNotAutoClicked = true;
 			}
 
 			if (alarmEnt.getAlarmSound() != null &&  alarmEnt.getAlarmSound().trim().length() > 0){
@@ -763,7 +725,9 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 
 		}else if (alarmEnt == null) {
 			if (tglbtnOnOff.isSelected()) {
+				btnNotAutoClicked = false;
 				tglbtnOnOff.doClick();
+				btnNotAutoClicked = true;
 			}
 			btnBuzzer.setText(Buzzer.BUZZER.name());
 		}
@@ -797,7 +761,6 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 				}else if (ap.isEqual(DayOfWeek.SATURDAY)) {
 					saturday.select();
 				}
-
 			}
 		}
 
@@ -882,13 +845,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 			alarmEnt.setAlarmRepeat(rp);
 			alarmEnt.setAlarmShutdown(buzzerSelection.getShutdownMin());
 
-			if (tglbtnOnOff.isSelected()){
-				//				lblAlarmIcon.setVisible(true);
+			if (tglbtnOnOff.isSelected()){				
 				alarmEnt.setActive(true);
-
 			}else {
 				alarmEnt.setActive(false);
-				//				lblAlarmIcon.setVisible(false);
 			}
 
 			if (add) {
@@ -908,12 +868,10 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 
 		}
 	}
-
 	@Override
 	public void message(Message message) {
 		if (Constants.ALA_SAY_WEEK_UPD.contentEquals(message.getPropertyName())) {
 			alarmInfoChanged = true;
 		}
-
 	}
 }
