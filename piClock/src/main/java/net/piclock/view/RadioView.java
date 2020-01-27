@@ -24,6 +24,7 @@ import net.piclock.bean.ErrorType;
 import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.RadioSql;
+import net.piclock.enums.IconEnum;
 import net.piclock.enums.LabelEnums;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
@@ -175,8 +176,6 @@ public class RadioView extends JPanel implements MessageListener{
 				try {
 					channel += 1;
 					
-//					logger.log(Level.CONFIG, "CHANNEL up: " + channel);
-
 					if (channel > HIGH_END_FRQ) {
 						channel = LOW_END_FRQ;
 					}
@@ -281,12 +280,12 @@ public class RadioView extends JPanel implements MessageListener{
 		btnDelStation.setForeground(Color.RED);
 		mainPanel.add(btnDelStation, "cell 0 2");
 		
-		btnVolume = new JButton("Vol");
+		btnVolume = new JButton("");
 		btnVolume.setFocusPainted(false);
 		btnVolume.setOpaque(false);
 		btnVolume.setContentAreaFilled(false);
 		btnVolume.setBorderPainted(false);
-		btnVolume.setVisible(false);
+//		btnVolume.setVisible(false);
 		btnVolume.addActionListener(new ActionListener() {
 			
 			@Override
@@ -300,6 +299,7 @@ public class RadioView extends JPanel implements MessageListener{
 			}
 		});
 		mainPanel.add(btnVolume, "cell 1 3,alignx center");
+		t.registerIconColor(btnVolume, IconEnum.VOLUME_ICON_RADIO);
 		btnVolume.setVisible(false);
 		
 		JPanel shutDownPanel = new JPanel();

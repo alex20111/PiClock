@@ -13,6 +13,7 @@ import home.db.DBConnection;
 import home.db.DbClass;
 import home.db.PkCriteria;
 import net.piclock.db.entity.Mp3Entity;
+import net.piclock.main.Constants;
 import net.piclock.server.Mp3GenreFilter;
 
 public class Mp3Sql {
@@ -291,6 +292,6 @@ public class Mp3Sql {
 
 
 	private DBConnection getConnection() throws ClassNotFoundException, SQLException{
-		return  new DBConnection("jdbc:h2:./newTest", "USER", "PADD", DbClass.H2 );
+		return  new DBConnection("jdbc:h2:" +Constants.DB_URL, Constants.DB_USER, Constants.DB_PASS, DbClass.H2 );
 	}
 }

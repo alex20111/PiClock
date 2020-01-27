@@ -8,10 +8,14 @@ import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 
 public class WordWrapCellRenderer extends JTextArea implements TableCellRenderer {
-    WordWrapCellRenderer() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	WordWrapCellRenderer() {
         setLineWrap(true);
         setWrapStyleWord(true);
-//        setAlignmentY(CENTER_ALIGNMENT);
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

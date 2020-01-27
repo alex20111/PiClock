@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import com.pi4j.io.gpio.exception.UnsupportedBoardType;
+import com.pi4j.wiringpi.SoftPwm;
 
 import net.piclock.arduino.ArduinoSerialCmd;
 import net.piclock.arduino.ButtonChangeListener;
+import net.piclock.enums.Light;
 import net.piclock.enums.ScreenType;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
@@ -106,6 +108,12 @@ public class DeviceHandler {
 	public void turnSpeakerOff() throws IllegalStateException, IOException {
 		if (deviceHyperPixel40()) {
 			ard.turnSpeakerOff();
+		}
+	}
+	
+	public void setScreenBrightness(Light light) {
+		if (deviceHyperPixel40()) {
+			SoftPwm.softPwmWrite(24, light.getPwmLevel());
 		}
 	}
 	

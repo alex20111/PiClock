@@ -295,6 +295,8 @@ public class Mp3Handler extends HttpBase{
 				addToDB(new File(mp3Folder + File.separatorChar +  fileName));
 				
 				ct.sendMessage(Constants.RELOAD_FROM_WEB, new Message("Reload"));
+				
+				message = generateSuccessMessage("File successfully uploaded");
 
 			}else{				
 				message = generateErrorMessage("Invalid file format. It needs to be a ZIP or MP3 file");

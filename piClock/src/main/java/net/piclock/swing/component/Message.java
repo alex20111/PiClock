@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
+
 public class Message {
 	
 	private String propertyName = "";
@@ -12,6 +14,7 @@ public class Message {
 	private List messageList;
 	private LocalDateTime dateTime;
 
+	
 	public  Message(List  messageList) {
 		this.messageList = messageList;
 		dateTime = LocalDateTime.now();
@@ -20,6 +23,8 @@ public class Message {
 		this.messageList = Arrays.asList(messageList);
 		dateTime = LocalDateTime.now();
 	}	
+	
+	@SuppressWarnings("unchecked")
 	public  Message(Object messageObject) {
 		this.messageList = new ArrayList();
 		this.messageList.add(messageObject);
@@ -28,6 +33,7 @@ public class Message {
 	public  Message() {
 		dateTime = LocalDateTime.now();
 	}
+	@SuppressWarnings("unchecked")
 	public void addStringToMessageList(String string){
 		if (messageList == null){
 			messageList = new ArrayList<>();
@@ -35,6 +41,7 @@ public class Message {
 		messageList.add(string);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void addIntToMessageList(int nbr){
 		if (messageList == null){
 			messageList = new ArrayList<>();

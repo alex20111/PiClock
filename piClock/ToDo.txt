@@ -1,6 +1,4 @@
-
-
-TODO:
+--------------TODO-------------
 add splash screen  ok (maybe custom) - select 
 add error for other function (Error types to display on screen)  IN progress (Package net.piclock.server - continue on)
 add daily log file creation.. a log for each day
@@ -9,18 +7,27 @@ THEME ICONS and TEXT customizition
 add volume icon in radio view. also there switchin
 finish alarm html page
 split piHandler that it know if using the Pi 7 inch screen or the hyperpixel screen with arduino.  //IN PROGRESS
-color code alarm button to define if active or not (Green for active , red for inactive)
-	
 
-//TEST//
-add shutdown for radio.
-alarm , save when updating days of the week.--NOPE  _RE TEST
+update settings to include LDR values. (as a JDIALOg? )
+Volume alarm radio not being set to ALARM..???  - Volume oiption not being sent to buzzer.. added new option in config to set a property.. continue for RadioView and Main
+add 7 alarms instated of 5 in alarms.
+make clock bigger.
+define volume icon in radio and have muted icon working
+
+
+
+--------------TEST------------
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
 Test add new web page for backgrounds. In progress
-Test Radio on/off function and long term functions
 test alarm html on the server
 
-//DONE test//
+-----------DONE test----------
+Test Radio on/off function and long term functions
+Update LDR worker with new ENUM and test new code for Clock
+add sunrise sunset code to change background even if screen is on.. this will reflect the times of days.
+alarm , save when updating days of the week.--NOPE  _RE TEST
+add shutdown for radio.
+color code alarm button to define if active or not (Green for active , red for inactive)
 re-order icons on the left to have the wifi always at the top.
 test volume location
 finish background html page. 

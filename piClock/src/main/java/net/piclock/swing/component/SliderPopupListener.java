@@ -16,8 +16,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import com.sun.awt.AWTUtilities;
-
 class SliderPopupListener extends MouseAdapter {
 
 	private final JWindow toolTip = new JWindow();

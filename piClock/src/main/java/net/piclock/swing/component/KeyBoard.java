@@ -10,6 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicArrowButton;
 
 public class KeyBoard extends JDialog implements ActionListener {
 	private static final long serialVersionUID = -8054254838392492878L;
@@ -34,6 +35,7 @@ public class KeyBoard extends JDialog implements ActionListener {
 	public KeyBoard(boolean onlyNumbers) {
 		 setUndecorated(true);
 
+		 setLocation(30, 20);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 	
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -98,7 +100,7 @@ public class KeyBoard extends JDialog implements ActionListener {
 			setSize(250, 200);
 			setOnlyNumbersKeyboard();
 		}else {
-			setSize(450, 300);
+			setSize(550, 350);
 			setFullKeyboard();
 		}
 	
@@ -155,7 +157,16 @@ public class KeyBoard extends JDialog implements ActionListener {
 		}
 
 		int idx = totSpecial + 1;
-		btn[idx] =  new JButton("Upper");
+		btn[idx] =  new BasicArrowButton(BasicArrowButton.NORTH){
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+             public Dimension getPreferredSize() {
+                 return new Dimension(btnWidth, btnHeight);
+             }
+         };
+		
 		btn[idx].setPreferredSize(new Dimension(btnWidth,btnHeight));
 		contentPanel.add(btn[idx]);
 		btn[idx].addActionListener(new ActionListener() {
@@ -192,7 +203,7 @@ public class KeyBoard extends JDialog implements ActionListener {
 	}
 	
 	public static void main (String args[]) {
-		KeyBoard k = new KeyBoard(true);
+		KeyBoard k = new KeyBoard(false);
 		k.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		k.setVisible(true);
 		k.setText("12");

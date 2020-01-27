@@ -80,6 +80,9 @@ public class MiniWebServer  {
 			server.addFileFolder("css");
 			server.addFileFolder("js"); 
 			server.addExternalHtmlFolder(EXT_WEB_FOLDER); //if the html pages are loaded externally. This define the root for html pages
+			
+			server.enableSessionManagement();
+			
 			server.startServer();
 
 			createTables();

@@ -10,13 +10,12 @@ import java.util.logging.Logger;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
-import net.piclock.enums.DayNightCycle;
+import net.piclock.enums.LDRCycle;
 import net.piclock.enums.Light;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
-import net.piclock.theme.ThemeHandler;
 import net.piclock.util.FormatStackTrace;
 
 public class LDRStatusWorker implements Runnable{
@@ -24,8 +23,8 @@ public class LDRStatusWorker implements Runnable{
 	private static final Logger logger = Logger.getLogger( LDRStatusWorker.class.getName() );
 
 	private SwingContext ct = SwingContext.getInstance();
-	private DayNightCycle lastCycleStatus = DayNightCycle.NONE;
-	private DayNightCycle cycle = DayNightCycle.NONE;
+	private LDRCycle lastCycleStatus = LDRCycle.NOT_DEFINED;
+	private LDRCycle cycle = LDRCycle.NOT_DEFINED;
 
 	private Light lastLightStatus = Light.VERY_BRIGHT;
 
@@ -37,7 +36,7 @@ public class LDRStatusWorker implements Runnable{
 		handler = PiHandler.getInstance();
 		Light currLight = handler.getLDRstatus();
 
-		cycle = (currLight == Light.DARK ? DayNightCycle.NIGHT : DayNightCycle.DAY); 
+		cycle = (currLight == Light.DARK ? LDRCycle.DARK : LDRCycle.LIGHT); 
 	}
 
 	@Override
@@ -62,10 +61,10 @@ public class LDRStatusWorker implements Runnable{
 					lastLightStatus = lightStatus;
 					if (lightStatus == Light.DARK) {
 						handler.setBrightness(Light.DIM);
-						cycle = DayNightCycle.NIGHT;
+						cycle = LDRCycle.DARK;
 					}else {
 						handler.setBrightness(lightStatus);
-						cycle = DayNightCycle.DAY;
+						cycle = LDRCycle.LIGHT;
 					}
 				}else {
 					cnt++;
@@ -78,14 +77,10 @@ public class LDRStatusWorker implements Runnable{
 				}
 			}
 
-			if (cycle == DayNightCycle.NIGHT ){
+			if (cycle == LDRCycle.DARK ){
 
 				if (cycle != lastCycleStatus) {
-					
-					ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.NIGHT);
-					ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-					themes.fireNightCycle();
-					lastCycleStatus = DayNightCycle.valueOf(cycle.name());
+					lastCycleStatus = LDRCycle.valueOf(cycle.name());
 				}
 				
 				
@@ -108,13 +103,10 @@ public class LDRStatusWorker implements Runnable{
 				}				
 
 
-			}else if (cycle == DayNightCycle.DAY ){
+			}else if (cycle == LDRCycle.LIGHT ){
 
 				if (cycle != lastCycleStatus) {
-					ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, DayNightCycle.DAY);
-					ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-					themes.fireDayCycle();
-					lastCycleStatus = DayNightCycle.valueOf(cycle.name());
+					lastCycleStatus = LDRCycle.valueOf(cycle.name());
 				}
 				
 				if (!handler.isScreenOn()) {

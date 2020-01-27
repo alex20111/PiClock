@@ -585,7 +585,7 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 					returnBtnDefault(btnAlarms[0], btnAlarms[2], btnAlarms[3], btnAlarms[4]);
 					populateAlarmFields();
 					
-					btnSelected = btnAlarms[1]
+					btnSelected = btnAlarms[1];
 				} catch (ClassNotFoundException | SQLException e1) {
 					logger.log(Level.SEVERE, "Error in alarm button", e1);
 				} 

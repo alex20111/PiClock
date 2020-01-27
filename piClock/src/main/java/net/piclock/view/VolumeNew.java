@@ -52,7 +52,11 @@ public class VolumeNew extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public VolumeNew(VolumeConfig config) {
+	public VolumeNew(VolumeConfig config) throws IllegalArgumentException{
+		
+		if (config.getMsgPropertyName() == null || config.getMsgPropertyName().isEmpty()) {
+			throw new IllegalArgumentException("No message property value defined..");
+		}
 
 		ct = SwingContext.getInstance();
 		prefs = (Preferences) ct.getSharedObject(Constants.PREFERENCES);
@@ -65,9 +69,7 @@ public class VolumeNew extends JDialog {
 		
 		setModalityType(ModalityType.APPLICATION_MODAL);
 //		setSize(100, 430);
-		setBounds(390, 0, 115, 400);
-//		setLocation(400, 0);
-//		setLocationRelativeTo(null);		
+		setBounds(390, 0, 115, 400);	
 		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -87,13 +89,13 @@ public class VolumeNew extends JDialog {
 						if (sampleVolThrd != null && sampleVolThrd.isAlive()){
 							sampleVolThrd.interrupt();
 						}
-						ct.sendMessage(Constants.VOLUME_SENT_FOR_CONFIG, new Message(s.getSlider().getValue()));
+						ct.sendMessage(config.getMsgPropertyName(), new Message(s.getSlider().getValue()));
 					}else{
 						try {
 
 							prefs.setLastVolumeLevel(s.getSlider().getValue());
 							PreferencesHandler.save(prefs);
-							ct.sendMessage(Constants.VOLUME_SENT_FOR_CONFIG, new Message(s.getSlider().getValue()));
+							ct.sendMessage(config.getMsgPropertyName(), new Message(s.getSlider().getValue()));
 						}catch (IOException e) {
 							logger.log(Level.SEVERE, "Error while saving volume in preferences", e);
 						}

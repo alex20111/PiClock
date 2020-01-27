@@ -28,6 +28,7 @@ public class SwingContext {
 	@SuppressWarnings("rawtypes")
 	private Map shareableDataMap = null;
 
+	@SuppressWarnings("rawtypes")
 	public SwingContext(){
 		shareableDataMap = new WeakHashMap();
 	}

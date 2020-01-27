@@ -6,14 +6,23 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
+
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
+import net.piclock.enums.DayNightCycle;
+import net.piclock.handlers.PiHandler;
+import net.piclock.main.Constants;
+import net.piclock.swing.component.SwingContext;
+import net.piclock.theme.ThemeHandler;
+import net.piclock.util.FormatStackTrace;
 
 public class Clock implements Runnable {
 	
@@ -38,6 +47,8 @@ public class Clock implements Runnable {
 	private SunriseSunsetCalculator calc;
 	private LocalDateTime sunrise;
 	private LocalDateTime sunset;	
+	
+	private int minutesDiff = 20;
 
 	public Clock(JLabel clockLabel, JLabel weekDateLable){	
 
@@ -48,14 +59,11 @@ public class Clock implements Runnable {
 		Location loc = new Location("45.41117","-75.69812");
 		calc = new SunriseSunsetCalculator(loc, TimeZone.getDefault());
 		Calendar now = Calendar.getInstance();
-		sunrise = convert(calc.getOfficialSunriseCalendarForDate(now));
-		sunset = convert(calc.getOfficialSunsetCalendarForDate(now));
+		sunrise = convert(calc.getOfficialSunriseCalendarForDate(now)).minusMinutes(minutesDiff);
+		sunset = convert(calc.getOfficialSunsetCalendarForDate(now)).plusMinutes(minutesDiff);
 
 	}
-	//IN LDRWorker, change DayNightCycle by LDRCycle , ENUMS OF : LIGHT, DARK, NOT_DEFINED. 
-	//	Remove the theme handler and the fire night/day cycle.
-	//  the dayNightCycle enum will be controled by the sunrise and sunset in CLOCK.
-	// get the Maven library for sunrise sunset
+
 	
 	@Override
 	public void run() {
@@ -67,19 +75,25 @@ public class Clock implements Runnable {
 			if (dt.isAfter(sunrise) && dt.isBefore(sunset) && !currCycle.isDay()){ 
 				logger.config("Day triggered. Sunrise: " + sunrise);
 				currCycle = DayNightCycle.DAY;			
-				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, currCycle);
+				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, currCycle);				
+				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+				themes.fireDayCycle();
+				
+				
 			}else if (  (dt.isAfter(sunset) || dt.isBefore(sunrise) ) && !currCycle.isNight()  ){
-				Logger.config("Night triggered. Sunset: " + sunset);
+				logger.config("Night triggered. Sunset: " + sunset);
 				currCycle = DayNightCycle.NIGHT;
 				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, currCycle);
+				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+				themes.fireNightCycle();
 			}		
 
 			if ( (prevDate == null || dt.truncatedTo(ChronoUnit.MINUTES).isAfter(prevDate.truncatedTo(ChronoUnit.MINUTES)))){
 				timeChanged = true;
 				prevDate = dt;
 				Calendar now = Calendar.getInstance();
-				sunrise = convert(calc.getOfficialSunriseCalendarForDate(now));
-				sunset = convert(calc.getOfficialSunsetCalendarForDate(now));			
+				sunrise = convert(calc.getOfficialSunriseCalendarForDate(now)).minusMinutes(minutesDiff);
+				sunset = convert(calc.getOfficialSunsetCalendarForDate(now)).plusMinutes(minutesDiff);			
 			}
 
 			if(timeChanged){			
@@ -93,7 +107,6 @@ public class Clock implements Runnable {
 				handler.displayTM1637Time(time);
 				firstTimeIn = false;
 			}else if (handler.isScreenOn() && !firstTimeIn){
-				System.out.println("Screen On , Reset value");
 				firstTimeIn = true; //reset value
 			}
 
@@ -102,7 +115,9 @@ public class Clock implements Runnable {
 				timeChanged = false;
 			}	
 		}catch(Throwable r){
-			r.printStackTrace();
+			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.GENERAL, new ErrorInfo(new FormatStackTrace(r).getFormattedException()));
+			logger.log(Level.SEVERE,"Error in clock",r);
 		}
 	}
 

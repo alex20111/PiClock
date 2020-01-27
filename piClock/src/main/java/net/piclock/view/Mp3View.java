@@ -128,7 +128,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		ct = SwingContext.getInstance();
 
 		ct.addMessageChangeListener(Constants.B_VISIBLE_FRM_BUZZ_SEL, this); //this is to make the button visible to selecte a mp3.
-		ct.addMessageChangeListener(Constants.VOLUME_SENT_FOR_CONFIG, this);
+		ct.addMessageChangeListener(Constants.VOLUME_SENT_FOR_CONFIG_MP3, this);
 		ct.addMessageChangeListener(Constants.RELOAD_FROM_WEB, this);
 		ct.addMessageChangeListener(Constants.MUSIC_TOGGELED, this);
 		ct.addMessageChangeListener(Constants.MP3_PLAY_NEXT, this);
@@ -373,6 +373,7 @@ public class Mp3View extends JPanel implements MessageListener {
 			VolumeConfig config = new VolumeConfig(selectedVolume);
 			config.setMp3Id(getMp3IdFromTable());
 			config.setFromAlarm(setVolumeForAlarm);
+			config.setMsgPropertyName(Constants.VOLUME_SENT_FOR_CONFIG_MP3);
 			VolumeNew vol = new VolumeNew(config); 
 
 			vol.setVisible(true);
@@ -668,10 +669,10 @@ public class Mp3View extends JPanel implements MessageListener {
 				loadAllMp3();
 			} catch (ClassNotFoundException | SQLException | IOException e) {
 
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Error loading all mp3", e);
 			}
 
-		}else if(message.getPropertyName().equals(Constants.VOLUME_SENT_FOR_CONFIG)){
+		}else if(message.getPropertyName().equals(Constants.VOLUME_SENT_FOR_CONFIG_MP3)){
 			selectedVolume = (Integer)message.getMessagePerIndex(0);
 			logger.log(Level.CONFIG,"MP screen -volume selected from previous card: " + selectedVolume );
 		}else if (message.getPropertyName().equals(Constants.MUSIC_TOGGELED)) {

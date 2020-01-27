@@ -6,6 +6,7 @@ public class VolumeConfig {
 	private int radioId 		= -1;
 	private int mp3Id 			= -1;
 	private boolean fromAlarm 	= false;
+	private String msgPropertyName = "";
 	
 	public VolumeConfig(){}
 	
@@ -41,6 +42,14 @@ public class VolumeConfig {
 	
 	public boolean hasId(){
 		return radioId > 0 || mp3Id > 0;
+	}
+
+	public String getMsgPropertyName() {
+		return msgPropertyName;
+	}
+
+	public void setMsgPropertyName(String msgPropertyName) {
+		this.msgPropertyName = msgPropertyName;
 	}
 	
 }

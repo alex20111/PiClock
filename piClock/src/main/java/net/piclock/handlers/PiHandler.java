@@ -420,7 +420,7 @@ public class PiHandler {
 	}
 	public void setBrightness(Light light) {
 		logger.log(Level.CONFIG, "setBrightness : " + light + "   pwn: " + light.getPwmLevel());
-		SoftPwm.softPwmWrite(24, light.getPwmLevel());
+		device.setScreenBrightness(light);//SoftPwm.softPwmWrite(24, light.getPwmLevel());
 	}
 	public void shutdown() {
 		setBrightness(Light.VERY_BRIGHT);

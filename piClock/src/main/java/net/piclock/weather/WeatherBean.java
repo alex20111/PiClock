@@ -1,6 +1,5 @@
 package net.piclock.weather;
 
-import java.util.Date;
 import java.util.Optional;
 
 public class WeatherBean {
