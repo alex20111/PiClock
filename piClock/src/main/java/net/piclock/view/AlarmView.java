@@ -451,6 +451,14 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 		btnBuzzer.setText(buzzerSelection.getBuzzer().name());
 
 		alarmInfoChanged = true;
+		if (buzzerSelection.getBuzzer() != Buzzer.BUZZER) {
+		//just do some temp updates until the real save:
+			alarmEnt.setVolume(buzzerSelection.getSelVolume());
+			alarmEnt.setMp3Id(buzzerSelection.getMp3Id());
+			alarmEnt.setRadioId(buzzerSelection.getRadioId());
+			alarmEnt.setAlarmShutdown(buzzerSelection.getShutdownMin());
+			alarmEnt.setAlarmSound(btnBuzzer.getText());
+		}
 	}
 	private void dayDaysToSelect(AlarmEntity alarm, ThemeHandler theme) {	
 

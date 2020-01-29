@@ -52,11 +52,8 @@ public class VolumeNew extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public VolumeNew(VolumeConfig config) throws IllegalArgumentException{
-		
-		if (config.getMsgPropertyName() == null || config.getMsgPropertyName().isEmpty()) {
-			throw new IllegalArgumentException("No message property value defined..");
-		}
+	public VolumeNew(VolumeConfig config) {
+
 
 		ct = SwingContext.getInstance();
 		prefs = (Preferences) ct.getSharedObject(Constants.PREFERENCES);
@@ -66,11 +63,11 @@ public class VolumeNew extends JDialog {
 		setModal(true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setUndecorated(true);
-		
+
 		setModalityType(ModalityType.APPLICATION_MODAL);
-//		setSize(100, 430);
+		//		setSize(100, 430);
 		setBounds(390, 0, 115, 400);	
-		
+
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -89,16 +86,25 @@ public class VolumeNew extends JDialog {
 						if (sampleVolThrd != null && sampleVolThrd.isAlive()){
 							sampleVolThrd.interrupt();
 						}
-						ct.sendMessage(config.getMsgPropertyName(), new Message(s.getSlider().getValue()));
+						if(config.getMsgPropertyName().length() > 0) {
+							ct.sendMessage(config.getMsgPropertyName(), new Message(s.getSlider().getValue()));
+						}
+
 					}else{
 						try {
 
 							prefs.setLastVolumeLevel(s.getSlider().getValue());
 							PreferencesHandler.save(prefs);
-							ct.sendMessage(config.getMsgPropertyName(), new Message(s.getSlider().getValue()));
+							if(config.getMsgPropertyName().length() > 0) {
+								ct.sendMessage(config.getMsgPropertyName(), new Message(s.getSlider().getValue()));
+							}
 						}catch (IOException e) {
 							logger.log(Level.SEVERE, "Error while saving volume in preferences", e);
 						}
+					}
+
+					if(config.getMsgPropertyName().length() > 0) {
+						ct.sendMessage(config.getMsgPropertyName(), new Message(s.getSlider().getValue()));
 					}
 
 					this.setVisible(false);
@@ -143,7 +149,7 @@ public class VolumeNew extends JDialog {
 					@Override
 					public void run() {
 						try {
-							
+
 							if (config.getMp3Id() > 0){
 								Mp3Entity m;
 
@@ -163,7 +169,7 @@ public class VolumeNew extends JDialog {
 								RadioSql sql = new RadioSql();
 								RadioEntity r  = sql.loadRadioById(config.getRadioId());
 								handler.radioSetChannel(r.radioNameToChannel(), s.getSlider().getValue());
-								
+
 								try {
 									Thread.sleep(6000);
 								} catch (InterruptedException e) {
@@ -172,7 +178,7 @@ public class VolumeNew extends JDialog {
 								}
 								handler.radioOff(false);
 							}
-							
+
 						} catch (Exception ex){
 							logger.log(Level.SEVERE, "Error in sampling music", ex);
 						}

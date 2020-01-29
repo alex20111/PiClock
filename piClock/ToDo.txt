@@ -9,19 +9,23 @@ finish alarm html page
 split piHandler that it know if using the Pi 7 inch screen or the hyperpixel screen with arduino.  //IN PROGRESS
 
 update settings to include LDR values. (as a JDIALOg? )
-Volume alarm radio not being set to ALARM..???  - Volume oiption not being sent to buzzer.. added new option in config to set a property.. continue for RadioView and Main
+Finish label colors when night/day refresh
 add 7 alarms instated of 5 in alarms.
-make clock bigger.
 define volume icon in radio and have muted icon working
 
 
-
 --------------TEST------------
+make clock bigger.
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
 Test add new web page for backgrounds. In progress
 test alarm html on the server
 
+
+
 -----------DONE test----------
+Test config keyboard
+(TEST RADIO ALARM) Volume alarm radio not being set to ALARM..???  - Volume oiption not being sent to buzzer.. added new option in config to set a property.. continue for RadioView and Main
+Config Refresh!!!!!
 Test Radio on/off function and long term functions
 Update LDR worker with new ENUM and test new code for Clock
 add sunrise sunset code to change background even if screen is on.. this will reflect the times of days.

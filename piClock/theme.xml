@@ -36,8 +36,13 @@
 				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
-				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
-				
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>				
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -93,6 +98,12 @@
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -148,6 +159,12 @@
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -203,6 +220,12 @@
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -258,6 +281,12 @@
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -313,6 +342,12 @@
 				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">

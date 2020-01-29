@@ -594,12 +594,13 @@ public class PiHandler {
 
 		if (!radioOn) {
 			toggleMusicSystem(true, false);
-			//turning on speakers
-			handleSpeakers(true);
 
 			adjustVolume(volume);
 
 			device.turnOnRadio();
+
+			//turning on speakers
+			handleSpeakers(true);
 			
 			radioThread = new Thread(new Runnable() {
 
@@ -647,10 +648,11 @@ public class PiHandler {
 		
 		if (radioOn) {
 			//do not turn off speakers if the request is comming from a toggle
+			device.turnOffRadio();
+			
 			if (!isToggelingBetweenRadioAndMp3) {
 				handleSpeakers(false);
 			}
-			device.turnOffRadio();
 		}
 		
 		radioOn = false;

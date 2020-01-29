@@ -179,7 +179,6 @@ public class Mp3View extends JPanel implements MessageListener {
 		table.addMouseMotionListener(scroll); 		
 
 		TableColumnModel tcm = table.getColumnModel();
-		//		tcm.removeColumn( tcm.getColumn(4) );//TODO - re-enable
 
 		tcm.getColumn(1).setCellRenderer( centerRenderer );
 		tcm.getColumn(2).setCellRenderer( centerRenderer );

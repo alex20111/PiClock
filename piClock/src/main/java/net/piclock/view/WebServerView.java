@@ -14,10 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
+import net.piclock.enums.LabelEnums;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
 import net.piclock.server.MiniWebServer;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.theme.ThemeHandler;
 
 public class WebServerView extends JPanel {
 
@@ -35,6 +37,8 @@ public class WebServerView extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 		setOpaque(false);
 		
+		ThemeHandler t = (ThemeHandler) SwingContext.getInstance().getSharedObject(Constants.THEMES_HANDLER);
+		
 		JPanel titlePanel = new JPanel();
 		titlePanel.setOpaque(false);
 		FlowLayout flowLayout = (FlowLayout) titlePanel.getLayout();
@@ -44,6 +48,7 @@ public class WebServerView extends JPanel {
 
 		JLabel lblWebServer = new JLabel("Web  Server");
 		lblWebServer.setFont(new Font("Tahoma", Font.BOLD, 35));
+		t.registerLabelTextColor(lblWebServer, LabelEnums.WSERVER_TITLE);
 		titlePanel.add(lblWebServer);
 
 		JPanel bodyPanel = new JPanel();
@@ -52,6 +57,7 @@ public class WebServerView extends JPanel {
 		bodyPanel.setLayout(new MigLayout("", "[][][][][][grow]", "[][][][][][][grow][]"));
 
 		JLabel lblStatus = new JLabel("Status:");
+		t.registerLabelTextColor(lblStatus, LabelEnums.WSERVER_STATUS);
 		lblStatus.setFont(new Font("Tahoma", Font.BOLD, 16));
 		bodyPanel.add(lblStatus, "cell 1 1,alignx right");
 
@@ -60,10 +66,12 @@ public class WebServerView extends JPanel {
 		bodyPanel.add(lblStatusresult, "cell 2 1 3 1,alignx left");
 
 		JLabel lblAddress = new JLabel("Address: ");
+		t.registerLabelTextColor(lblAddress, LabelEnums.WSERVER_ADDRESS);
 		lblAddress.setFont(new Font("Tahoma", Font.BOLD, 16));
 		bodyPanel.add(lblAddress, "cell 1 2,alignx right");
 
 		lblAddressTxt = new JLabel("");
+		t.registerLabelTextColor(lblAddressTxt, LabelEnums.WSERVER_ADDRESS_TXT);
 		lblAddressTxt.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		bodyPanel.add(lblAddressTxt, "cell 2 2 2 1,alignx left");
 

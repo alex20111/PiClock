@@ -319,6 +319,21 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 		keyBoard = new KeyBoard(false);
 //		keyBoard.setLocationRelativeTo(null);
 	}
+	public void load() {
+		Preferences prefs = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+
+		if (prefs.getWifi() != null && prefs.getWifi().length() > 0){
+			wifiNames.removeAllItems();
+			wifiNames.addItem("Disable Wifi");
+			wifiNames.addItem(prefs.getWifi());
+			wifiNames.setSelectedIndex(1);
+		}
+		
+		txtWifiPass.setText(prefs.getWifiPass());
+		
+		chckbxTurnOffWIFI.setSelected(prefs.isWifiOff());
+		chckbxTurnOffScr.setSelected(prefs.isAutoOffScreen());
+	}
 	private void setConnectOrigValue(){
 		btnSave.setEnabled(true);
 		btnCancel.setEnabled(true);

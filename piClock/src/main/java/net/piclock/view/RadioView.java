@@ -105,6 +105,7 @@ public class RadioView extends JPanel implements MessageListener{
 
 		JLabel lblStations = new JLabel("Stations");
 		lblStations.setFont(new Font("Tahoma", Font.BOLD, 13));
+		t.registerLabelTextColor(lblStations, LabelEnums.RADIO_STATIONS);
 		mainPanel.add(lblStations, "cell 0 0");
 
 		stationList = new JList<>(m);
@@ -285,7 +286,7 @@ public class RadioView extends JPanel implements MessageListener{
 		btnVolume.setOpaque(false);
 		btnVolume.setContentAreaFilled(false);
 		btnVolume.setBorderPainted(false);
-//		btnVolume.setVisible(false);
+		btnVolume.setVisible(false);
 		btnVolume.addActionListener(new ActionListener() {
 			
 			@Override
@@ -293,6 +294,7 @@ public class RadioView extends JPanel implements MessageListener{
 				 
 				logger.log(Level.CONFIG, "Loading volume : ---> " + prefs.getLastVolumeLevel());
 				VolumeConfig config = new VolumeConfig(prefs.getLastVolumeLevel());
+				config.setMsgPropertyName("");
 				VolumeNew vol = new VolumeNew(config);
 				vol.setVisible(true);
 				
@@ -300,7 +302,7 @@ public class RadioView extends JPanel implements MessageListener{
 		});
 		mainPanel.add(btnVolume, "cell 1 3,alignx center");
 		t.registerIconColor(btnVolume, IconEnum.VOLUME_ICON_RADIO);
-		btnVolume.setVisible(false);
+
 		
 		JPanel shutDownPanel = new JPanel();
 		shutDownPanel.setOpaque(false);
@@ -308,6 +310,7 @@ public class RadioView extends JPanel implements MessageListener{
 		shutDownPanel.setLayout(new MigLayout("", "[grow][][][]", "[]"));
 		
 		JLabel sleep = new JLabel("Auto Off:");
+		t.registerLabelTextColor(sleep, LabelEnums.RADIO_SLEEP);
 		shutDownPanel.add(sleep, "cell 1 0");
 		sleep.setFont(new Font("Tahoma", Font.BOLD, 18));
 		timeToSleep = new JComboBox<>();

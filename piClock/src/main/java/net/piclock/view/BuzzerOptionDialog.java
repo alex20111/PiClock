@@ -89,7 +89,9 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 		
 		setSize( 450, 300);
 		
-		setLocationRelativeTo(null);
+//		setLocationRelativeTo(null);
+		setLocation(200, 20);
+		
 		
 		ct.addMessageChangeListener(Constants.MP3_INFO, this);
 		ct.addMessageChangeListener(Constants.VOLUME_SENT_FOR_CONFIG_RADIO, this);
@@ -148,6 +150,7 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 							if(radioCmb.getSelectedIndex() > -1) {
 								radioSelectedId = ((RadioEntity)radioCmb.getSelectedItem()).getId();
 							}
+							lblMp3TrkName.setText("");
 						}else {
 							radioSelectedId = -1;
 							tglbtnBuzzer.doClick();
@@ -415,9 +418,8 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 	}
 	@Override
 	public void message(Message message) {
-		if(message.getPropertyName().equals(Constants.MP3_INFO)){
-
-			logger.log(Level.CONFIG,"Message in BuzzerOption", message);
+		logger.log(Level.CONFIG,"Message in BuzzerOption: "+ message);
+		if(message.getPropertyName().equals(Constants.MP3_INFO)){			
 			int success = (int)message.getMessagePerIndex(0);
 			if (success == 0){
 				noMp3Selected = false;			
@@ -429,7 +431,7 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 				noMp3Selected = true;
 			}
 		}else if (message.getPropertyName().equals(Constants.VOLUME_SENT_FOR_CONFIG_RADIO)) {
-			//TODO
+			lastVolume = (Integer)message.getFirstMessage();
 		}
 
 	}

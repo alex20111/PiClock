@@ -115,7 +115,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	private WeatherForecastView forecastView;
 	private WeatherConfigView  weatherConfig;
 	private WeatherAlertView weatherAlertView;
-//	private RadioStationsView radioStationsView;
+	private ConfigView configView;
 	private AlarmView av;
 	private WebServerView webServerView;
 	private Mp3View mp3View;
@@ -249,14 +249,14 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		timePanel.setOpaque(false);
 		
 		clockLabel = new JLabel("00:00");
-		clockLabel.setFont(new Font("Courier New", Font.BOLD, 120));
+		clockLabel.setFont(new Font("Courier New", Font.BOLD, 140));
 		themes.registerLabelTextColor(clockLabel, LabelEnums.CLOCK);
-		timePanel.add(clockLabel, "cell 2 2,alignx center,aligny center");
+		timePanel.add(clockLabel, "cell 0 2 4 1,alignx center,aligny center");
 		
 		weekDateLable = new JLabel("Fri, dec 21");
 		themes.registerLabelTextColor(weekDateLable, LabelEnums.DAY_OF_WEEK);
 		weekDateLable.setFont(new Font("Tahoma", Font.BOLD, 40));
-		timePanel.add(weekDateLable, "cell 2 3,alignx center,aligny top");
+		timePanel.add(weekDateLable, "cell 0 3 4 1,alignx center,aligny top");
 		lblWebserverIcon = new JLabel();
 		lblWebserverIcon.setVisible(false);
 //		timePanel.add(lblWebserverIcon, "cell 0 5");
@@ -302,7 +302,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 				logger.log(Level.CONFIG, "Loading volume : ---> " + prefs.getLastVolumeLevel());
 				VolumeConfig config = new VolumeConfig(prefs.getLastVolumeLevel());
 				VolumeNew vol = new VolumeNew(config);
-//				Volume vol = new Volume(btnVolume, IconEnum.VOLUME_ICON, IconEnum.VOLUME_MUTED);
+				
 				vol.setVisible(true);
 				
 			}
@@ -329,10 +329,10 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		JPanel weatherPanel = new JPanel();
 		mainPanel.add(weatherPanel, BorderLayout.NORTH);
-		weatherPanel.setLayout(new MigLayout("", "[grow 14][220px,left][][50px][80px][80px][grow 14]", "[]"));
+		weatherPanel.setLayout(new MigLayout("", "[grow 14][220px,left][][50px][80px][80px][grow 14]", "[70px]"));
 		weatherPanel.setOpaque(false);
 		
-		lblCurrentweather = new JLabel("<html><div style='width: 100px;word-wrap: break-word;text-align: center'>Not available</html>");
+		lblCurrentweather = new JLabel("<html><div style='width: 200px;word-wrap: break-word;text-align: center'>Not available</html>");
 		lblCurrentweather.setFont(new Font("Tahoma", Font.BOLD, 30));
 		lblCurrentweather.setForeground(Color.WHITE);
 		lblCurrentweather.addMouseListener(new MouseAdapter(){
@@ -343,7 +343,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		});
 		
 		themes.registerLabelTextColor(lblCurrentweather, LabelEnums.CURRENT_WEATHER);
-		weatherPanel.add(lblCurrentweather, "cell 1 0,alignx center");
+		weatherPanel.add(lblCurrentweather, "cell 0 0 2 1,alignx right");
 		
 		lblWeatherIcon = new JLabel("--:--",weatherNaIcon,  SwingConstants.CENTER);
 		lblWeatherIcon.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -522,7 +522,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		cardsPanel.add(webServerView, Constants.WEB_SERVER_VIEW);
 		
 		//settings
-		ConfigView configView = new ConfigView();
+		configView = new ConfigView();
 		cardsPanel.add(configView, Constants.CONFIG_VIEW);
 		
 		//options menu popups
@@ -697,6 +697,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try{
+					configView.load();  
 					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.CONFIG_VIEW);
