@@ -10,8 +10,6 @@ split piHandler that it know if using the Pi 7 inch screen or the hyperpixel scr
 
 update settings to include LDR values. (as a JDIALOg? )
 Finish label colors when night/day refresh
-add 7 alarms instated of 5 in alarms.
-define volume icon in radio and have muted icon working
 
 
 --------------TEST------------
@@ -23,6 +21,8 @@ test alarm html on the server
 
 
 -----------DONE test----------
+add 7 alarms instated of 5 in alarms.
+define volume icon in radio and have muted icon working
 Test config keyboard
 (TEST RADIO ALARM) Volume alarm radio not being set to ALARM..???  - Volume oiption not being sent to buzzer.. added new option in config to set a property.. continue for RadioView and Main
 Config Refresh!!!!!

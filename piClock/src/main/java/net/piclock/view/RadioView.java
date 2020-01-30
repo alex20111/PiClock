@@ -125,7 +125,7 @@ public class RadioView extends JPanel implements MessageListener{
 		nowPlayingTitlepanel.setLayout(new MigLayout("", "[grow][center][][grow]", "[][][][50px][40px]"));
 		nowPlayingTitlepanel.setOpaque(false);
 
-		JLabel lblNowPlaying = new JLabel("Now Playing");
+		JLabel lblNowPlaying = new JLabel("Now Playing"); //TODO add in themes
 		lblNowPlaying.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		nowPlayingTitlepanel.add(lblNowPlaying, "cell 0 0 4 1,alignx center");
 

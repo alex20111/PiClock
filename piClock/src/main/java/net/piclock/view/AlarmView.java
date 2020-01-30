@@ -838,13 +838,13 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 	private void returnBtnDefault(JButton btnAlarms[], JButton btnToSkip) { //exclude
 		for (int i = 0 ; i < btnAlarms.length ; i++){
 			if (!btnAlarms[i].equals(btnToSkip)){
-				btn.setForeground(null);
-				if ("active".equals(btn.getName())) {
-					btn.setBackground(Color.GREEN);
+				btnAlarms[i].setForeground(null);
+				if ("active".equals(btnAlarms[i].getName())) {
+					btnAlarms[i].setBackground(Color.GREEN);
 				}else {
-					btn.setBackground(Color.RED);
+					btnAlarms[i].setBackground(Color.RED);
 				}
-				btn.setBorder(null);
+				btnAlarms[i].setBorder(null);
 			}
 		}
 	}

@@ -104,6 +104,9 @@ public class Clock implements Runnable {
 			}
 
 			if ( !handler.isScreenOn() && ( timeChanged || firstTimeIn) ){	
+				if (time == null || time.trim().length() == 0) {
+					time = dt.format(shortDt);
+				}
 				handler.displayTM1637Time(time);
 				firstTimeIn = false;
 			}else if (handler.isScreenOn() && !firstTimeIn){
