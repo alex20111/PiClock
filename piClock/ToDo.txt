@@ -8,6 +8,10 @@ add volume icon in radio view. also there switchin
 finish alarm html page
 split piHandler that it know if using the Pi 7 inch screen or the hyperpixel screen with arduino.  //IN PROGRESS
 
+when weather error, try it again 3 times before generating an error.. (pause and then try);
+
+Create a java Pi4J to test on the pi4
+
 update settings to include LDR values. (as a JDIALOg? )
 Finish label colors when night/day refresh
 
