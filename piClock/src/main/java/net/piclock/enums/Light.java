@@ -1,17 +1,32 @@
 package net.piclock.enums;
 
 public enum Light {
-	DARK(255,243, 0), DIM(236,200, 8), LIGHT(192,126, 15), BRIGHT(118,77, 50), VERY_BRIGHT(69,0, 100), GREY_ZONE(0,0, 100), VERY_DIM(0,0,3); //very dim is only used when to turn the monitor back on with button.
+	DARK(255,243, 0,1),
+	DIM(236,200, 8, 10),
+	LIGHT(192,126, 15 , 130),
+	BRIGHT(118,77, 50, 210),
+	VERY_BRIGHT(69,0, 100, 255),
+	GREY_ZONE(0,0, 100, 255),
+	VERY_DIM(0,0,3, 5); //very dim is only used when to turn the monitor back on with button.
 	
 	private int ldrHighLevel = -1;
 	private int ldrLowLevel = -1;
 	
 	private int pwmLevel = -1;
+	private int piTchScreenBrightness = -1;
 	
-	private Light (int highLevel, int lowLevel, int pwmLevel){
+	/**
+	 * 
+	 * @param highLevel - high level for brightness detection
+	 * @param lowLevel - low level for brightness detection
+	 * @param pwmLevel - PWM level for Hyperpixel brightness
+	 * @param piTchScreenBrightness - backlight brightness for pi touch screen.
+	 */
+	private Light (int highLevel, int lowLevel, int pwmLevel, int piTchScreenBrightness){
 		ldrHighLevel = highLevel;
 		ldrLowLevel = lowLevel;
 		this.pwmLevel = pwmLevel;
+		this.piTchScreenBrightness = piTchScreenBrightness;
 	}
 	
 	public int getLdrHighLevel(){
@@ -22,6 +37,9 @@ public enum Light {
 	}
 	public int getPwmLevel(){
 		return pwmLevel;
+	}
+	public int getPiTchScreenBrightness() {
+		return piTchScreenBrightness;
 	}
 	public boolean isDayLight() {
 		return this == Light.BRIGHT || this == Light.VERY_BRIGHT || this == Light.DIM || this == Light.LIGHT;

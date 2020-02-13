@@ -107,14 +107,14 @@ public class AlarmView extends JPanel implements PropertyChangeListener, Message
 	 */
 	public AlarmView(final JPanel cardsPanel, final Preferences prefs, final JLabel lblAlarm) throws ClassNotFoundException, SQLException, IOException, UnsupportedBusNumberException, UnsupportedBoardType, InterruptedException {		
 		logger.config("Starting alarmView");
+		
+		sql = new AlarmSql();
+		sql.CreateAlarmTable();
 
 		lblAlarmIcon = lblAlarm;
 
 		tm = ThreadManager.getInstance();
 		tm.startAlarm();
-
-		sql = new AlarmSql();
-		sql.CreateAlarmTable();
 
 		alarmEnt = sql.loadAlarmByOrderNbr(1);
 

@@ -44,6 +44,8 @@ public class DeviceHandler {
 		
 		if (deviceHyperPixel40() ) {
 			ard.addButtonListener(btn);
+		}else if(devicePiScreen()) {
+			//GPIO listener
 		}
 		
 	}
@@ -51,6 +53,8 @@ public class DeviceHandler {
 		
 		if (deviceHyperPixel40()) {
 			ard.writeTime(time);
+		}else if (devicePiScreen()) {
+			//TODO , maybe in loop, but must find a way to turn off program
 		}
 	}
 	
@@ -59,6 +63,8 @@ public class DeviceHandler {
 		
 		if (deviceHyperPixel40()) {
 			ldrValue =  ard.readLdr();
+		}else if (devicePiScreen()) {
+			ldrValue = piScreen.getVisibleLight();
 		}
 		
 		return ldrValue;
@@ -67,6 +73,8 @@ public class DeviceHandler {
 	public void turnOffTimeScreen() throws IllegalStateException, IOException {
 		if (deviceHyperPixel40()) {
 			ard.timeOff();
+		}else if(devicePiScreen()) {
+			piScreen.time(true);
 		}
 	}
 	
@@ -114,6 +122,8 @@ public class DeviceHandler {
 	public void setScreenBrightness(Light light) {
 		if (deviceHyperPixel40()) {
 			SoftPwm.softPwmWrite(24, light.getPwmLevel());
+		}else if (devicePiScreen()) {
+			piScreen.setScreenBrightness(light);
 		}
 	}
 	

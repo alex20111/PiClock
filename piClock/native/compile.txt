@@ -1,0 +1,3 @@
+gcc 2591_pi_2.cpp 2591a.cpp -lwiringPi -o 2591
+
+gcc TM1637-TEST.c TM1637.c -lwiringPi -o tmDisplay

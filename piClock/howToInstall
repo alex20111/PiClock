@@ -1,5 +1,15 @@
 ON PI:
 
+install JAVA 8:(https://www.raspberrypi.org/forums/viewtopic.php?t=248561)
+sudo apt update
+sudo apt install openjdk-8-jdk
+
+pi4j:
+https://pi4j.com/1.2/download.html
+
+wiringPi:
+http://wiringpi.com/download-and-install/
+
 Install hyperpixel:
 https://github.com/pimoroni/hyperpixel4/tree/libinput
 
