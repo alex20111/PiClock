@@ -17,6 +17,14 @@ public class PiScreenHandler {
 	private String ldrFile = "home/pi/native/TSL2561/tslReading.rdr";
 	private Path  ldrFilePath = null;
 	
+	private List<ButtonChangeListener> btnListeners = new ArrayList<ButtonChangeListener>();	
+	
+	public PiScreenHandler(){
+		 
+		init();
+	}
+	
+	
 	public void setScreenBrightness(Light light) {
 
 
@@ -62,8 +70,34 @@ public class PiScreenHandler {
 	public void time(boolean ON) {
 		System.out.println("Setting time");
 	}
-	
+	public void addButtonListeners(){
+		btnListeners.add(btn);
+	}
+	private void init(){
+		final GpioController gpio = GpioFactory.getInstance();
+       		 // provision gpio pin #02 as an input pin with its internal pull down resistor enabled
+       		final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(RaspiPin.GPIO_02, PinPullResistance.PULL_DOWN);
+		
+		myButton.setDebounce(100);
 
+        // create and register gpio pin listener
+        myButton.addListener(new GpioPinListenerDigital() {
+            @Override
+            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+		    ButtonState state = event.getState().isHigh() ? ButtonState.HIGH : ButtonState.LOW;
+        	fireBtnChangeEvent(state);
+            }
+        });
+	}
+		
+	private synchronized void fireBtnChangeEvent(ButtonState buttonState) {
+
+		Iterator<ButtonChangeListener> listeners = btnListeners.iterator();
+		while( listeners.hasNext() ) {
+			ButtonChangeListener bl =  (ButtonChangeListener) listeners.next();
+			bl.stateChanged( buttonState );
+		}
+	}
 	public static void main(String args[]) throws InterruptedException,  IOException {
 
 		System.out.println("Starting");
