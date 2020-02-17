@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 	exit(1);
   }
   
-  int mode = atoi(argv[0]);  
+  int mode = atoi(argv[1]);  
   
   if (mode == 1){
   

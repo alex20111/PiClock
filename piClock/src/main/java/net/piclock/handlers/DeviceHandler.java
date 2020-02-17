@@ -45,7 +45,7 @@ public class DeviceHandler {
 		if (deviceHyperPixel40() ) {
 			ard.addButtonListener(btn);
 		}else if(devicePiScreen()) {
-			//GPIO listener
+			piScreen.addButtonListeners(btn);
 		}
 		
 	}
