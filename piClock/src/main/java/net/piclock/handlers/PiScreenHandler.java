@@ -22,7 +22,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
 import net.piclock.enums.Light;
-import net.piclock.nativeImpl.tsl2591.TSL2591;
+import net.piclock.nativeImpl.TSL2591;
 
 public class PiScreenHandler {
 	

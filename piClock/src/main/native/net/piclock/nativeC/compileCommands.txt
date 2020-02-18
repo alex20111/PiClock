@@ -1,0 +1,35 @@
+to create a linux library (.so file)
+
+
+1 create a folder on the target system. Ex: /home/pi/native
+2 copy the following files to the PI : 
+  net_piclock_nativeImpl_TSL2591.cpp,
+  net_piclock_nativeImpl_TSL2591.h,
+  2591a.cpp,
+  2591.h
+     
+execute the following commands below:  (MORE TO COME FOR MULTIPLE NATIVE)
+
+ 
+ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-armhf
+
+javah -jni net.piclock.nativeImpl.TSL2591
+
+To compile C++
+g++ -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux net_piclock_nativeImpl_TSL2591.cpp 2591a.cpp -o libpiclocknative.so -lwiringPi
+
+To compile C:
+gcc -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux -fPIC net_piclock_nativeImpl_Tm1637.c TM1637.c -o libpiclocknative.so -lwiringPi
+
+
+
+excute - only to test
+sudo java -Djava.library.path=/home/pi/java/net/piclock/nativeImpl/ net.piclock.nativeImpl.TSL2591
+
+
+Created in C++:
+tsl2951
+Radip
+
+Created in C:
+Tm1637

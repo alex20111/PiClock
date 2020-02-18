@@ -7,8 +7,9 @@
 
 //#define clk 4//pins definitions for TM1637 and can be changed to other ports    
 //#define dio 5
+//TM1637 tm1;
 
-boolean isPointActive = false;
+
 
 /*
  * Class:     net_piclock_nativeImpl_Tm1637
@@ -23,8 +24,8 @@ JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_Tm1637_init
      return 1;
   	}
 
-  	pinMode(clk,INPUT);
-  	pinMode(dio,INPUT);
+  	pinMode((int)clk,INPUT);
+  	pinMode((int)dio,INPUT);
   	delay(200);
   	TM1637_init((int)clk,(int)dio);
   	TM1637_set(BRIGHT_TYPICAL,0x40,0xc0);//BRIGHT_TYPICAL = 2,BRIGHT_DARKEST = 0,BRIGHTEST = 7;
@@ -40,10 +41,7 @@ JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_Tm1637_init
 JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_Tm1637_displayTime
   (JNIEnv* env, jobject obj, jint hour, jint min, jint format){
   
-  if (!isPointActive){
-  	TM1637_point(POINT_ON);
-  	isPointActive = true;
-  }
+
   
   
   
@@ -103,13 +101,7 @@ JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_Tm1637_displayNumberPos
 JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_Tm1637_displayPoint
   (JNIEnv* env, jobject obj, jboolean pointOn){
   
-  	if (pointOn && !isPointActive){
-  		TM1637_point(POINT_ON);
-  		isPointActive = true;
-  	}else if (isPointActive){
-  		TM1637_point(POINT_OFF);
-  		isPointActive = false;
-  	}    
+ 
   }
 /*
  * Class:     net_piclock_nativeImpl_Tm1637

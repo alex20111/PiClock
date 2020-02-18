@@ -1,6 +1,6 @@
 #include <jni.h>
 #include "2591a.h"
-#include "net_piclock_nativeImpl_tsl2591_TSL2591.h"
+#include "net_piclock_nativeImpl_TSL2591.h"
 #include <iostream>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -19,7 +19,7 @@ void read(){
  * Signature: (I)V
  */
  					   
-JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_init
+JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_TSL2591_init
   (JNIEnv* env, jobject obj, jint port){
   
     wiringPiSetup();
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_init
  * Method:    getFullSpectrum
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_getFullSpectrum
+JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_TSL2591_getFullSpectrum
   (JNIEnv* env, jobject obj){
   
 	
@@ -57,7 +57,7 @@ JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_getFullSpectr
  * Method:    getInfrared
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_getInfrared
+JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_TSL2591_getInfrared
   (JNIEnv* env, jobject obj){
   	uint16_t ir;
     uint32_t visible_and_ir;
@@ -75,7 +75,7 @@ JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_getInfrared
  * Method:    getVisible
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_getVisible
+JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_TSL2591_getVisible
   (JNIEnv* env, jobject obj){
   
     	uint16_t full,ir;
@@ -100,7 +100,7 @@ JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_getVisible
  * Method:    getLux
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_getLux
+JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_TSL2591_getLux
   (JNIEnv* env, jobject obj){
   
   	uint16_t full,ir;
@@ -123,7 +123,7 @@ JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_getLux
  * Method:    setGain
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_setGain
+JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_TSL2591_setGain
   (JNIEnv* env, jobject obj, jint gain){
   
   tsl2591Gain_t cGain = static_cast<tsl2591Gain_t>(gain);  
@@ -137,7 +137,7 @@ JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_setGain
  * Method:    setIntegrationTime
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_tsl2591_TSL2591_setIntegrationTime
+JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_TSL2591_setIntegrationTime
   (JNIEnv* env, jobject obj, jint intg){
   
   tsl2591IntegrationTime_t cIntg = static_cast<tsl2591IntegrationTime_t>(intg);

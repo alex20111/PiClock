@@ -1,4 +1,4 @@
-package net.piclock.nativeImpl.tsl2591;
+package net.piclock.nativeImpl;
 
 import java.io.FileWriter;
 import java.io.IOException;
