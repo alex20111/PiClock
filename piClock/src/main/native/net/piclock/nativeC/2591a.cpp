@@ -47,6 +47,7 @@
 
 /**************************************************************************/
 
+#include <stdlib.h>
 #include "2591a.h"
 
 Adafruit_TSL2591::Adafruit_TSL2591(int32_t sensorID, tsl2591IntegrationTime_t intg, tsl2591Gain_t  gain) 
@@ -186,9 +187,9 @@ tsl2591IntegrationTime_t Adafruit_TSL2591::getTiming()
   return _integration;
 }
 
-uint32_t Adafruit_TSL2591::calculateLux(uint16_t ch0, uint16_t ch1)
+float Adafruit_TSL2591::calculateLux(uint16_t ch0, uint16_t ch1)
 {
-  uint16_t atime, again;
+  float atime, again;
   float    cpl, lux1, lux2, lux;
   uint32_t chan0, chan1;
 
@@ -196,7 +197,7 @@ uint32_t Adafruit_TSL2591::calculateLux(uint16_t ch0, uint16_t ch1)
   if ((ch0 == 0xFFFF) | (ch1 == 0xFFFF))
   {
     // Signal an overflow
-    return 0;
+    return -1;
   }
 
   // Note: This algorithm is based on preliminary coefficients
@@ -251,20 +252,25 @@ uint32_t Adafruit_TSL2591::calculateLux(uint16_t ch0, uint16_t ch1)
   
 //printf("ch0= %zu   ch1=%zu\n",ch0,ch1);
 
-  lux1 = ( (float)ch0 - (TSL2591_LUX_COEFB * (float)ch1) ) / cpl;
-  lux2 = ( ( TSL2591_LUX_COEFC * (float)ch0 ) - ( TSL2591_LUX_COEFD * (float)ch1 ) ) / cpl;
+  //lux1 = ( (float)ch0 - (TSL2591_LUX_COEFB * (float)ch1) ) / cpl;
+  //lux2 = ( ( TSL2591_LUX_COEFC * (float)ch0 ) - ( TSL2591_LUX_COEFD * (float)ch1 ) ) / cpl;
 
 //  printf("Lux1= %f   Lux2=%f\n",lux1,lux2); 
   // The highest value is the approximate lux equivalent
-  lux = lux1 > lux2 ? lux1 : lux2;
+  //lux = lux1 > lux2 ? lux1 : lux2;
 
+  // Alternate lux calculation 1
+  // See: https://github.com/adafruit/Adafruit_TSL2591_Library/issues/14
+  lux = ( ((float)ch0 - (float)ch1 )) * (1.0F - ((float)ch1/(float)ch0) ) / cpl;
+  // Alternate lux calculation 2
+  //lux = ( (float)ch0 - ( 1.7F * (float)ch1 ) ) / cpl;
   // Signal I2C had no errors
-  return (uint32_t)lux;
+  return lux;
 }
 
 uint32_t Adafruit_TSL2591::getFullLuminosity (int fd)
 {
-//printf("getFullLuminosity\n");
+
   if (!_initialized)
   {
     if (!begin(fd))
@@ -275,20 +281,22 @@ uint32_t Adafruit_TSL2591::getFullLuminosity (int fd)
 
   // Enable the device
   enable(fd);
-//printf ("getFullLuminosity: device enabled\n");
   // Wait x ms for ADC to complete
   for (uint8_t d=0; d<=_integration; d++) 
   {
     delay(120);
   }
 
-  uint32_t x,y;
-//  x = read16(TSL2591_COMMAND_BIT | TSL2591_REGISTER_CHAN1_LOW);
+  // CHAN0 must be read before CHAN1
+  // See: https://forums.adafruit.com/viewtopic.php?f=19&t=124176
+  uint32_t x;
+  uint16_t y;
+  
+  y = wiringPiI2CReadReg16(fd,  TSL2591_COMMAND_BIT | TSL2591_REGISTER_CHAN0_LOW);
   x = wiringPiI2CReadReg16(fd, TSL2591_COMMAND_BIT | TSL2591_REGISTER_CHAN1_LOW);
-//  printf("Chan1=%u\n",x);
   x <<= 16;
 //  x |= read16(TSL2591_COMMAND_BIT | TSL2591_REGISTER_CHAN0_LOW);
-  y = wiringPiI2CReadReg16(fd,  TSL2591_COMMAND_BIT | TSL2591_REGISTER_CHAN0_LOW);
+  
 // printf("Chan0=%u\n",y);
 
   x |= y;
