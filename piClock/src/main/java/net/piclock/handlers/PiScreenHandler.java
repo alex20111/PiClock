@@ -28,9 +28,9 @@ public class PiScreenHandler {
 	
 	private static final Logger logger = Logger.getLogger( PiScreenHandler.class.getName() );
 
-//	private String ldrFile = "/home/pi/native/TSL2561/tslReading.rdr";
-//	private Path  ldrFilePath = null;
 	private TSL2591 tsl2591;
+	private Tm1637 tm1637;
+	private SI4703 si4703;
 
 	private List<ButtonChangeListener> btnListeners = new ArrayList<ButtonChangeListener>();	
 
@@ -59,39 +59,28 @@ public class PiScreenHandler {
 
 	public int getVisibleLight() throws ExecuteException, IOException {		
 
-//		new Thread(new Runnable(){
-//
-//			@Override
-//			public void run() {
-//				Exec exe = new Exec();
-//				exe.addCommand("./2591").addCommand(ldrFile).addCommand("2").addCommand("2");
-//				try {
-//					exe.run();
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}		
-//			}			
-//		}).start();
-//
-//		//read from file
-//		if (ldrFilePath == null){
-//			ldrFilePath = Paths.get(ldrFile);
-//		}		
-//
-//		List<String> r = Files.readAllLines(ldrFilePath);
-//
-//		String split[] = r.get(0).split(",");	
-//
-//		System.out.println("Getting light - Visible : " + split[2] );
 		
 		logger.config("Visible: " + tsl2591.getVisible());
 		
 		return 176;
 	}
 
-	public void time(boolean ON) {
-		System.out.println("Setting time");
+	public void writeTime(String time) {
+		int hours = Integer.parseInt(time.substring(0, 2))
+	        int minutes = Integer.parseInt(time.substring(3, time.length()));
+		//0 = 12hrs format, 1=24 hours format
+		tm1637.displayTime(hours, minutes, 1);
+		
+	}
+	public void radioOn(){
+		int stat = si4703.powerOn();
+		//TODO display error if 
+	}
+	public void radioOff(){
+		si4703.powerOff();
+	}
+	public void setFmStation(float fmStation){
+		si4703.setFrequency(fmStation);
 	}
 	public void addButtonListeners(ButtonChangeListener btn){
 		btnListeners.add(btn);
@@ -115,6 +104,12 @@ public class PiScreenHandler {
 		//init the LUX sensor
 		tsl2591 = new TSL2591();
 		tsl2591.init(0x29);
+		
+		//init TM1637
+		tm1637 = new Tm1637(4,5); //pins
+		
+		//radio
+		si4703 = new SI4703(18,0);
 	}
 
 	private synchronized void fireBtnChangeEvent(ButtonState buttonState) {
