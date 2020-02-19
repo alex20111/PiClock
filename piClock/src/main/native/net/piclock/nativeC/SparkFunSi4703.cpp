@@ -62,10 +62,8 @@ char ToYesNo(uint16_t val) {
 
 }  // anonymous namespace
 
-Si4703_Breakout::Si4703_Breakout(int resetPin, int sdioPin, Region region)
-    : resetPin_(resetPin),
-      sdioPin_(sdioPin),
-      region_(region),
+Si4703_Breakout::Si4703_Breakout(Region region)
+    : region_(region),
       run_rds_thread_(false) {
   clearRDSBuffer();
   switch (region) {
@@ -84,6 +82,12 @@ Si4703_Breakout::Si4703_Breakout(int resetPin, int sdioPin, Region region)
       break;
   }
 }
+
+Si4703_Breakout::Si4703_Breakout(int resetPin, int sdioPin){
+	resetPin_ = resetPin;
+	sdioPin_ = sdioPin;
+}
+
 
 Si4703_Breakout::~Si4703_Breakout() {
   powerOff();
