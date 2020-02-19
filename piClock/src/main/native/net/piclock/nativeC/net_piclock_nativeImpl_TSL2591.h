@@ -44,7 +44,7 @@ JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_TSL2591_getVisible
  * Method:    getLux
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_TSL2591_getLux
+JNIEXPORT jfloat JNICALL Java_net_piclock_nativeImpl_TSL2591_getLux
   (JNIEnv *, jobject);
 
 /*
