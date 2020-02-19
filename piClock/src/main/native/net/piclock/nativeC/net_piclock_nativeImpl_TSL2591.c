@@ -100,11 +100,12 @@ JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_TSL2591_getVisible
  * Method:    getLux
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_piclock_nativeImpl_TSL2591_getLux
+JNIEXPORT jfloat JNICALL Java_net_piclock_nativeImpl_TSL2591_getLux
   (JNIEnv* env, jobject obj){
   
   	uint16_t full,ir;
-    uint32_t visible_and_ir, lux;
+    uint32_t visible_and_ir;
+    float lux;
 	
     visible_and_ir = tsl.Adafruit_TSL2591::getFullLuminosity (fd);
 
@@ -143,22 +144,6 @@ JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_TSL2591_setIntegrationTime
   tsl2591IntegrationTime_t cIntg = static_cast<tsl2591IntegrationTime_t>(intg);
   tsl.Adafruit_TSL2591::setTiming (fd, cIntg);
   
-  }  
-  
-  	//uint16_t full,ir;
-    //uint32_t visible_and_ir, lux;
-	
-//    visible_and_ir = tsl.Adafruit_TSL2591::getFullLuminosity (fd);
+  }    
 
-    // Reads two byte value from channel 0 (visible + infrared)
-    //full =  (visible_and_ir & 0xFFFF);
-    // Reads two byte value from channel 1 (infrared)
-   // ir = (visible_and_ir >> 16);
-
-    //lux = tsl.Adafruit_TSL2591::calculateLux(full, ir);
-
-	//int visible = 0;
-
-   
-   // if ( full >= ir ) visible = full-ir;
   
