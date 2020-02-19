@@ -75,9 +75,12 @@ enum class SeekDirection { Up, Down };
 
 class Si4703_Breakout {
  public:
-  Si4703_Breakout(int resetPin, int sdioPin, Region region = Region::US);
+  Si4703_Breakout(Region region = Region::US);
   ~Si4703_Breakout();
 
+   //begin
+  begin(int resetPin, int sdioPin);
+ 
   // Power on the radio.
   Status powerOn();
 
