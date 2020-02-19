@@ -18,19 +18,16 @@ public class Tm1637 {
 		
 		Tm1637 tm = new Tm1637(4,5);
 		
-		System.out.println("Displat time");
+		System.out.println("Displayt time");
 		LocalDateTime d = LocalDateTime.now();
 		tm.displayTime(d.getHour(), d.getMinute(), 1);
-		Thread.sleep(3000);
-		System.out.println("Clear display");
-		tm.clearDisplay();
-		Thread.sleep(1000);
+		Thread.sleep(3000);		
 		System.out.println("set brightness from 0 to 7");
 		for(int i = 0 ; i < 7; i++){
 			System.out.println("Brightness level: " + i);
 			tm.setBrightness(i);
 			Thread.sleep(1500);
-		}
+		}		
 		System.out.println("clearing dots");
 		tm.displayPoint(false);
 		Thread.sleep(2000);
@@ -45,7 +42,15 @@ public class Tm1637 {
 		tm.displayNumberPos(2, 2);
 		System.out.println("Finished!!!! -- Clearing out");
 		Thread.sleep(2000);
-		tm.clearDisplay();		
+		tm.displayPoint(false);
+		tm.clearDisplay();	
+		
+		System.out.println("Time on a loop");
+		while(true) {
+			LocalDateTime d2 = LocalDateTime.now();
+			tm.displayTime(d2.getHour(), d2.getMinute(), 1);
+			Thread.sleep(3000);
+		}
 	}
 	private native int init(int clk, int dio);
 	public native void displayTime(int hour, int min, int format); //format 0 = 12hrs/ 1 = 24 hrs. Always needs to be passed as 24hours.

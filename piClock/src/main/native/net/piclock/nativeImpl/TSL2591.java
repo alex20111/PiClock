@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class TSL2591 {
 	
 	static {
-        System.loadLibrary("piclocknative");
+        System.loadLibrary("piclocknativeCPP");
         }	
 
 	public native void init(int address);
