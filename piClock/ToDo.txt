@@ -10,11 +10,13 @@ split piHandler that it know if using the Pi 7 inch screen or the hyperpixel scr
 
 when weather error, try it again 3 times before generating an error.. (pause and then try);
 
-Create a java Pi4J to test on the pi4
-
 update settings to include LDR values. (as a JDIALOg? )
 Finish label colors when night/day refresh
 
+PiOffical touch:
+	Test tsl2951. Change Lux in CPP from int to float. Added changes from adafruit.Change filename from c to cpp.
+	Test radio modification. Removed constructor and added a begin (int , int). recompile - retest.
+	
 
 --------------TEST------------
 make clock bigger.
@@ -25,6 +27,7 @@ test alarm html on the server
 
 
 -----------DONE test----------
+Create a java Pi4J to test on the pi4
 add 7 alarms instated of 5 in alarms.
 define volume icon in radio and have muted icon working
 Test config keyboard
