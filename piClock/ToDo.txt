@@ -18,14 +18,18 @@ PiOffical touch:
 	Test to add calibration to light level..
 	add logic to switch from dark to light or light to dark .
 	
+	In Device handler, return dark when 0 is return for the arduino command.
+	Implement timing and GAIN into the TSL2591. The CPP has already the logic for it.
+	SI4703 add seek up/down
 
 	
 
 --------------TEST------------
-make clock bigger.
+Test LDRThread with new values..
+
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
 Test add new web page for backgrounds. In progress
-test alarm html on the server
+test alarm html on the server(In prog)
 
 
 
