@@ -1,27 +1,24 @@
 package net.piclock.bean;
 
 import net.piclock.enums.ScreenType;
-
 public class LightLevel {
 	
 	public  static final String DARK = "Dark";
 	public  static final String LIGHT = "Light";
 	
 	private ScreenType screenType;
+	private String status = LIGHT;
 	
 	private int ldrValue = 0;
-	private int screenDimMode = 0;
-	private boolean isDark = false;
-	private boolean isLight = false;
-	
+	private int screenDimMode = 0;	
 	
 	public LightLevel(int ldr, ScreenType type) {
 		this.ldrValue = ldr;
 		
 		if (ldrValue <=  type.getLdrDarkValue()) {
-			isDark = true;
+			status = DARK;
 		}else {
-			isLight = true;
+			status = LIGHT;
 		}
 		
 		this.screenType = type;
@@ -46,27 +43,15 @@ public class LightLevel {
 	}
 
 	public boolean isDark() {
-		return isDark;
-	}
-
-	public void setDark(boolean isDark) {
-		this.isDark = isDark;
+		return status.equals(DARK);
 	}
 
 	public boolean isLight() {
-		return isLight;
-	}
-
-	public void setLight(boolean isLight) {
-		this.isLight = isLight;
+		return status.equals(LIGHT);
 	}
 	
 	public String status() {
-		if (isDark) {
-			return DARK;
-		}else {
-			return LIGHT;
-		}
+		return status;
 	}
 
 	public int getScreenDimMode() {
@@ -79,7 +64,7 @@ public class LightLevel {
 	@Override
 	public String toString() {
 		return "LightLevel [screenType=" + screenType + ", ldrValue=" + ldrValue + ", screenDimMode=" + screenDimMode
-				+ ", isDark=" + isDark + ", isLight=" + isLight + "]";
+				+ ", status=" + status + "]";
 	}
 	
 
