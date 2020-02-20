@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class Tm1637 {
 
 	static{
-		 System.loadLibrary("piclocknative");
+		 System.loadLibrary("piclocknativeC");
 	}
 	
 	public Tm1637(int clk, int dio){

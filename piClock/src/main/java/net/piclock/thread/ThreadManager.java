@@ -1,5 +1,6 @@
 package net.piclock.thread;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.concurrent.Executors;
@@ -136,7 +137,7 @@ public class ThreadManager {
 		}	
 		logger.log(Level.CONFIG, "Weather thread stopped. ");
 	}
-	public void startLdr() {
+	public void startLdr() throws IllegalStateException, IOException, InterruptedException {
 		logger.log(Level.CONFIG, "startLdr");
 		scheduler.scheduleWithFixedDelay(new LDRStatusWorker(), 1, 5, TimeUnit.SECONDS);
 	}

@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
-import net.piclock.enums.Light;
 import net.piclock.handlers.PiHandler;
 
 public class MonitorButtonHandler implements ButtonChangeListener {
@@ -28,10 +27,9 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 			if (!piHandler.isScreenOn()  ) {
 				try {
 
-					piHandler.turnOnScreen(true, Light.VERY_DIM);
-					//						piHandler.setBrightness(Light.VERY_DIM);
+					
+					piHandler.turnOnScreen(true, 255);
 					piHandler.autoShutDownScreen(20000);
-					//						piHandler.turnWifiOn();
 				} catch (InterruptedException | IOException e) {
 					logger.log(Level.CONFIG, "in button monitor");
 				}

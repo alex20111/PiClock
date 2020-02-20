@@ -8,6 +8,7 @@ import com.pi4j.wiringpi.SoftPwm;
 
 import net.piclock.arduino.ArduinoSerialCmd;
 import net.piclock.arduino.ButtonChangeListener;
+import net.piclock.bean.LightLevel;
 import net.piclock.enums.Light;
 import net.piclock.enums.ScreenType;
 import net.piclock.main.Constants;
@@ -54,27 +55,27 @@ public class DeviceHandler {
 		if (deviceHyperPixel40()) {
 			ard.writeTime(time);
 		}else if (devicePiScreen()) {
-			//TODO , maybe in loop, but must find a way to turn off program
+			piScreen.writeTime(time);
 		}
 	}
 	
-	public int readLdr() throws IllegalStateException, IOException, InterruptedException {
-		int ldrValue =  -1; 
-		
+	public LightLevel readLdr() throws IllegalStateException, IOException, InterruptedException {
+
+		LightLevel level = null;
 		if (deviceHyperPixel40()) {
-			ldrValue =  ard.readLdr();
+			level = new LightLevel(ard.readLdr(), ScreenType.HYPERPIXEL40);
 		}else if (devicePiScreen()) {
-			ldrValue = piScreen.getVisibleLight();
+			level =  new LightLevel(piScreen.getVisibleLight(), ScreenType.PI_TOUCH_SCREEN);
 		}
 		
-		return ldrValue;
+		return level;
 	}
 	
 	public void turnOffTimeScreen() throws IllegalStateException, IOException {
 		if (deviceHyperPixel40()) {
 			ard.timeOff();
 		}else if(devicePiScreen()) {
-			piScreen.time(true);
+			piScreen.clockOff();
 		}
 	}
 	
@@ -93,16 +94,21 @@ public class DeviceHandler {
 	public void turnOnRadio() throws IllegalStateException, IOException {
 		if (deviceHyperPixel40()) {
 			ard.turnOnRadio();
+		}else if(devicePiScreen()) {
+			piScreen.radioOn();
 		}
 	}
 
 	public void turnOffRadio() throws IllegalStateException, IOException {
 		if (deviceHyperPixel40()) {
 			ard.turnOffRadio();
+		}else if(devicePiScreen()) {
+			piScreen.radioOff();
 		}
 	}
 	
 	public void selectRadioChannel(int channel) throws IllegalStateException, IOException {
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!channelllll!!!!!!!!!!!!!!!!!!!!!!!!!:  " + channel);
 		if (deviceHyperPixel40()) {
 			ard.radioSelectChannel(channel);
 		}
@@ -119,11 +125,11 @@ public class DeviceHandler {
 		}
 	}
 	
-	public void setScreenBrightness(Light light) {
+	public void setScreenBrightness(int level) {
 		if (deviceHyperPixel40()) {
-			SoftPwm.softPwmWrite(24, light.getPwmLevel());
+			SoftPwm.softPwmWrite(24, level);
 		}else if (devicePiScreen()) {
-			piScreen.setScreenBrightness(light);
+			piScreen.setScreenBrightness(level);
 		}
 	}
 	

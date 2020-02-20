@@ -22,7 +22,9 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
 import net.piclock.enums.Light;
+import net.piclock.nativeImpl.SI4703;
 import net.piclock.nativeImpl.TSL2591;
+import net.piclock.nativeImpl.Tm1637;
 
 public class PiScreenHandler {
 	
@@ -40,7 +42,7 @@ public class PiScreenHandler {
 	}
 
 
-	public void setScreenBrightness(Light light) {
+	public void setScreenBrightness(int level) {
 
 
 		RandomAccessFile f;
@@ -48,7 +50,7 @@ public class PiScreenHandler {
 			f = new RandomAccessFile(new File("/sys/class/backlight/rpi_backlight/brightness"), "rw");
 
 			f.seek(0); // to the beginning
-			f.write(String.valueOf(light.getPiTchScreenBrightness()).getBytes());
+			f.write(String.valueOf(level).getBytes());
 			f.close();
 		} catch ( IOException e) {
 			// TODO Auto-generated catch block
@@ -56,21 +58,36 @@ public class PiScreenHandler {
 		}
 	}
 
-
+/**
+ * get lux an map it from 5 to 255
+ * @return
+ * @throws ExecuteException
+ * @throws IOException
+ */
 	public int getVisibleLight() throws ExecuteException, IOException {		
-
+//TODO add calibration? 
+		int lux = (int)tsl2591.getLux();
 		
-		logger.config("Visible: " + tsl2591.getVisible());
+		long resultLux = map(lux, 0, 1000, 3, 255);
 		
-		return 176;
+		logger.config("LUX value: " + lux);
+		
+		return (int)resultLux;
 	}
 
 	public void writeTime(String time) {
-		int hours = Integer.parseInt(time.substring(0, 2))
+		int hours = Integer.parseInt(time.substring(0, 2));
 	        int minutes = Integer.parseInt(time.substring(3, time.length()));
 		//0 = 12hrs format, 1=24 hours format
 		tm1637.displayTime(hours, minutes, 1);
 		
+	}
+	public void clockOn() {
+		tm1637.setBrightness(3);
+	}
+	public void clockOff() {
+		tm1637.displayPoint(false);
+		tm1637.clearDisplay();	
 	}
 	public void radioOn(){
 		int stat = si4703.powerOn();
@@ -120,59 +137,62 @@ public class PiScreenHandler {
 			bl.stateChanged( buttonState );
 		}
 	}
-	public static void main(String args[]) throws InterruptedException,  IOException {
-
-		System.out.println("Starting");
-		PiScreenHandler handler = new PiScreenHandler();
-
-		boolean testScreenBrightness = false;
-		boolean testLuxSensor 		 = true;
-
-
-		if (testScreenBrightness) {
-			System.out.println("Test brightness settings");
-			Thread.sleep(1000);
-			Light l = Light.DARK;
-			System.out.println("Turning Off screen");
-			handler.setScreenBrightness(l);
-			Thread.sleep(2000);
-			l = Light.VERY_BRIGHT;
-			System.out.println("Turning screen back on");
-			handler.setScreenBrightness(l);
-
-			System.out.println("test all levels");
-			for (int i = 0; i < Light.values().length ; i++) {
-				Light lvl = Light.values()[i];
-				System.out.println("Level: " + lvl);
-				handler.setScreenBrightness(lvl);
-				Thread.sleep(1000);
-			}
-			l = Light.VERY_BRIGHT;
-			System.out.println("Turning screen back on");
-			handler.setScreenBrightness(l);
-			System.out.println("End of screen brightness test");
-
-		}
-
-		if (testLuxSensor) {
-			System.out.println("Testing lux sensor");
-			//			handler.I2cScanner(I2CBus.BUS_1);
-
-			Thread.sleep(1000);
-
-			//			handler.testTSL2561(true);
-			for(int y = 0 ; y < 10; y ++) {
-				handler.getVisibleLight();
-				Thread.sleep(2000);
-			}
-
-
-		}		
-
-
-
-
-
-
+	private long map(long x, long in_min, long in_max, long out_min, long out_max) {
+		  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}
+//	public static void main(String args[]) throws InterruptedException,  IOException {
+//
+//		System.out.println("Starting");
+//		PiScreenHandler handler = new PiScreenHandler();
+//
+//		boolean testScreenBrightness = false;
+//		boolean testLuxSensor 		 = true;
+//
+//
+//		if (testScreenBrightness) {
+//			System.out.println("Test brightness settings");
+//			Thread.sleep(1000);
+//			Light l = Light.DARK;
+//			System.out.println("Turning Off screen");
+//			handler.setScreenBrightness(l);
+//			Thread.sleep(2000);
+//			l = Light.VERY_BRIGHT;
+//			System.out.println("Turning screen back on");
+//			handler.setScreenBrightness(l);
+//
+//			System.out.println("test all levels");
+//			for (int i = 0; i < Light.values().length ; i++) {
+//				Light lvl = Light.values()[i];
+//				System.out.println("Level: " + lvl);
+//				handler.setScreenBrightness(lvl);
+//				Thread.sleep(1000);
+//			}
+//			l = Light.VERY_BRIGHT;
+//			System.out.println("Turning screen back on");
+//			handler.setScreenBrightness(l);
+//			System.out.println("End of screen brightness test");
+//
+//		}
+//
+//		if (testLuxSensor) {
+//			System.out.println("Testing lux sensor");
+//			//			handler.I2cScanner(I2CBus.BUS_1);
+//
+//			Thread.sleep(1000);
+//
+//			//			handler.testTSL2561(true);
+//			for(int y = 0 ; y < 10; y ++) {
+//				handler.getVisibleLight();
+//				Thread.sleep(2000);
+//			}
+//
+//
+//		}		
+//
+//
+//
+//
+//
+//
+//	}
 }

@@ -79,7 +79,7 @@ class Si4703_Breakout {
   ~Si4703_Breakout();
 
    //begin
-  begin(int resetPin, int sdioPin);
+  void begin(int resetPin, int sdioPin);
  
   // Power on the radio.
   Status powerOn();

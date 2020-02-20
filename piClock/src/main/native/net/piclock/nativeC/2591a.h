@@ -81,7 +81,7 @@ class Adafruit_TSL2591
   uint16_t  read16  ( uint8_t reg );
   uint8_t   read8   ( uint8_t reg );
 
-  uint32_t  calculateLux  ( uint16_t ch0, uint16_t ch1 );
+  float  calculateLux  ( uint16_t ch0, uint16_t ch1 );
   void      setGain       ( int fd, tsl2591Gain_t gain );
   void      setTiming     ( int fd, tsl2591IntegrationTime_t integration );
   uint16_t  getLuminosity (int fd, uint8_t channel );

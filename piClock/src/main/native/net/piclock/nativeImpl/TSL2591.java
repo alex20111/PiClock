@@ -14,7 +14,7 @@ public class TSL2591 {
 	public native int getFullSpectrum();
 	public native int getInfrared();
 	public native int getVisible();
-	public native int getLux();
+	public native float getLux();
 	public native void setGain(int gainLevel);
 	public native void setIntegrationTime(int intgTime);
 	
@@ -24,18 +24,23 @@ public class TSL2591 {
 		TSL2591 t = new TSL2591();
 		t.init(0x29);
 
-		 FileWriter myWriter = new FileWriter("/home/pi/java/lixreading.txt");
+		
+//		 FileWriter myWriter = new FileWriter("/home/pi/java/lixreading.txt");
 		
 		while(true) {
+			
+	
 			StringBuilder sb = new StringBuilder();
 			sb.append("Full: " + t.getFullSpectrum() + " - ");
 			sb.append("IR : " + t.getInfrared()+ " - ");
 			sb.append("LUX: " + t.getLux()+ " - ");
-			sb.append("Visible: " + t.getVisible()+ " - " + "\n\n");
+			sb.append("Visible: " + t.getVisible()+ " - " + "\n	");
 			
-			myWriter.write(sb.toString() + "  " + LocalDateTime.now());
-			myWriter.flush();
-			Thread.sleep(2000);
+			System.out.println(sb.toString());
+			
+//			myWriter.write(sb.toString() + "  " + LocalDateTime.now());
+//			myWriter.flush();
+//			Thread.sleep(2000);
 		}
 
 		

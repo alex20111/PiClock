@@ -83,7 +83,7 @@ Si4703_Breakout::Si4703_Breakout(Region region)
   }
 }
 
-Si4703_Breakout::Si4703_Breakout(int resetPin, int sdioPin){
+void Si4703_Breakout::begin(int resetPin, int sdioPin){
 	resetPin_ = resetPin;
 	sdioPin_ = sdioPin;
 }

@@ -88,6 +88,11 @@ public class ArduinoSerialCmd {
 		int ldrVal = -1;
 		try{
 			ldrVal = ldrQueue.poll(4000, TimeUnit.MILLISECONDS); 
+			
+			//convert for pwn on screen
+			ldrVal = (ldrVal - 255) * -1;
+		
+			
 		}catch(Exception ex) {
 			String fmtEx = new FormatStackTrace(ex).getFormattedException();
 			eh.addError(ErrorType.ARDUINO, new ErrorInfo(fmtEx));

@@ -26,6 +26,7 @@ import net.piclock.arduino.ListenerNotFoundException;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
+import net.piclock.bean.LightLevel;
 import net.piclock.button.AlarmBtnHandler;
 import net.piclock.button.MonitorButtonHandler;
 import net.piclock.enums.Buzzer;
@@ -114,14 +115,14 @@ public class PiHandler {
 		logger.log(Level.INFO,"turnOffScreen()");
 
 		setScreenOn(false);
-		setBrightness(Light.DARK);
+		setBrightness(0);
 
 		logger.log(Level.CONFIG,"end turnOffScreen(). ");
 
 
 	}
 	/*withWifiOn: then turn on the wifi on request*/
-	public void turnOnScreen(boolean withWifiOn, Light brightness) throws InterruptedException, ExecuteException, IOException{
+	public void turnOnScreen(boolean withWifiOn, int brightness) throws InterruptedException, ExecuteException, IOException{
 		logger.log(Level.INFO,"Turning on screen. Wifi on option: " + withWifiOn);
 
 		//if screen is auto shutting down and there is a request by the LDR to turn it back on, kill it.
@@ -178,10 +179,11 @@ public class PiHandler {
 			checkInternetConnection(false);
 		}				
 	}
-	public Light getLDRstatus(){
+	public LightLevel getLDRstatus() throws IllegalStateException, IOException, InterruptedException{
 
-		int ldrVal = sendCommand(LDR,null);		
-		return Light.setLightLevel(ldrVal);
+		LightLevel ldrVal = device.readLdr();	
+		
+		return ldrVal;
 	}
 	/**Turn on the alarm based on the selected buzzer
 	 * @throws SQLException 
@@ -418,12 +420,12 @@ public class PiHandler {
 			logger.log(Level.INFO, "Problem with volume. Ext: " + ext + "  output: " + exec.getOutput());
 		}
 	}
-	public void setBrightness(Light light) {
-		logger.log(Level.CONFIG, "setBrightness : " + light + "   pwn: " + light.getPwmLevel());
-		device.setScreenBrightness(light);//SoftPwm.softPwmWrite(24, light.getPwmLevel());
+	public void setBrightness(int level) {
+		logger.log(Level.CONFIG, "setBrightness  pwn: " + level);
+		device.setScreenBrightness(level);//SoftPwm.softPwmWrite(24, light.getPwmLevel());
 	}
 	public void shutdown() {
-		setBrightness(Light.VERY_BRIGHT);
+		setBrightness(255);
 		GpioFactory.getInstance().shutdown();
 	}
 	public  boolean isScreenOn() {
@@ -476,9 +478,7 @@ public class PiHandler {
 			if (command.equals(TIME)){
 //				cmd.writeTime(value);
 				device.writeTime(value);
-			}else if(command.equals(LDR)) {
-//				retCd = cmd.readLdr();
-				retCd = device.readLdr();
+			
 			}else if(command.equals(TIME_OFF)) {
 //				cmd.timeOff();
 				device.turnOffTimeScreen();
@@ -492,7 +492,7 @@ public class PiHandler {
 				}
 			}
 
-		} catch (IOException | InterruptedException  e) {
+		} catch (IOException  e) {
 			ErrorHandler eh = (ErrorHandler)context.getSharedObject(Constants.ERROR_HANDLER);
 				eh.addError(ErrorType.PI, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
 			logger.log(Level.SEVERE, "Error contacting arduino", e);
@@ -822,4 +822,6 @@ public class PiHandler {
 	public boolean isRadioOn() {
 		return radioOn;
 	}
+	
+
 }

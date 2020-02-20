@@ -175,7 +175,7 @@ public class Alarm implements Runnable, MessageListener{
 				autoAlarmShutOff(true, alarm.getAlarmShutdown()); //start alarm auto shutdown
 
 				if (!handler.isScreenOn()){						
-					handler.turnOnScreen(false, Light.LIGHT);
+					handler.turnOnScreen(false, 255);
 					handler.autoShutDownScreen(45000);
 				}	
 				

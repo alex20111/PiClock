@@ -12,7 +12,7 @@ public class SI4703 {
 
 	public static void main(String[] args) throws InterruptedException {
 		
-		SI4703 si = new SI4703(4,5);
+		SI4703 si = new SI4703(18,0);
 		float frequency = 106.9f;
 		
 		System.out.println("Starting radio");

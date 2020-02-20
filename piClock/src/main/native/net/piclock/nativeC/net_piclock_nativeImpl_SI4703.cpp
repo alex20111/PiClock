@@ -4,7 +4,7 @@
 #include "net_piclock_nativeImpl_SI4703.h"  //https://stackoverflow.com/questions/9796367/jni-keeping-a-global-reference-to-an-object-accessing-it-with-other-jni-methods
 											//https://stackoverflow.com/questions/8397426/keep-some-sort-of-c-object-alive-over-multiple-jni-calls/8397907
 
- Si4703_Breakout radio(18,0);
+ Si4703_Breakout radio(Region::US);
 
 using std::cerr;
 using std::cout;
@@ -135,6 +135,6 @@ JNIEXPORT jfloat JNICALL Java_net_piclock_nativeImpl_SI4703_seek
  */
 JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_SI4703_init
   (JNIEnv* env, jobject obj, jint reset, jint sdio){
-   // radio.setVolume(5);
+    radio.begin(18,0);
   }
 

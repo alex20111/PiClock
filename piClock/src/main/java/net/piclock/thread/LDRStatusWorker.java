@@ -1,5 +1,6 @@
 package net.piclock.thread;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
+import net.piclock.bean.LightLevel;
 import net.piclock.enums.LDRCycle;
 import net.piclock.enums.Light;
 import net.piclock.handlers.PiHandler;
@@ -26,17 +28,18 @@ public class LDRStatusWorker implements Runnable{
 	private LDRCycle lastCycleStatus = LDRCycle.NOT_DEFINED;
 	private LDRCycle cycle = LDRCycle.NOT_DEFINED;
 
-	private Light lastLightStatus = Light.VERY_BRIGHT;
+	private LightLevel lastLightStatus;//= new LightLevel()// = LightLevel.LIGHT;
 
-	private Map<Light, Integer> cntMap = new HashMap<Light, Integer>();
+//	private Map<LightLevel, Integer> cntMap = new HashMap<LightLevel, Integer>();
 	PiHandler handler;
 
-	public LDRStatusWorker() {
-		cntMap.put(Light.DARK, 4);
+	public LDRStatusWorker() throws IllegalStateException, IOException, InterruptedException {
+//		cntMap.put(Light.DARK, 4);
 		handler = PiHandler.getInstance();
-		Light currLight = handler.getLDRstatus();
+		
+		LightLevel currLight = handler.getLDRstatus();
 
-		cycle = (currLight == Light.DARK ? LDRCycle.DARK : LDRCycle.LIGHT); 
+		cycle = (currLight.isDark() ? LDRCycle.DARK : LDRCycle.LIGHT); 
 	}
 
 	@Override
@@ -45,36 +48,36 @@ public class LDRStatusWorker implements Runnable{
 			//call it every 10 seconds
 			Preferences p = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
 
-			Light lightStatus = handler.getLDRstatus();
+			LightLevel lightStatus = handler.getLDRstatus();
 
 			logger.log(Level.CONFIG, "LDR cycle: " + cycle + " lastCycleStatus: " + lastCycleStatus + 
 					" lightStatus: "+ lightStatus + " lastLightStatus: " + lastLightStatus +" AutoOffScreen Option: " + p.isAutoOffScreen());
 
-			if (lastLightStatus != lightStatus && lightStatus != Light.GREY_ZONE) {
+			if (lastLightStatus == null || !lastLightStatus.status().equals(lightStatus.status()) ) {
+//
+//				Integer cMap = cntMap.get(lightStatus);
+//				int cnt = (cMap == null ? 0 : cMap.intValue());
 
-				Integer cMap = cntMap.get(lightStatus);
-				int cnt = (cMap == null ? 0 : cMap.intValue());
-
-				if (cnt  >= getCnt(lightStatus)) {
-					cntMap.clear();
+//				if (cnt  >= getCnt(lightStatus)) {
+//					cntMap.clear();
 					//adjust LCD based on the LDR.					
 					lastLightStatus = lightStatus;
-					if (lightStatus == Light.DARK) {
-						handler.setBrightness(Light.DIM);
+					if (lightStatus.isDark()) {
+						handler.setBrightness(0);
 						cycle = LDRCycle.DARK;
 					}else {
-						handler.setBrightness(lightStatus);
+						handler.setBrightness(lightStatus.getLdrValue());
 						cycle = LDRCycle.LIGHT;
 					}
-				}else {
-					cnt++;
-					cntMap.put(lightStatus, cnt);
-
-					if(cntMap.size() > 1) {
-						cntMap.clear();
-						cntMap.put(lightStatus, cnt);
-					}
-				}
+//				}else {
+//					cnt++;
+//					cntMap.put(lightStatus, cnt);
+//
+//					if(cntMap.size() > 1) {
+//						cntMap.clear();
+//						cntMap.put(lightStatus, cnt);
+//					}
+//				}
 			}
 
 			if (cycle == LDRCycle.DARK ){
@@ -89,7 +92,7 @@ public class LDRStatusWorker implements Runnable{
 					handler.turnOffScreen();
 					handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
 				}else if (!p.isAutoOffScreen() && !handler.isScreenOn()){
-					handler.turnOnScreen(false, Light.DIM);
+					handler.turnOnScreen(false, lightStatus.getScreenType().getLowestBacklight());
 					handler.turnOffTM1637Time();
 				}
 
@@ -110,7 +113,7 @@ public class LDRStatusWorker implements Runnable{
 				}
 				
 				if (!handler.isScreenOn()) {
-					handler.turnOnScreen(false, lightStatus);
+					handler.turnOnScreen(false, lightStatus.getLdrValue());
 					handler.turnOffTM1637Time();
 				}
 
@@ -128,9 +131,9 @@ public class LDRStatusWorker implements Runnable{
 		}
 	}
 
-	private int getCnt(Light current) {
-		if (lastLightStatus == Light.DARK && current.isDayLight() || 
-				lastLightStatus.isDayLight() && !current.isDayLight()) {
+	private int getCnt(LightLevel current) {
+		if (lastLightStatus.isDark()  && current.isLight() || 
+				lastLightStatus.isLight() && !current.isLight()) {
 			return 4;
 		}else {
 			return 1;
