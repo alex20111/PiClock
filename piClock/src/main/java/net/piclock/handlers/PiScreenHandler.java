@@ -33,6 +33,9 @@ public class PiScreenHandler {
 	private TSL2591 tsl2591;
 	private Tm1637 tm1637;
 	private SI4703 si4703;
+	
+	private int luxHighestValue = 300; //highest value for LUX..
+	private boolean scrPowerOn = true;
 
 	private List<ButtonChangeListener> btnListeners = new ArrayList<ButtonChangeListener>();	
 
@@ -44,17 +47,18 @@ public class PiScreenHandler {
 
 	public void setScreenBrightness(int level) {
 
-
-		RandomAccessFile f;
-		try {
-			f = new RandomAccessFile(new File("/sys/class/backlight/rpi_backlight/brightness"), "rw");
-
-			f.seek(0); // to the beginning
-			f.write(String.valueOf(level).getBytes());
-			f.close();
-		} catch ( IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String brightness = "/sys/class/backlight/rpi_backlight/brightness";
+		String onOff      = "/sys/class/backlight/rpi_backlight/bl_power";
+		if (level > 0 ){
+			if(!screenOn){
+				writeToScreenFile(0, onOff);
+				screenOn = true;
+			}
+			writeToScreenFile(level, brightness);
+		}else if (screenOn && level == 0){
+			
+			writeToScreenFile(1, onOff);
+			screenOn = false;
 		}
 	}
 
@@ -64,15 +68,30 @@ public class PiScreenHandler {
  * @throws ExecuteException
  * @throws IOException
  */
-	public int getVisibleLight() throws ExecuteException, IOException {		
-//TODO add calibration? 
+	public LightLevel getVisibleLight() throws ExecuteException, IOException {		
+
 		int lux = (int)tsl2591.getLux();
 		
-		long resultLux = map(lux, 0, 1000, 3, 255);
+		if (lux > luxHighestValue){
+			luxHighestValue = lux;
+		}
 		
-		logger.config("LUX value: " + lux);
+		LightLevel level= null;
+		//lux of 3 is light in the room
+		//15 to 177 is the backlight control values. 15 being the lowest and 177 highest brightness.
+		if (lux > 3){
+			//the LDR will return 
+			long resultLux = map(lux, 0, luxHighestValue, 15, 177);
 		
-		return (int)resultLux;
+			if (resultLux == 177){
+				resultLux = 255;
+			}
+			logger.config("LUX value: " + lux + " resultLux: " + resultLux);
+			level = new LightLevel((int)resultLux, LightLevel.LIGHT, ScreenType.PI_TOUCH_SCREEN);
+		}else{
+			level = new LightLevel(0, ScreenType.PI_TOUCH_SCREEN);
+		}
+		return level;
 	}
 
 	public void writeTime(String time) {
@@ -139,6 +158,15 @@ public class PiScreenHandler {
 	}
 	private long map(long x, long in_min, long in_max, long out_min, long out_max) {
 		  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+	}
+	private void writeToScreenFile(int level, String filePath){
+		RandomAccessFile f;
+		
+		f = new RandomAccessFile(new File("filePath"), "rw");
+		f.seek(0); // to the beginning
+		f.write(String.valueOf(level).getBytes());
+		f.close();
+	
 	}
 //	public static void main(String args[]) throws InterruptedException,  IOException {
 //
