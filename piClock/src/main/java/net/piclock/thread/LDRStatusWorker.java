@@ -63,7 +63,7 @@ public class LDRStatusWorker implements Runnable{
 					//adjust LCD based on the LDR.					
 					lastLightStatus = lightStatus;
 					if (lightStatus.isDark()) {
-						handler.setBrightness(0);
+						handler.setBrightness(lightStatus.getLdrValue()); //we don't want to turn off screen here
 						cycle = LDRCycle.DARK;
 					}else {
 						handler.setBrightness(lightStatus.getLdrValue());
@@ -92,7 +92,7 @@ public class LDRStatusWorker implements Runnable{
 					handler.turnOffScreen();
 					handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
 				}else if (!p.isAutoOffScreen() && !handler.isScreenOn()){
-					handler.turnOnScreen(false, lightStatus.getScreenType().getLowestBacklight());
+					handler.turnOnScreen(false, lightStatus.getLdrValue()); //basd on the light surrounding.. it will be at the loest
 					handler.turnOffTM1637Time();
 				}
 
