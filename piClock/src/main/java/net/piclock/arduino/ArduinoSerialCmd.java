@@ -91,7 +91,17 @@ public class ArduinoSerialCmd {
 			
 			//convert for pwn on screen
 			ldrVal = (ldrVal - 255) * -1;
-		
+			//3 is the lowest PWM for the screen.. 
+			if (ldrVal > 15){
+				Long ldrLong = map(ldrVal, 0, 255, 3,180);
+				if (ldrLong = 180){
+					ldrLong = 255l; //max value
+				}
+				ldrVal = (int)ldrLong;
+			}else{
+			    ldrVal = 0;
+			}
+			
 			
 		}catch(Exception ex) {
 			String fmtEx = new FormatStackTrace(ex).getFormattedException();
@@ -225,7 +235,11 @@ public class ArduinoSerialCmd {
 
 		}
 	}
+	private long map(long x, long in_min, long in_max, long out_min, long out_max) {
 
+		  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+
+	}
 
 
 }
