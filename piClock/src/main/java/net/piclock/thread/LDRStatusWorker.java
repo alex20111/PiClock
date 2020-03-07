@@ -3,8 +3,6 @@ package net.piclock.thread;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +11,6 @@ import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
 import net.piclock.bean.LightLevel;
 import net.piclock.enums.LDRCycle;
-import net.piclock.enums.Light;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
@@ -28,7 +25,7 @@ public class LDRStatusWorker implements Runnable{
 	private LDRCycle lastCycleStatus = LDRCycle.NOT_DEFINED;
 	private LDRCycle cycle = LDRCycle.NOT_DEFINED;
 
-	private LightLevel lastLightStatus;//= new LightLevel()// = LightLevel.LIGHT;
+	private LightLevel lastLightStatus = new LightLevel(0, 13);
 
 //	private Map<LightLevel, Integer> cntMap = new HashMap<LightLevel, Integer>();
 	PiHandler handler;
@@ -53,7 +50,7 @@ public class LDRStatusWorker implements Runnable{
 			logger.log(Level.CONFIG, "LDR cycle: " + cycle + " lastCycleStatus: " + lastCycleStatus + 
 					" lightStatus: "+ lightStatus + " lastLightStatus: " + lastLightStatus +" AutoOffScreen Option: " + p.isAutoOffScreen());
 
-			if (lastLightStatus == null || !lastLightStatus.status().equals(lightStatus.status()) ) {
+			if (!lastLightStatus.status().equals(lightStatus.status()) ) {
 //
 //				Integer cMap = cntMap.get(lightStatus);
 //				int cnt = (cMap == null ? 0 : cMap.intValue());
@@ -61,9 +58,9 @@ public class LDRStatusWorker implements Runnable{
 //				if (cnt  >= getCnt(lightStatus)) {
 //					cntMap.clear();
 					//adjust LCD based on the LDR.					
-					lastLightStatus = lightStatus;
+					lastLightStatus.setStatus(lightStatus.status());
 					if (lightStatus.isDark()) {
-						handler.setBrightness(lightStatus.getLdrValue()); //we don't want to turn off screen here
+						handler.setBrightness(lightStatus.getScreenDimMode()); //we don't want to turn off screen here
 						cycle = LDRCycle.DARK;
 					}else {
 						handler.setBrightness(lightStatus.getLdrValue());
@@ -92,7 +89,7 @@ public class LDRStatusWorker implements Runnable{
 					handler.turnOffScreen();
 					handler.displayTM1637Time(new SimpleDateFormat(Constants.HOUR_MIN).format(new Date()));
 				}else if (!p.isAutoOffScreen() && !handler.isScreenOn()){
-					handler.turnOnScreen(false, lightStatus.getLdrValue()); //basd on the light surrounding.. it will be at the loest
+					handler.turnOnScreen(false, lightStatus.getScreenDimMode()); //basd on the light surrounding.. it will be at the loest
 					handler.turnOffTM1637Time();
 				}
 
@@ -120,9 +117,9 @@ public class LDRStatusWorker implements Runnable{
 				if (!handler.isWifiOn()) {//does not matter if the option to turn off wifi is ON, when day and wifi dowon, turn it on. Since we only turn off wifi at night
 					handler.turnWifiOn();
 				}
+				
+				handler.setBrightness(lightStatus.getLdrValue());
 			}
-
-
 
 		}catch(Throwable tr){
 			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
@@ -131,13 +128,13 @@ public class LDRStatusWorker implements Runnable{
 		}
 	}
 
-	private int getCnt(LightLevel current) {
-		if (lastLightStatus.isDark()  && current.isLight() || 
-				lastLightStatus.isLight() && !current.isLight()) {
-			return 4;
-		}else {
-			return 1;
-		}
-	}
+//	private int getCnt(LightLevel current) {
+//		if (lastLightStatus.isDark()  && current.isLight() || 
+//				lastLightStatus.isLight() && !current.isLight()) {
+//			return 4;
+//		}else {
+//			return 1;
+//		}
+//	}
 
 }

@@ -66,7 +66,7 @@ public class VolumeNew extends JDialog {
 
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		//		setSize(100, 430);
-		setBounds(390, 0, 115, 400);	
+		setBounds(390, 0, 130, 400);	
 
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

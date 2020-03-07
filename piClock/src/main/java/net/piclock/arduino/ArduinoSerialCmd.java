@@ -7,6 +7,7 @@ import com.pi4j.io.serial.*;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
+import net.piclock.enums.ScreenType;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
@@ -71,17 +72,6 @@ public class ArduinoSerialCmd {
 		} catch (InterruptedException e) {}
 	}
 
-//	public static ArduinoSerialCmd getInstance() throws UnsupportedBoardType, IOException, InterruptedException {
-//
-//		if (arduinoSerialCmd == null) {
-//			synchronized (ArduinoSerialCmd.class) {
-//				if(arduinoSerialCmd == null) {
-//					arduinoSerialCmd = new ArduinoSerialCmd();
-//				}
-//			}
-//		}
-//		return arduinoSerialCmd;
-//	}
 
 	public int readLdr() throws IllegalStateException, IOException, InterruptedException {
 		sendCommand(translator.generateLDRCmd());
@@ -92,9 +82,9 @@ public class ArduinoSerialCmd {
 			//convert for pwn on screen
 			ldrVal = (ldrVal - 255) * -1;
 			//3 is the lowest PWM for the screen.. 
-			if (ldrVal > 15){
-				Long ldrLong = map(ldrVal, 0, 255, 3,180);
-				if (ldrLong = 180){
+			if (ldrVal > ScreenType.HYPERPIXEL40.getLowestBrightness()){
+				long ldrLong = map(ldrVal, 0, 255, ScreenType.HYPERPIXEL40.getMinBacklight(),ScreenType.HYPERPIXEL40.getMaxBacklight());
+				if (ldrLong == ScreenType.HYPERPIXEL40.getMaxBacklight()){
 					ldrLong = 255l; //max value
 				}
 				ldrVal = (int)ldrLong;

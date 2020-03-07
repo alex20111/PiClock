@@ -33,7 +33,6 @@ import net.piclock.enums.Buzzer;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
-import net.piclock.enums.Light;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
@@ -65,7 +64,6 @@ public class PiHandler {
 	
 	//commands to ard
 	private  String BUZZER = "buzzer";
-	private  String LDR 	 = "ldr";
 	private  String TIME 	 = "time";
 	private  String TIME_OFF = "timeOff";
 	
@@ -426,6 +424,12 @@ public class PiHandler {
 	}
 	public void shutdown() {
 		setBrightness(255);
+		try {
+			device.turnOffRadio();
+		} catch (IllegalStateException | IOException e) {
+			
+			e.printStackTrace();
+		}
 		GpioFactory.getInstance().shutdown();
 	}
 	public  boolean isScreenOn() {

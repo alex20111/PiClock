@@ -1,38 +1,37 @@
 package net.piclock.bean;
 
-import net.piclock.enums.ScreenType;
 public class LightLevel {
 	
 	public  static final String DARK = "Dark";
 	public  static final String LIGHT = "Light";
 	
-	private ScreenType screenType;
+//	private ScreenType screenType;
 	private String status = LIGHT;
 	
 	private int ldrValue = 0;
 	private int screenDimMode = 0;	
 	
-	public LightLevel(int ldr, ScreenType type) {
+	public LightLevel(int ldr, int dimMode) {
 		this.ldrValue = ldr;
 		
-		if (ldrValue <=  type.getLdrDarkValue()) {
+		if (ldrValue ==  0) {
 			status = DARK;
 		}else {
 			status = LIGHT;
 		}
 		
-		this.screenType = type;
-		this.screenDimMode =type.getLowestBacklight();
+//		this.screenType = type;
+		this.screenDimMode =dimMode;
 	}
 
 
-	public ScreenType getScreenType() {
-		return screenType;
-	}
-
-	public void setScreenType(ScreenType screenType) {
-		this.screenType = screenType;
-	}
+//	public ScreenType getScreenType() {
+//		return screenType;
+//	}
+//
+//	public void setScreenType(ScreenType screenType) {
+//		this.screenType = screenType;
+//	}
 
 	public int getLdrValue() {
 		return ldrValue;
@@ -53,6 +52,11 @@ public class LightLevel {
 	public String status() {
 		return status;
 	}
+	
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 
 	public int getScreenDimMode() {
 		return screenDimMode;
@@ -63,8 +67,7 @@ public class LightLevel {
 	}
 	@Override
 	public String toString() {
-		return "LightLevel [screenType=" + screenType + ", ldrValue=" + ldrValue + ", screenDimMode=" + screenDimMode
-				+ ", status=" + status + "]";
+		return "LightLevel [ldrValue=" + ldrValue + ", status=" + status + ", Dim mode: " + screenDimMode + " ]";
 	}
 	
 

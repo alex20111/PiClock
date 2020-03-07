@@ -142,7 +142,7 @@ public class SwingContext {
 					mfor.message(message);
 				}
 			}else {
-				logger.log(Level.CONFIG,"Message not found");
+				logger.log(Level.CONFIG,"Message not found. Message property: " + propertyName);
 			}
 			sendingMsg = false;
 		}catch (Exception ex) {

@@ -6,7 +6,11 @@ import java.util.logging.Logger;
 
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
+import net.piclock.enums.ScreenType;
 import net.piclock.handlers.PiHandler;
+import net.piclock.main.Constants;
+import net.piclock.main.Preferences;
+import net.piclock.swing.component.SwingContext;
 
 public class MonitorButtonHandler implements ButtonChangeListener {
 
@@ -27,8 +31,11 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 			if (!piHandler.isScreenOn()  ) {
 				try {
 
+					Preferences pref = (Preferences)SwingContext.getInstance().getSharedObject(Constants.PREFERENCES);
 					
-					piHandler.turnOnScreen(true, 255);
+					ScreenType type = ScreenType.valueOf(pref.getScreenType());
+					
+					piHandler.turnOnScreen(true, type.getMinBacklight());  
 					piHandler.autoShutDownScreen(20000);
 				} catch (InterruptedException | IOException e) {
 					logger.log(Level.CONFIG, "in button monitor");

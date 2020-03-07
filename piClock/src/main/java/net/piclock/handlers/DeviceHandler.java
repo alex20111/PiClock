@@ -9,7 +9,6 @@ import com.pi4j.wiringpi.SoftPwm;
 import net.piclock.arduino.ArduinoSerialCmd;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.bean.LightLevel;
-import net.piclock.enums.Light;
 import net.piclock.enums.ScreenType;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
@@ -63,9 +62,10 @@ public class DeviceHandler {
 
 		LightLevel level = null;
 		if (deviceHyperPixel40()) {
-			level = new LightLevel(ard.readLdr(), ScreenType.HYPERPIXEL40);
+			level = new LightLevel(ard.readLdr(), ScreenType.HYPERPIXEL40.getMinBacklight());
 		}else if (devicePiScreen()) {
-			level =  new LightLevel(piScreen.getVisibleLight(), ScreenType.PI_TOUCH_SCREEN);
+					
+			level =  new LightLevel(piScreen.getVisibleLight(), ScreenType.PI_TOUCH_SCREEN.getMinBacklight());
 		}
 		
 		return level;
@@ -108,9 +108,12 @@ public class DeviceHandler {
 	}
 	
 	public void selectRadioChannel(int channel) throws IllegalStateException, IOException {
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!channelllll!!!!!!!!!!!!!!!!!!!!!!!!!:  " + channel);
+		
 		if (deviceHyperPixel40()) {
 			ard.radioSelectChannel(channel);
+		}else if (devicePiScreen()) {
+			float ch =(float)channel / 10;
+			piScreen.setFmStation(ch);
 		}
 	}
 	
