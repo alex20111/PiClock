@@ -3,13 +3,22 @@ package net.piclock.nativeImpl;
 import java.time.LocalDateTime;
 
 public class Tm1637 {
+	
+	private int clk = 4;
+	private int dio = 5;
 
 	static{
 		 System.loadLibrary("piclocknativeC");
 	}
 	
 	public Tm1637(int clk, int dio){
-		init(4,5);
+		this.clk = clk;
+		this.dio = dio;
+//		initProgram();
+	}
+	
+	public void initProgram() {
+		init(clk,dio);
 	}
 	
 	

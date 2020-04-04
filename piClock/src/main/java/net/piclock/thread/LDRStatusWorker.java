@@ -114,7 +114,7 @@ public class LDRStatusWorker implements Runnable{
 					handler.turnOffTM1637Time();
 				}
 
-				if (!handler.isWifiOn()) {//does not matter if the option to turn off wifi is ON, when day and wifi dowon, turn it on. Since we only turn off wifi at night
+				if (!handler.isWifiOn() || handler.isWifiAutoShutdownInProgress()) {//does not matter if the option to turn off wifi is ON, when day and wifi dowon, turn it on. Since we only turn off wifi at night
 					handler.turnWifiOn();
 				}
 				

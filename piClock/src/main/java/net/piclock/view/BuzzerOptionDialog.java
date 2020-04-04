@@ -265,13 +265,20 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 								ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
 								close = true;
 							}else if(btnRadio.isSelected()){
-								//TODO add last volume for radio
+
 								if (radioCmb != null && radioCmb.getSelectedItem() != null) {
-									bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId(), shtDownMin );
-									bs.setSelVolume(lastVolume);
-									ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
+									
+									if (lastVolume != 0) {
+										bs = new BuzzerSelection(Buzzer.RADIO,((RadioEntity)radioCmb.getSelectedItem()).getId(), shtDownMin );
+										bs.setSelVolume(lastVolume);
+										ct.putSharedObject(Constants.BUZZER_CHANGED, bs);
+										close = true;
+									}else {
+										JOptionPane.showMessageDialog(BuzzerOptionDialog.this, "Please select a volume level\nother than 0.",
+												"Radio volume 0", JOptionPane.WARNING_MESSAGE);
+									}
 								}
-								close = true;
+								
 							}else if(btnMp3.isSelected()){
 								if (noMp3Selected){
 									JOptionPane.showMessageDialog(BuzzerOptionDialog.this, "No Mp3 selected,\nplease select a Mp3 or another option",

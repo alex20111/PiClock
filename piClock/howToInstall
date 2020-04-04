@@ -58,7 +58,9 @@ create script start.sh:
   #!/bin/bash
   cd /home/pi/piClock
   sudo java -jar [nameo f jar]
-in raspberry buster add line in autostart located: /etc/xdg/lxsession/LXDE-pi
-  /home/pi/start.sh
+in raspberry buster add the following lines in autostart located: /etc/xdg/lxsession/LXDE-pi
+  point-rpi
+  @lxterminal
+  /home/pi/piClock/scripts/start.sh
 
 enable splash screen.

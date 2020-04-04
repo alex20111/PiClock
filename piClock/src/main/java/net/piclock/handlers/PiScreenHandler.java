@@ -105,14 +105,17 @@ public class PiScreenHandler {
 		logger.log(Level.CONFIG, "Sending time: " + time);
 		int hours = Integer.parseInt(time.substring(0, 2));
 		int minutes = Integer.parseInt(time.substring(3, time.length()));
+		tm1637.initProgram();
 		//0 = 12hrs format, 1=24 hours format
 		tm1637.displayTime(hours, minutes, 1);
 
 	}
 	public void clockOn() {
+		tm1637.initProgram();
 		tm1637.setBrightness(3);
 	}
 	public void clockOff() {
+		tm1637.initProgram();
 		tm1637.displayPoint(false);
 		tm1637.clearDisplay();	
 	}

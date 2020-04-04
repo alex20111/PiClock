@@ -732,7 +732,7 @@ public class PiHandler {
 	}	
 	
 	public void autoWifiShutDown(boolean startAutoShutdown) throws InterruptedException {
-		logger.log(Level.CONFIG, "autoWifiShutDown");
+		logger.log(Level.CONFIG, "autoWifiShutDown. Bool: " + startAutoShutdown);
 		
 		cancelWifiAutoShutdown();
 
