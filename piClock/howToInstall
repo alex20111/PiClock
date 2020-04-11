@@ -43,6 +43,7 @@ Create folder PiClock under the pi home folder.
 		/pi/piClock/temp
 		/piClock/mp3
 		/piClock/nativeLib
+		/piClock/python
 		
 copy piClock-0.0.1-SNAPSHOT.jar under PiClock folder
 		
@@ -62,5 +63,9 @@ in raspberry buster add the following lines in autostart located: /etc/xdg/lxses
   point-rpi
   @lxterminal
   /home/pi/piClock/scripts/start.sh
+
+//verify if power management on the wifi is ON. If On , turn it off.    
+ edit:  sudo nano /etc/rc.local     --> add this line before exit    sudo iwconfig wlan0 power off   
+
 
 enable splash screen.

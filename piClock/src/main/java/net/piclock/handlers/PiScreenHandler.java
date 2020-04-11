@@ -19,6 +19,7 @@ import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
+import home.misc.Exec;
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
 import net.piclock.enums.ScreenType;
@@ -36,9 +37,12 @@ public class PiScreenHandler {
 
 	private int luxHighestValue = 200; //highest value for LUX..
 	private boolean screenOn = true;
+	private boolean clockOn = false;
 
 	private List<ButtonChangeListener> btnListeners = new ArrayList<ButtonChangeListener>();	
 
+	private Thread clockThread;
+	
 	public PiScreenHandler(){
 
 		init();
@@ -79,9 +83,9 @@ public class PiScreenHandler {
 		float luxFloat = tsl2591.getLux();
 		int lux = (int) luxFloat;
 		
-		if (lux > luxHighestValue){//TODO  re-assessed max value once a week
-			luxHighestValue = lux;
-		}
+//		if (lux > luxHighestValue){//TODO  re-assessed max value once a week
+//			luxHighestValue = lux;
+//		}
 
 		//lux of 3 is light in the room
 		//15 to 177 is the backlight control values. 15 being the lowest and 177 highest brightness.
@@ -96,7 +100,7 @@ public class PiScreenHandler {
 			level = (int) resultLux;
 		}
 		
-		logger.config("LUX Float value: " + luxFloat + " LUX int: " + lux + " level: " + level);
+		logger.config("LUX Float value: " + luxFloat + " LUX int: " + lux + " level: " + level + " Highest Lux: " + luxHighestValue);
 		
 		return level;
 	}
@@ -111,13 +115,67 @@ public class PiScreenHandler {
 
 	}
 	public void clockOn() {
-		tm1637.initProgram();
-		tm1637.setBrightness(3);
+		logger.log(Level.CONFIG, "clockOn() -> " + clockOn);
+
+		if (clockThread == null || !clockThread.isAlive()) {
+			clockThread = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					logger.log(Level.CONFIG, "Starting clock thread");
+					int ret = 99;
+					
+
+						try {
+							Exec exec = new Exec();
+
+							exec.addCommand("sudo");
+							exec.addCommand("./scripts/clock.sh");
+							clockOn = true;
+							ret = exec.run();
+
+						}catch(Exception ex) {
+							logger.log(Level.INFO, "Exception in clockThread", ex);
+							clockOn = false;
+						}
+
+				
+					logger.log(Level.CONFIG, "Clock thread finished. " + ret);
+				}
+			});
+			
+			clockThread.start();
+		}else {
+			clockOn = true;
+		}
+		//		tm1637.initProgram();
+		//		tm1637.setBrightness(3);
 	}
 	public void clockOff() {
-		tm1637.initProgram();
-		tm1637.displayPoint(false);
-		tm1637.clearDisplay();	
+		logger.config("Clock off(). is Clock thread alive: " + (clockThread != null ? clockThread.isAlive() : "False"));
+		
+		
+		if (clockThread != null && clockThread.isAlive()) {
+			
+			try {
+				//1st kill the process
+				Exec exec = new Exec();
+
+				exec.addCommand("sudo");
+				exec.addCommand("./scripts/killClock.sh");
+				clockOn = true;
+				int ret = exec.run();
+
+//				clockThread.interrupt();
+				clockOn = false;
+				logger.config("END CLOCK OFF. -> " + exec.getOutput());
+			}catch(Exception ex) {
+				logger.log(Level.SEVERE, "Exception clock off", ex);
+			}
+		}
+//		tm1637.initProgram();
+//		tm1637.displayPoint(false);
+//		tm1637.clearDisplay();	
 	}
 	public void radioOn(){
 		int stat = si4703.powerOn();
@@ -235,4 +293,9 @@ public class PiScreenHandler {
 	//
 	//
 	//	}
+
+
+	public boolean isClockOn() {
+		return clockOn;
+	}
 }

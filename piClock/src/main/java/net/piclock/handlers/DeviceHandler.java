@@ -53,8 +53,11 @@ public class DeviceHandler {
 		
 		if (deviceHyperPixel40()) {
 			ard.writeTime(time);
-		}else if (devicePiScreen()) {
-			piScreen.writeTime(time);
+		}
+		
+		else if (devicePiScreen() && !piScreen.isClockOn()) {
+			
+			piScreen.clockOn();
 		}
 	}
 	
