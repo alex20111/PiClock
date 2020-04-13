@@ -10,6 +10,7 @@ import java.util.Set;
 
 import home.db.ColumnType;
 import home.db.DBConnection;
+import home.db.Database;
 import home.db.DbClass;
 import home.db.PkCriteria;
 import net.piclock.db.entity.Mp3Entity;
@@ -79,7 +80,6 @@ public class Mp3Sql {
 					.setParameter(Mp3Entity.MP3_LENGTH, mp3.getMp3Length())
 					.setParameter(Mp3Entity.MP3_FILE_NAME, mp3.getMp3FileName())
 					.addUpdWhereClause("Where "+Mp3Entity.ID+" = :idValue", mp3.getId()).update();
-//					.update(Mp3Entity.ID, mp3.getId());
 
 			if (upd < 1) {
 				throw new SQLException("Error updating mp3. " + upd);
@@ -251,47 +251,11 @@ public class Mp3Sql {
 
 		return mp3;
 	}
-	//	public List<Mp3Entity> loadMp3FileNameListById(List<Mp3Entity> mp3List) throws SQLException, ClassNotFoundException {
-	//		DBConnection con = null;
-	//		List<Mp3Entity> mp3 = new ArrayList<>();
-	//		try {
-	//			con = getConnection();
-	//			boolean first = false;
-	//			
-	//			StringBuilder query = new StringBuilder();
-	//			query.append("SELECT "+ Mp3Entity.MP3_NAME+ " , " + Mp3Entity.MP3_FILE_NAME + " FROM "
-	//					+ Mp3Entity.TBL_NM + " where " );
-	//			
-	//			for(Mp3Entity m : mp3List){
-	//				if (first){
-	//					first = false;
-	//					query.append(Mp3Entity.ID + " =  " + m.getId());
-	//				}else{
-	//					query.append(" OR " + Mp3Entity.ID + " =  " + m.getId());
-	//				}
-	//			}
-	//			
-	//			ResultSet rs = con.createSelectQuery(query.toString())					
-	//					.getSelectResultSet();
-	//
-	//			if (rs!=null) {
-	//				while(rs.next()) {
-	//					Mp3Entity m2 = new Mp3Entity();
-	//					m2.setMp3FileName(rs.getString(Mp3Entity.MP3_FILE_NAME));
-	//					m2.setMp3Name(rs.getString(Mp3Entity.MP3_NAME));
-	//					mp3.add(m2);
-	//			
-	//				}
-	//			}
-	//		}finally {
-	//			con.close();
-	//		}
-	//
-	//		return mp3;
-	//	}
-
 
 	private DBConnection getConnection() throws ClassNotFoundException, SQLException{
-		return  new DBConnection("jdbc:h2:" +Constants.DB_URL, Constants.DB_USER, Constants.DB_PASS, DbClass.H2 );
+		
+		Database db = new Database("jdbc:h2:" +Constants.DB_URL,Constants.DB_USER, Constants.DB_PASS.toCharArray(), DbClass.H2);
+//		return  new DBConnection("jdbc:h2:" +Constants.DB_URL, Constants.DB_USER, Constants.DB_PASS, DbClass.H2 );
+		return new DBConnection(db);
 	}
 }

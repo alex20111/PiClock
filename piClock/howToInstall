@@ -58,7 +58,7 @@ https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 create script start.sh:
   #!/bin/bash
   cd /home/pi/piClock
-  sudo java -jar [nameo f jar]
+  sudo java -jar [name of jar]
 in raspberry buster add the following lines in autostart located: /etc/xdg/lxsession/LXDE-pi
   point-rpi
   @lxterminal
@@ -69,3 +69,5 @@ in raspberry buster add the following lines in autostart located: /etc/xdg/lxses
 
 
 enable splash screen.
+
+//if you need to recompile the native libraries, follow instruction in /src/net/piclock/nativeC

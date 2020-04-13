@@ -25,14 +25,13 @@ import net.piclock.arduino.ButtonState;
 import net.piclock.enums.ScreenType;
 import net.piclock.nativeImpl.SI4703;
 import net.piclock.nativeImpl.TSL2591;
-import net.piclock.nativeImpl.Tm1637;
 
 public class PiScreenHandler {
 
 	private static final Logger logger = Logger.getLogger( PiScreenHandler.class.getName() );
 
 	private TSL2591 tsl2591;
-	private Tm1637 tm1637;
+//	private Tm1637 tm1637;
 	private SI4703 si4703;
 
 	private int luxHighestValue = 200; //highest value for LUX..
@@ -50,7 +49,6 @@ public class PiScreenHandler {
 
 
 	public void setScreenBrightness(int level) {
-//		logger.log(Level.CONFIG, "In setScreenBrightness. Level: " + level + " ScreenOn: " + screenOn);
 
 		try {
 			String brightness = "/sys/class/backlight/rpi_backlight/brightness";
@@ -105,15 +103,6 @@ public class PiScreenHandler {
 		return level;
 	}
 
-	public void writeTime(String time) {
-		logger.log(Level.CONFIG, "Sending time: " + time);
-		int hours = Integer.parseInt(time.substring(0, 2));
-		int minutes = Integer.parseInt(time.substring(3, time.length()));
-		tm1637.initProgram();
-		//0 = 12hrs format, 1=24 hours format
-		tm1637.displayTime(hours, minutes, 1);
-
-	}
 	public void clockOn() {
 		logger.log(Level.CONFIG, "clockOn() -> " + clockOn);
 
@@ -148,8 +137,6 @@ public class PiScreenHandler {
 		}else {
 			clockOn = true;
 		}
-		//		tm1637.initProgram();
-		//		tm1637.setBrightness(3);
 	}
 	public void clockOff() {
 		logger.config("Clock off(). is Clock thread alive: " + (clockThread != null ? clockThread.isAlive() : "False"));
@@ -166,21 +153,16 @@ public class PiScreenHandler {
 				clockOn = true;
 				int ret = exec.run();
 
-//				clockThread.interrupt();
 				clockOn = false;
-				logger.config("END CLOCK OFF. -> " + exec.getOutput());
+				logger.config("END CLOCK OFF. -> Ret: " + ret + " out: " + exec.getOutput());
 			}catch(Exception ex) {
 				logger.log(Level.SEVERE, "Exception clock off", ex);
 			}
 		}
-//		tm1637.initProgram();
-//		tm1637.displayPoint(false);
-//		tm1637.clearDisplay();	
 	}
 	public void radioOn(){
 		int stat = si4703.powerOn();
 		si4703.setVolume(4);
-		//TODO display error if 
 	}
 	public void radioOff(){
 		si4703.powerOff();
@@ -211,9 +193,6 @@ public class PiScreenHandler {
 		tsl2591 = new TSL2591();
 		tsl2591.init(0x29);
 
-		//init TM1637
-		tm1637 = new Tm1637(4,5); //pins
-
 		//radio
 		si4703 = new SI4703(18,0);
 	}
@@ -238,62 +217,6 @@ public class PiScreenHandler {
 		f.close();
 
 	}
-	//	public static void main(String args[]) throws InterruptedException,  IOException {
-	//
-	//		System.out.println("Starting");
-	//		PiScreenHandler handler = new PiScreenHandler();
-	//
-	//		boolean testScreenBrightness = false;
-	//		boolean testLuxSensor 		 = true;
-	//
-	//
-	//		if (testScreenBrightness) {
-	//			System.out.println("Test brightness settings");
-	//			Thread.sleep(1000);
-	//			Light l = Light.DARK;
-	//			System.out.println("Turning Off screen");
-	//			handler.setScreenBrightness(l);
-	//			Thread.sleep(2000);
-	//			l = Light.VERY_BRIGHT;
-	//			System.out.println("Turning screen back on");
-	//			handler.setScreenBrightness(l);
-	//
-	//			System.out.println("test all levels");
-	//			for (int i = 0; i < Light.values().length ; i++) {
-	//				Light lvl = Light.values()[i];
-	//				System.out.println("Level: " + lvl);
-	//				handler.setScreenBrightness(lvl);
-	//				Thread.sleep(1000);
-	//			}
-	//			l = Light.VERY_BRIGHT;
-	//			System.out.println("Turning screen back on");
-	//			handler.setScreenBrightness(l);
-	//			System.out.println("End of screen brightness test");
-	//
-	//		}
-	//
-	//		if (testLuxSensor) {
-	//			System.out.println("Testing lux sensor");
-	//			//			handler.I2cScanner(I2CBus.BUS_1);
-	//
-	//			Thread.sleep(1000);
-	//
-	//			//			handler.testTSL2561(true);
-	//			for(int y = 0 ; y < 10; y ++) {
-	//				handler.getVisibleLight();
-	//				Thread.sleep(2000);
-	//			}
-	//
-	//
-	//		}		
-	//
-	//
-	//
-	//
-	//
-	//
-	//	}
-
 
 	public boolean isClockOn() {
 		return clockOn;

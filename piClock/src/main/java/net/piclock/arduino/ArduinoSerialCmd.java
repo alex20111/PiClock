@@ -31,7 +31,6 @@ public class ArduinoSerialCmd {
 
 	private static final Logger logger = Logger.getLogger( ArduinoSerialCmd.class.getName() );
 
-//	private static ArduinoSerialCmd arduinoSerialCmd;
 	private Serial serial;
 	private SerialConfig config;
 	private ErrorHandler eh;

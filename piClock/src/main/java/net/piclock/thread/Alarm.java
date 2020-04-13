@@ -19,7 +19,6 @@ import net.piclock.db.sql.Mp3Sql;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
-import net.piclock.enums.Light;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
 import net.piclock.main.Preferences;

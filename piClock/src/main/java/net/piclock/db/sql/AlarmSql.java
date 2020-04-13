@@ -108,7 +108,6 @@ public class AlarmSql {
 					.setParameter(AlarmEntity.ORDER,  alarm.getAlarmOrder())
 					.setParameter(AlarmEntity.ALARM_SHUTDOWN, alarm.getAlarmShutdown()).
 					addUpdWhereClause("Where "+AlarmEntity.ID+" = :idValue", alarm.getId()).update();
-//					.update(AlarmEntity.ID, alarm.getId());
 
 			if (upd < 1) {
 				throw new SQLException("Error updating config. " + upd);

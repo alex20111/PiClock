@@ -44,11 +44,8 @@ public class AlarmMonitorThread implements Runnable, MessageListener{
 
 				//we need to check if the date and time is 1 minute before the alarm sounds off and if it should sound off.
 				LocalDateTime 	date = LocalDateTime.now().plusMinutes(1);					
-//				date = LocalDateTime.now();
 
 				DayOfWeek dayOfWeek = date.getDayOfWeek();
-
-//				logger.config("Running: " + date + " alarmThreadAlive? " + (currAlarmThread != null && currAlarmThread.isAlive() ? "YES" : "NO"));
 
 				alarmTrig.updateTrigger(date);
 
@@ -67,7 +64,6 @@ public class AlarmMonitorThread implements Runnable, MessageListener{
 
 								if (ar.isEqual(dayOfWeek)){
 
-//									System.out.println("generate: " + a.getId());
 									logger.info("Alarm triggered: " + a);
 									alarmTrig.setAlarmTriggered(a.getId());
 
@@ -91,7 +87,7 @@ public class AlarmMonitorThread implements Runnable, MessageListener{
 
 		try{
 			if (message.getPropertyName().equals(Constants.UPDATE_ALARMS)){				
-//				alarms.clear();
+
 				AlarmEntity a = (AlarmEntity)message.getFirstMessage();
 
 				logger.info("Updating alarm list: " + a);

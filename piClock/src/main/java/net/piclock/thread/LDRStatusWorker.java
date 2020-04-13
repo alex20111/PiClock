@@ -27,13 +27,11 @@ public class LDRStatusWorker implements Runnable{
 
 	private LightLevel lastLightStatus = new LightLevel(0, 13);
 
-//	private Map<LightLevel, Integer> cntMap = new HashMap<LightLevel, Integer>();
 	PiHandler handler;
 
 	public LDRStatusWorker() throws IllegalStateException, IOException, InterruptedException {
-//		cntMap.put(Light.DARK, 4);
 		handler = PiHandler.getInstance();
-		
+
 		LightLevel currLight = handler.getLDRstatus();
 
 		cycle = (currLight.isDark() ? LDRCycle.DARK : LDRCycle.LIGHT); 
@@ -51,30 +49,16 @@ public class LDRStatusWorker implements Runnable{
 					" lightStatus: "+ lightStatus + " lastLightStatus: " + lastLightStatus +" AutoOffScreen Option: " + p.isAutoOffScreen());
 
 			if (!lastLightStatus.status().equals(lightStatus.status()) ) {
-//
-//				Integer cMap = cntMap.get(lightStatus);
-//				int cnt = (cMap == null ? 0 : cMap.intValue());
 
-//				if (cnt  >= getCnt(lightStatus)) {
-//					cntMap.clear();
-					//adjust LCD based on the LDR.					
-					lastLightStatus.setStatus(lightStatus.status());
-					if (lightStatus.isDark()) {
-						handler.setBrightness(lightStatus.getScreenDimMode()); //we don't want to turn off screen here
-						cycle = LDRCycle.DARK;
-					}else {
-						handler.setBrightness(lightStatus.getLdrValue());
-						cycle = LDRCycle.LIGHT;
-					}
-//				}else {
-//					cnt++;
-//					cntMap.put(lightStatus, cnt);
-//
-//					if(cntMap.size() > 1) {
-//						cntMap.clear();
-//						cntMap.put(lightStatus, cnt);
-//					}
-//				}
+				//adjust LCD based on the LDR.					
+				lastLightStatus.setStatus(lightStatus.status());
+				if (lightStatus.isDark()) {
+					handler.setBrightness(lightStatus.getScreenDimMode()); //we don't want to turn off screen here
+					cycle = LDRCycle.DARK;
+				}else {
+					handler.setBrightness(lightStatus.getLdrValue());
+					cycle = LDRCycle.LIGHT;
+				}
 			}
 
 			if (cycle == LDRCycle.DARK ){
@@ -82,8 +66,8 @@ public class LDRStatusWorker implements Runnable{
 				if (cycle != lastCycleStatus) {
 					lastCycleStatus = LDRCycle.valueOf(cycle.name());
 				}
-				
-				
+
+
 				//turn off screeen if screen is on.
 				if(p.isAutoOffScreen() && handler.isScreenOn() && !handler.isAutoShutdownInProgress()){
 					handler.turnOffScreen();
@@ -108,7 +92,7 @@ public class LDRStatusWorker implements Runnable{
 				if (cycle != lastCycleStatus) {
 					lastCycleStatus = LDRCycle.valueOf(cycle.name());
 				}
-				
+
 				if (!handler.isScreenOn()) {
 					handler.turnOnScreen(false, lightStatus.getLdrValue());
 					handler.turnOffTM1637Time();
@@ -117,7 +101,7 @@ public class LDRStatusWorker implements Runnable{
 				if (!handler.isWifiOn() || handler.isWifiAutoShutdownInProgress()) {//does not matter if the option to turn off wifi is ON, when day and wifi dowon, turn it on. Since we only turn off wifi at night
 					handler.turnWifiOn();
 				}
-				
+
 				handler.setBrightness(lightStatus.getLdrValue());
 			}
 
@@ -127,14 +111,5 @@ public class LDRStatusWorker implements Runnable{
 			logger.log(Level.SEVERE,"Error in ldr",tr);
 		}
 	}
-
-//	private int getCnt(LightLevel current) {
-//		if (lastLightStatus.isDark()  && current.isLight() || 
-//				lastLightStatus.isLight() && !current.isLight()) {
-//			return 4;
-//		}else {
-//			return 1;
-//		}
-//	}
 
 }

@@ -480,19 +480,15 @@ public class PiHandler {
 		try {
 
 			if (command.equals(TIME)){
-//				cmd.writeTime(value);
 				device.writeTime(value);
 			
 			}else if(command.equals(TIME_OFF)) {
-//				cmd.timeOff();
 				device.turnOffTimeScreen();
 			}else if(command.equals(BUZZER)) {
 				if ( value.equals("true")) {
 					device.buzzerOn();
-//					cmd.buzzer(true);
 				}else {
 					device.buzzerOff();
-//					cmd.buzzer(false);
 				}
 			}
 
@@ -533,7 +529,6 @@ public class PiHandler {
 			mp3Stream.play();
 			
 			handleSpeakers(true);
-//			cmd.turnSpeakerOn();
 		}else {
 			if (mp3Stream != null) {
 				mp3Stream.writeCommand("q");
@@ -541,7 +536,6 @@ public class PiHandler {
 				mp3Stream.stop();
 			}
 			handleSpeakers(false);
-//			cmd.turnSpeakerOff();
 			mp3Stream = null;
 		}
 
@@ -570,7 +564,6 @@ public class PiHandler {
 			streaming.play();
 			
 			handleSpeakers(true);
-//			cmd.turnSpeakerOn();
 		}else {
 			if (streaming != null) {
 				streaming.writeCommand("q");
@@ -578,7 +571,6 @@ public class PiHandler {
 				streaming.stop();
 			}
 			handleSpeakers(false);
-//			cmd.turnSpeakerOff();
 			streaming = null;
 		}
 
@@ -826,6 +818,4 @@ public class PiHandler {
 	public boolean isRadioOn() {
 		return radioOn;
 	}
-	
-
 }

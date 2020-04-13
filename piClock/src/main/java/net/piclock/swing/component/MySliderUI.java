@@ -42,8 +42,6 @@ public class MySliderUI extends BasicSliderUI {
     	
     	 Graphics2D g2d = (Graphics2D) g;
     	 
-//    	 fireThumbPositionListeners(thumbRect.x, thumbRect.y, thumbRect.getSize());
-    
     	 int x = thumbRect.x + 1;
     	 int y = thumbRect.y + 1;
          

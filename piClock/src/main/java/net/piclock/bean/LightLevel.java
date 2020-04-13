@@ -5,7 +5,6 @@ public class LightLevel {
 	public  static final String DARK = "Dark";
 	public  static final String LIGHT = "Light";
 	
-//	private ScreenType screenType;
 	private String status = LIGHT;
 	
 	private int ldrValue = 0;
@@ -20,18 +19,9 @@ public class LightLevel {
 			status = LIGHT;
 		}
 		
-//		this.screenType = type;
 		this.screenDimMode =dimMode;
 	}
 
-
-//	public ScreenType getScreenType() {
-//		return screenType;
-//	}
-//
-//	public void setScreenType(ScreenType screenType) {
-//		this.screenType = screenType;
-//	}
 
 	public int getLdrValue() {
 		return ldrValue;

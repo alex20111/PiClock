@@ -149,7 +149,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					logs.configLogs("mainAppLog", Level.CONFIG, true, true);  					
 					
 					MainApp frame = new MainApp();
-//					frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -221,7 +220,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		weatherConfig = new WeatherConfigView();
 		forecastView = new WeatherForecastView();
 		weatherAlertView = new WeatherAlertView();	
-//		radioStationsView = new RadioStationsView(lblRadioIcon);
 		RadioView radioView = new RadioView(lblRadioIcon);
 		mp3View				   = new Mp3View(lblMp3Icon);
 		
@@ -259,7 +257,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		timePanel.add(weekDateLable, "cell 0 3 4 1,alignx center,aligny top");
 		lblWebserverIcon = new JLabel();
 		lblWebserverIcon.setVisible(false);
-//		timePanel.add(lblWebserverIcon, "cell 0 5");
 		lblWebserverIcon.setBorder(new EmptyBorder(10,10,0,0));
 		lblWebserverIcon.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -517,7 +514,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
 		cardsPanel.add(forecastView, Constants.WEATHER_FORECAST_VIEW);
 		cardsPanel.add(weatherAlertView, Constants.WEATHER_ALERT_VIEW);
-//		cardsPanel.add(radioStationsView, Constants.RADIO_STATION_VIEW); 
 		cardsPanel.add(radioView, Constants.RADIO_STATION_VIEW); //TODO test
 		cardsPanel.add(webServerView, Constants.WEB_SERVER_VIEW);
 		
@@ -569,19 +565,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	}
 	
 	private void clock(){		
-		
-//		SimpleDateFormat sdfDate = new SimpleDateFormat("EEE, MMM d");
-//		Date dt = new Date();
-//		clockLabel.setText(sdfTime.format(dt));
-//		weekDateLable.setText(sdfDate.format(dt));
-//		
-//		Calendar dtf = Calendar.getInstance();
-//		dtf.setTime(dt);
-//		dtf.add(Calendar.MINUTE, 1);
-//		dtf.set(Calendar.SECOND, 00);
-//		dtf.set(Calendar.MILLISECOND, 00);
-//		
-//		long delay = dtf.getTimeInMillis() - dt.getTime();
 		
 		tm.startClock(clockLabel, weekDateLable, 0);
 		

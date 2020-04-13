@@ -86,11 +86,4 @@ public class BuzzerSelection {
 		return "BuzzerSelection [buzzer=" + buzzer + ", radioId=" + radioId + ", mp3Id=" + mp3Id + ", shutdownMin="
 				+ shutdownMin + ", selVolume=" + selVolume + "]";
 	}
-
-
-
-
-
-
-
 }

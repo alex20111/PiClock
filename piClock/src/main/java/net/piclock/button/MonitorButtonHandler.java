@@ -24,8 +24,6 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 
 		logger.log(Level.CONFIG, "Screen on : " + piHandler.isScreenOn() + " WIFI on? " + piHandler.isWifiOn() + "  Button state: " + state);
 
-		//		try {
-
 		if(state == ButtonState.HIGH) {
 
 			if (!piHandler.isScreenOn()  ) {

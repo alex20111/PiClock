@@ -2,30 +2,27 @@ to create a linux library (.so file)
 
 
 1 create a folder on the target system. Ex: /home/pi/native
-2 copy the following files to the PI : 
-  net_piclock_nativeImpl_TSL2591.cpp,
-  net_piclock_nativeImpl_TSL2591.h,
-  2591a.cpp,
-  2591.h
+2 copy all the files under /src/net/piclock/nativeC 
      
 execute the following commands below:  (MORE TO COME FOR MULTIPLE NATIVE)
-
  
- export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-armhf
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-armhf
 
 javah -jni net.piclock.nativeImpl.TSL2591
 
 ------------To compile C++---------------
-g++ -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux net_piclock_nativeImpl_TSL2591.cpp 2591a.cpp -o libpiclocknativeCPP.so -lwiringPi
-g++ -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux net_piclock_nativeImpl_SI4703.cpp SparkFunSi4703.cpp -o libpiclocknativeCPP.so -lwiringPi
+go into the folder where the files were created.
 
-g++ -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux net_piclock_nativeImpl_TSL2591.cpp 2591a.cpp net_piclock_nativeImpl_SI4703.cpp SparkFunSi4703.cpp -o libpiclocknativeCPP.so -lwiringPi
+MULTIPLE LINE COMPILE:  g++ -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux net_piclock_nativeImpl_TSL2591.cpp 2591a.cpp -o libpiclocknativeCPP.so -lwiringPi
+						g++ -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux net_piclock_nativeImpl_SI4703.cpp SparkFunSi4703.cpp -o libpiclocknativeCPP.so -lwiringPi
+
+ONE LINE COMPILE: 		g++ -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux net_piclock_nativeImpl_TSL2591.cpp 2591a.cpp net_piclock_nativeImpl_SI4703.cpp SparkFunSi4703.cpp -o libpiclocknativeCPP.so -lwiringPi
 
 
 ------------to compile C--------------:
 gcc -shared -I${JAVA_HOME}/include  -I${JAVA_HOME}/include/linux -fPIC net_piclock_nativeImpl_Tm1637.c TM1637.c -o libpiclocknativeC.so -lwiringPi
 
-------------- to compile all into 1 library for CPP-------------------------------
+------------- to TEST-------------------------------
 
 excute - only to test
 sudo java -Djava.library.path=/home/pi/java/net/piclock/nativeImpl/ net.piclock.nativeImpl.TSL2591
