@@ -684,7 +684,7 @@ public class PiHandler {
 	 * Check if the computer has an ip address.
 	 * @return
 	 */
-	private boolean checkIfIpPresent() throws ExecuteException, IOException {
+	public boolean checkIfIpPresent() throws ExecuteException, IOException {
 		logger.log(Level.CONFIG, "checkIfIpPresent() ");
 		
 			if (getIpAddress().contains("192.168")){
@@ -764,6 +764,24 @@ public class PiHandler {
 			wifiShutDown.interrupt();
 			logger.log(Level.CONFIG, "autoWifiShutDown: Interrupted wifiShutDown");
 		}
+	}
+	
+	public void rebootWifi() {
+		logger.log(Level.INFO, "Rebooting wifi");
+		try {
+			Exec e = new Exec();
+			e.addCommand("sudo").addCommand("./scripts/rebootWifi.sh");
+
+			e.timeout(15000);
+
+			int ext = e.run();
+		}catch(Exception ex) {
+			logger.log(Level.SEVERE, "error while rebooting wifi", ex);
+		}
+	}
+	//connection to get I2CDevice if needed.
+	public void getI2cDevice() {
+		
 	}
 	/**
 	 * If the radio is requested, tur off mp3 and if mp3 is requested , turn off radio

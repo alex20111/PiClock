@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import net.piclock.enums.HardwareType;
+import net.piclock.enums.LightSensor;
 import net.piclock.enums.ScreenType;
 import net.piclock.main.Preferences;
 
@@ -15,6 +17,9 @@ public class PreferencesHandler {
 
 	//default config
 	private final static String SCREEN_TYPE     = "SCREEN_TYPE";
+	private final static String LIGHT_SENSOR     = "LIGHT_SENSOR";
+	private final static String HWD_TYPE     = "HARDWARE_TYPE";
+	
 	private final static String WIFI_SSID 		= "WIFI_SSID";
 	private final static String WIFI_PASS 		= "WIFI_PASS";
 	private final static String AUTO_SCREEN_OFF = "AUTO_SCREEN_OFF";
@@ -29,11 +34,14 @@ public class PreferencesHandler {
 	
 	//RADIO
 	private final static String RADIO_STATION 		= "RADIO_STATION";
-	private final static String RADIO_SLEEP 		= "RADIO_SLEEP";
 	private final static String RADIO_SLEEP_TIME	= "RADIO_SLEEP_TIME";
 	
 	//VOLUME
 	private final static String LAST_VOLUME	= "VOLUME";
+	
+	//SETTINGS PASSWORD
+	private final static String SETTINGS_PASS_PROTECTED	= "SETTINGS_PASS_PROTECTED";
+	private final static String SETTINGS_PASS	= "SETTINGS_PASS";
 	
 	private final static String prefFileName = "user_prf.cfg";
 	
@@ -47,6 +55,9 @@ public class PreferencesHandler {
 
 			//default config
 			prop.setProperty(SCREEN_TYPE, String.valueOf(prefs.getScreenType()));
+			prop.setProperty(LIGHT_SENSOR, prefs.getLightSensor());
+			prop.setProperty(HWD_TYPE, prefs.getHardwareType());
+			
 			prop.setProperty(AUTO_SCREEN_OFF, String.valueOf(prefs.isAutoOffScreen()));
 			prop.setProperty(WIFI_OFF, String.valueOf(prefs.isWifiOff()));
 			prop.setProperty(WIFI_SSID,prefs.getWifi());
@@ -59,16 +70,16 @@ public class PreferencesHandler {
 			prop.setProperty(WEATHER_REFRESH, String.valueOf(prefs.getWeatherRefresh()));
 			prop.setProperty(WEATHER_STATION_CODE, prefs.getStationCode());
 
-//			private String weatherCountry = "";
-//						private String weatherLang = "en";
-
 			//RADIO
 			prop.setProperty(RADIO_STATION,prefs.getRadioStation());
-			prop.setProperty(RADIO_SLEEP, String.valueOf(prefs.isRadioSleep()));
+//			prop.setProperty(RADIO_SLEEP, String.valueOf(prefs.isRadioSleep()));
 			prop.setProperty(RADIO_SLEEP_TIME, String.valueOf(prefs.getSleepInMin()));
 			
 			prop.setProperty(LAST_VOLUME, String.valueOf(prefs.getLastVolumeLevel()));
 			
+			//settings
+			prop.setProperty(SETTINGS_PASS_PROTECTED, String.valueOf(prefs.isSettingPassProtected()));
+			prop.setProperty(SETTINGS_PASS, prefs.getSettingsPassword());
 			// save properties to project root folder
 			prop.store(output, "User preferences for world best clock");
 		
@@ -99,6 +110,8 @@ public class PreferencesHandler {
 			userPrefs = new Preferences();
 			//default config AUTO_SCREEN_CYCLE
 			userPrefs.setScreenType(prop.getProperty(SCREEN_TYPE, ScreenType.HYPERPIXEL40.name()));
+			userPrefs.setLightSensor(prop.getProperty(LIGHT_SENSOR, LightSensor.TSL2591_PI.name()));
+			userPrefs.setHardwareType(prop.getProperty(HWD_TYPE, HardwareType.PI.name()));
 			userPrefs.setAutoOffScreen(Boolean.valueOf(prop.getProperty(AUTO_SCREEN_OFF, "true")));
 			userPrefs.setWifiOff(Boolean.valueOf(prop.getProperty(WIFI_OFF, "true")));
 			userPrefs.setWifi(prop.getProperty(WIFI_SSID, ""));
@@ -113,12 +126,15 @@ public class PreferencesHandler {
 			userPrefs.setStationCode(prop.getProperty(WEATHER_STATION_CODE, "on-118"));	
 						
 			//RADIO
-			userPrefs.setRadioSleep(Boolean.valueOf(prop.getProperty(RADIO_SLEEP, "false")));
 			userPrefs.setRadioStation(prop.getProperty(RADIO_STATION, ""));
 			userPrefs.setSleepInMin(Integer.parseInt(prop.getProperty(RADIO_SLEEP_TIME, "0")));	
 			
 			//volume
-			userPrefs.setLastVolumeLevel(Integer.parseInt(prop.getProperty(LAST_VOLUME, "20")));	
+			userPrefs.setLastVolumeLevel(Integer.parseInt(prop.getProperty(LAST_VOLUME, "20")));
+			
+			//settings
+			userPrefs.setSettingPassProtected(Boolean.valueOf(prop.getProperty(SETTINGS_PASS_PROTECTED, "false")));
+			userPrefs.setSettingsPassword(prop.getProperty(SETTINGS_PASS, "20"));
 
 		}catch(FileNotFoundException f){
 			userPrefs = new Preferences();

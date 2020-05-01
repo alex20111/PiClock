@@ -1,11 +1,16 @@
 package net.piclock.main;
 
+import net.piclock.enums.HardwareType;
+import net.piclock.enums.LightSensor;
 import net.piclock.enums.ScreenType;
 
 public class Preferences {
 
 	//general settings
 	private String screenType = ScreenType.HYPERPIXEL40.name();
+	private String hardwareType = HardwareType.ARDUINO.name();
+	private String lightSensor  = LightSensor.LDR_ARDUINO.name();
+	
 	private String wifi = "";
 	private String wifiPass = "";
 	private boolean autoOffScreen = true; //turn on off screen
@@ -22,11 +27,14 @@ public class Preferences {
 		
 	//RADIO
 	private String radioStation = "";
-	private boolean radioSleep = false;
 	private int sleepInMin = 0;
 	
 	//volume
 	private int lastVolumeLevel = 20;
+	
+	//Limited access for settings
+	private boolean isSettingPassProtected = false;
+	private String settingsPassword = "";
 	
 	
 
@@ -108,12 +116,6 @@ public class Preferences {
 	public void setRadioStation(String radioStation) {
 		this.radioStation = radioStation;
 	}
-	public boolean isRadioSleep() {
-		return radioSleep;
-	}
-	public void setRadioSleep(boolean radioSleep) {
-		this.radioSleep = radioSleep;
-	}
 	public int getSleepInMin() {
 		return sleepInMin;
 	}
@@ -137,6 +139,30 @@ public class Preferences {
 	}
 	public void setScreenType(String screenType) {
 		this.screenType = screenType;
+	}
+		public String getSettingsPassword() {
+		return settingsPassword;
+	}
+	public void setSettingsPassword(String settingsPassword) {
+		this.settingsPassword = settingsPassword;
+	}
+	public boolean isSettingPassProtected() {
+		return isSettingPassProtected;
+	}
+	public void setSettingPassProtected(boolean isSettingPassProtected) {
+		this.isSettingPassProtected = isSettingPassProtected;
+	}
+	public String getHardwareType() {
+		return hardwareType;
+	}
+	public void setHardwareType(String hardwareType) {
+		this.hardwareType = hardwareType;
+	}
+	public String getLightSensor() {
+		return lightSensor;
+	}
+	public void setLightSensor(String lightSensor) {
+		this.lightSensor = lightSensor;
 	}
 	@Override
 	public String toString() {

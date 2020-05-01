@@ -113,6 +113,21 @@ public class PopupSlider extends JPanel {//implements ThumbPosition{
 		this.useTableLabel = useLabel;
 	}
 	
+	public void setSliderValue(int value) {
+		
+		slider.setValue(value);
+		if (useTableLabel) {
+			Dictionary dic = slider.getLabelTable();
+			JLabel l = (JLabel)dic.get(slider.getValue());
+			lblValue.setText(l.getText());
+
+		}else {
+			lblValue.setText(String.valueOf(slider.getValue()));
+		}
+		
+		
+	}
+	
 	private void initClass(){	
 		 UI = new MySliderUI(slider);	
 		

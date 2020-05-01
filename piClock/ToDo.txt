@@ -4,34 +4,43 @@ add error for other function (Error types to display on screen)  IN progress (Pa
 add daily log file creation.. a log for each day
 THEME ICONS and TEXT customizition
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
-add volume icon in radio view. also there switchin
 finish alarm html page
-split piHandler that it know if using the Pi 7 inch screen or the hyperpixel screen with arduino.  //IN PROGRESS
 
-when weather error, try it again 3 times before generating an error.. (pause and then try);
 create script for installation.
 
 update settings to include LDR values. (as a JDIALOg? )
 Finish label colors when night/day refresh
 loop mp3 whenplaying.
+todo.. add auto update
 
 PiOffical touch:
-	add in shutdown hook a graceful shutdown of the JNI
-	add logic to switch from dark to light or light to dark .
 	Implement timing and GAIN into the TSL2591. The CPP has already the logic for it.
 	SI4703 add seek up/down
-
 	
+Press the button once at night to turn the screen on (delay 30 sec) press it again to turn it back off.
+----- IN PROGRESS -------------
+	
+	
+	Add limited access also to  web page for wifi passwords.
 
 --------------TEST------------
 
+TEST new CLASSES with hardware config , deploy new user_pref  .. don't forget to copy the current one.
+
+
+test new volume option
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
 Test add new web page for backgrounds. In progress
 test alarm html on the server(In prog)
 
 
+when weather error, try it again 3 times before generating an error.. (pause and then try);  
+add network test to reconnect in case of network down.
 
 -----------DONE test----------
+Test password box to access settings
+Add parental control to settings.  --> add new user.cfg and theme.xml
+split piHandler that it know if using the Pi 7 inch screen or the hyperpixel screen with arduino.  //IN PROGRESS
 Test LDRThread with new values..
 	In Device handler, return dark when 0 is return for the arduino command.
 	Test to add calibration to light level..

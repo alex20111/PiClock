@@ -3,42 +3,21 @@ package net.piclock.handlers;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.exec.ExecuteException;
-
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalInput;
-import com.pi4j.io.gpio.PinPullResistance;
-import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 import home.misc.Exec;
-import net.piclock.arduino.ButtonChangeListener;
-import net.piclock.arduino.ButtonState;
-import net.piclock.enums.ScreenType;
 import net.piclock.nativeImpl.SI4703;
-import net.piclock.nativeImpl.TSL2591;
 
 public class PiScreenHandler {
 
 	private static final Logger logger = Logger.getLogger( PiScreenHandler.class.getName() );
 
-	private TSL2591 tsl2591;
-//	private Tm1637 tm1637;
 	private SI4703 si4703;
 
-	private int luxHighestValue = 200; //highest value for LUX..
 	private boolean screenOn = true;
 	private boolean clockOn = false;
-
-	private List<ButtonChangeListener> btnListeners = new ArrayList<ButtonChangeListener>();	
 
 	private Thread clockThread;
 	
@@ -69,39 +48,6 @@ public class PiScreenHandler {
 		}
 	}
 
-	/**
-	 * get lux an map it from 5 to 255
-	 * @return
-	 * @throws ExecuteException
-	 * @throws IOException
-	 */
-	public int getVisibleLight() throws ExecuteException, IOException {		
-
-		int level = 0;
-		float luxFloat = tsl2591.getLux();
-		int lux = (int) luxFloat;
-		
-//		if (lux > luxHighestValue){//TODO  re-assessed max value once a week
-//			luxHighestValue = lux;
-//		}
-
-		//lux of 3 is light in the room
-		//15 to 177 is the backlight control values. 15 being the lowest and 177 highest brightness.
-		if (lux >  ScreenType.PI_TOUCH_SCREEN.getLowestBrightness()){
-			//the LDR will return 
-			long resultLux = map(lux, 0, luxHighestValue, ScreenType.PI_TOUCH_SCREEN.getMinBacklight(), ScreenType.PI_TOUCH_SCREEN.getMaxBacklight());
-
-			if (resultLux == ScreenType.PI_TOUCH_SCREEN.getMaxBacklight()){
-				resultLux = 255;
-			}
-			
-			level = (int) resultLux;
-		}
-		
-		logger.config("LUX Float value: " + luxFloat + " LUX int: " + lux + " level: " + level + " Highest Lux: " + luxHighestValue);
-		
-		return level;
-	}
 
 	public void clockOn() {
 		logger.log(Level.CONFIG, "clockOn() -> " + clockOn);
@@ -162,7 +108,7 @@ public class PiScreenHandler {
 	}
 	public void radioOn(){
 		int stat = si4703.powerOn();
-		si4703.setVolume(4);
+		si4703.setVolume(1);
 	}
 	public void radioOff(){
 		si4703.powerOff();
@@ -170,44 +116,13 @@ public class PiScreenHandler {
 	public void setFmStation(float fmStation){
 		si4703.setFrequency(fmStation);
 	}
-	public void addButtonListeners(ButtonChangeListener btn){
-		btnListeners.add(btn);
-	}
+
 	private void init(){
-		final GpioController gpio = GpioFactory.getInstance();
-		// provision gpio pin #02 as an input pin with its internal pull down resistor enabled
-		final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(RaspiPin.GPIO_02, PinPullResistance.PULL_DOWN);
-
-		myButton.setDebounce(100);
-
-		// create and register gpio pin listener
-		myButton.addListener(new GpioPinListenerDigital() {
-			@Override
-			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				ButtonState state = event.getState().isHigh() ? ButtonState.HIGH : ButtonState.LOW;
-				fireBtnChangeEvent(state);
-			}
-		});
-
-		//init the LUX sensor
-		tsl2591 = new TSL2591();
-		tsl2591.init(0x29);
 
 		//radio
 		si4703 = new SI4703(18,0);
 	}
 
-	private synchronized void fireBtnChangeEvent(ButtonState buttonState) {
-
-		Iterator<ButtonChangeListener> listeners = btnListeners.iterator();
-		while( listeners.hasNext() ) {
-			ButtonChangeListener bl =  (ButtonChangeListener) listeners.next();
-			bl.stateChanged( buttonState );
-		}
-	}
-	private long map(long x, long in_min, long in_max, long out_min, long out_max) {
-		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-	}
 	private void writeToScreenFile(int level, String filePath) throws IOException{
 		RandomAccessFile f;
 

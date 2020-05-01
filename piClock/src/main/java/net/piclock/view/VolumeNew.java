@@ -1,6 +1,7 @@
 package net.piclock.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,6 +14,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicArrowButton;
 
 import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.Mp3Entity;
@@ -27,6 +29,9 @@ import net.piclock.swing.component.PopupSlider;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.PreferencesHandler;
 import javax.swing.BoxLayout;
+import java.awt.Font;
+import java.awt.Component;
+import net.miginfocom.swing.MigLayout;
 
 
 public class VolumeNew extends JDialog {
@@ -47,8 +52,13 @@ public class VolumeNew extends JDialog {
 	private Thread sampleVolThrd;
 
 	private int mutedValue = -1;
+	private JPanel panel;
+	private BasicArrowButton btnVolUp;
+	private BasicArrowButton btnVolDown;
 
-
+	
+	private Thread btnCounter;
+	private boolean keepRunning = false;
 	/**
 	 * Create the dialog.
 	 */
@@ -66,7 +76,7 @@ public class VolumeNew extends JDialog {
 
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		//		setSize(100, 430);
-		setBounds(390, 0, 130, 400);	
+		setBounds(390, 0, 140, 390);	
 
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -78,7 +88,8 @@ public class VolumeNew extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("OK");
-				okButton.setPreferredSize(new Dimension(57, 23));
+				okButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
+				okButton.setPreferredSize(new Dimension(57, 30));
 				okButton.addActionListener(l -> {
 
 					if (config.isFromAlarm()){						
@@ -118,6 +129,8 @@ public class VolumeNew extends JDialog {
 			{
 
 				muteButton = new JButton("mute");
+				muteButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
+				muteButton.setPreferredSize(new Dimension(57, 30));
 				buttonPane.add(muteButton);
 				muteButton.addActionListener(l ->{
 
@@ -137,6 +150,7 @@ public class VolumeNew extends JDialog {
 				});				
 			}			
 			sampleVolBtn = new JButton("Test");
+			sampleVolBtn.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			sampleVolBtn.addActionListener(l ->{
 
 				//sample for 5 seconds
@@ -199,6 +213,61 @@ public class VolumeNew extends JDialog {
 
 
 		getContentPane().add(s, BorderLayout.CENTER);
+		
+		panel = new JPanel();
+		getContentPane().add(panel, BorderLayout.EAST);
+		panel.setLayout(new MigLayout("", "[30px,fill]", "[23px,grow,fill][grow,fill]"));
+		
+		btnVolUp = new BasicArrowButton(BasicArrowButton.NORTH);
+		btnVolUp.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnVolUp.setBackground(Color.LIGHT_GRAY);
+		panel.add(btnVolUp, "cell 0 0,alignx right,aligny top");
+		
+		btnVolDown = new BasicArrowButton(BasicArrowButton.SOUTH);
+		btnVolDown.setBackground(Color.LIGHT_GRAY);
+		btnVolDown.addMouseListener(new MouseAdapter(){
+
+			@Override
+			public void mouseReleased(MouseEvent e) {			
+				try {
+					keepRunning = false;
+					btnCounter.interrupt();
+
+					handler.adjustVolume(s.getSlider().getValue());
+
+				} catch (IOException e1) {
+					logger.log(Level.CONFIG, "Error " , e1);
+				}
+			}
+			
+		
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				keepRunning = true;
+				
+				btnCounter = new Thread(new Runnable(){
+
+					
+					@Override
+					public void run() {
+						while(keepRunning){
+							int val = s.getSlider().getValue();
+							if (val != 0) {							
+								val --;							
+								s.setSliderValue(val);
+							}
+							try {
+								Thread.sleep(200);
+							} catch (InterruptedException e) {}
+						}	
+					}					
+				});
+				btnCounter.start();
+			}
+		});		
+
+		panel.add(btnVolDown, "cell 0 1");
 
 		if (config.isFromAlarm()){
 			muteButton.setVisible(false);
@@ -209,6 +278,48 @@ public class VolumeNew extends JDialog {
 			muteButton.setVisible(true);
 			sampleVolBtn.setVisible(false);
 		}
+		
+		
+		btnVolUp.addMouseListener(new MouseAdapter(){
+
+			@Override
+			public void mouseReleased(MouseEvent e) {			
+				try {
+					keepRunning = false;
+					btnCounter.interrupt();
+
+					handler.adjustVolume(s.getSlider().getValue());
+
+				} catch (IOException e1) {
+					logger.log(Level.CONFIG, "Error " , e1);
+				}
+			}
+			
+		
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				keepRunning = true;
+				btnCounter = new Thread(new Runnable(){
+
+					@Override
+					public void run() {
+						while(keepRunning){
+							int val = s.getSlider().getValue();
+							if (val != 100) {							
+								val ++;							
+								s.setSliderValue(val);
+							}
+							try {
+								Thread.sleep(200);
+							} catch (InterruptedException e) {}
+						}	
+					}					
+				});
+				btnCounter.start();
+			}
+		});		
+
 
 
 		s.getSlider().addMouseListener(new MouseAdapter(){
@@ -229,25 +340,6 @@ public class VolumeNew extends JDialog {
 
 
 	} 
-	//	private void adjustVolume(int volume) throws IOException{
-	//		logger.log(Level.CONFIG, "manipulate volume: " + volume);
-	//		Exec exec = new Exec();
-	//		exec.addCommand("amixer").addCommand("-c").addCommand("1").addCommand("set")
-	//		.addCommand("Speaker").addCommand(String.valueOf(volume) + "%").timeout(10000);
-	//		
-	//		int ext = exec.run();
-	//		
-	//		if (ext > 0 ){
-	//			logger.log(Level.INFO, "Problem with volume. Ext: " + ext + "  output: " + exec.getOutput());
-	//		}
-	//		
-	////		if (prefs.getLastVolumeLevel() == 0 && s.getValue() > 0) {
-	////			logger.log(Level.CONFIG, "Volume unmuted");
-	////			ThemeHandler t = (ThemeHandler) ct.getSharedObject(Constants.THEMES_HANDLER);
-	////			volumeButton.setIcon(t.getIcon(IconEnum.VOLUME_ICON));
-	////			t.registerIconColor(volumeButton, IconEnum.VOLUME_ICON);
-	////		}
-	//		
-	//	}
+
 
 }

@@ -169,6 +169,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		prefs = PreferencesHandler.read();	
 		ct.putSharedObject(Constants.PREFERENCES, prefs);
 		
+		ct.putSharedObject(Constants.HARDWARE, new HardwareConfig(prefs));
+		
 		ErrorView ev = new ErrorView();
 		
 		tm = ThreadManager.getInstance();
@@ -537,6 +539,9 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		//start the LDR
 		tm.startLdr();
+		
+		//start Network check // 2 min delay
+		tm.startNetworkCheck(2);
 			
 		//check if we have wifi credentials.
 		if (prefs.isWifiCredentialProvided()){
@@ -679,11 +684,19 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try{
-					configView.load();  
-					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
-					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
-					cardLayout.show(cardsPanel, Constants.CONFIG_VIEW);
+				try{				
+					
+					Security s = new Security();
+					
+					boolean canAccess = s.validateSettingsAccess();
+					
+					if (canAccess) {
+						configView.load();  
+						keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
+						CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
+						cardLayout.show(cardsPanel, Constants.CONFIG_VIEW);
+					}
+					
 				}catch (Exception ex){
 					String fmtEx = new FormatStackTrace(ex).getFormattedException();
 					eh.addError(ErrorType.GENERAL, new ErrorInfo(fmtEx));

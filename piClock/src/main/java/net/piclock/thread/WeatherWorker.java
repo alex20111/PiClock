@@ -1,8 +1,12 @@
 package net.piclock.thread;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.syndication.io.ParsingFeedException;
 
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
@@ -53,54 +57,88 @@ public class WeatherWorker implements Runnable {
 
 			if (handler.isWifiConnected()){
 
+				int retry = 0;
+
 				Host host = Host.valueOf(pref.getWeatherProvider());
 
-				if (host == Host.envCanada) {
-					wgm =  WeatherAction.getEnvironmentCanadaRSSWeather(pref.getStationCode(), WeatherLang.english, false, true);
-				}else if (host == Host.DARKSKY) {
-					wgm = WeatherAction.getDarkSkyForecast(Double.valueOf(city.getLat()).longValue(),Double.valueOf( city.getLon()).longValue(), null, DarkSkyUnits.SI,  WeatherLang.english);
+				while (retry < 3) {
+					boolean inError = false;
+					retry++;
+					try {
+
+						if (host == Host.envCanada) {
+							wgm =  WeatherAction.getEnvironmentCanadaRSSWeather(pref.getStationCode(), WeatherLang.english, false, true);
+						}else if (host == Host.DARKSKY) {
+							wgm = WeatherAction.getDarkSkyForecast(Double.valueOf(city.getLat()).longValue(),Double.valueOf( city.getLon()).longValue(), null, DarkSkyUnits.SI,  WeatherLang.english);
+						}
+
+						ct.putSharedObject(Constants.WEATHER_LST_UPD, new Date());//to prevent too many refresh.
+
+						ct.putSharedObject(Constants.FORECAST_RESULT, wgm);
+
+						//Environment canada
+
+						WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
+						if (host == Host.envCanada) {
+							logger.log(Level.CONFIG, "Current Weather NAME: " + wcm.getSummary());
+							ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+							if (summaryContains(wcm.getSummary(), "rain")){						
+								theme.loadRainBackdrop();
+							}else if (summaryContains(wcm.getSummary(),"thunder")){						
+								theme.loadThunderBackdrop();
+							}else if (summaryContains(wcm.getSummary(),"snow")){						
+								theme.loadSnowBackdrop();
+							}else if (summaryContains(wcm.getSummary(),"cloud")) {					
+								theme.loadCloudyBackdrop();
+							}else if (summaryContains(wcm.getSummary(),"fog","mist")){					
+								theme.loadFogBackdrop();
+							}else {//default sunny						
+								theme.loadSunnyBackdrop();
+							}
+						}else if (host == Host.DARKSKY) {
+							logger.log(Level.CONFIG, "Dark Sky Current Weather : " + wcm.getSummary());
+							ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+							if (summaryContains(wcm.getSummary(), "rain", "drizzle")){						
+								theme.loadRainBackdrop();
+							}else if (summaryContains(wcm.getSummary(),"thunder")){						
+								theme.loadThunderBackdrop();
+							}else if (summaryContains(wcm.getSummary(),"snow")){						
+								theme.loadSnowBackdrop();
+							}else if (summaryContains(wcm.getSummary(),"cloud")) {					
+								theme.loadCloudyBackdrop();
+							}else if (summaryContains(wcm.getSummary(),"fog","mist")){					
+								theme.loadFogBackdrop();
+							}else {//default sunny						
+								theme.loadSunnyBackdrop();
+							}
+						}
+						
+						retry = 99;
+
+					}catch(UnknownHostException uhx) {
+						Thread.sleep(10000);
+						logger.log(Level.INFO, "Unknown host exception. Retry # " + retry);
+						inError = true;
+						
+					} catch(ParsingFeedException pfe) {
+						logger.log(Level.INFO, "ParsingFeedException. Retry" + retry); //TODO write it to file.
+						Thread.sleep(10000);
+						inError = true;
+					}
+					catch(SocketException s) {
+						logger.log(Level.INFO, "SocketException. Retry" + retry); //TODO write it to file.
+						Thread.sleep(10000);
+						inError = true;
+					}
+					
+					if (retry == 3 && inError) {
+						//tried 3 times and failed.
+						wgm.addMessage("Error", "Max tries", Message.INFO);
+						ct.putSharedObject(Constants.FORECAST_DISPLAY_ERROR, wgm);
+						logger.log(Level.CONFIG, "Weather max tries");
+					}
 				}
 
-				ct.putSharedObject(Constants.WEATHER_LST_UPD, new Date());//to prevent too many refresh.
-
-				ct.putSharedObject(Constants.FORECAST_RESULT, wgm);
-
-				//Environment canada
-
-				WeatherCurrentModel wcm = wgm.getWeatherCurrentModel();
-				if (host == Host.envCanada) {
-					logger.log(Level.CONFIG, "Current Weather NAME: " + wcm.getSummary());
-					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-					if (summaryContains(wcm.getSummary(), "rain")){						
-						theme.loadRainBackdrop();
-					}else if (summaryContains(wcm.getSummary(),"thunder")){						
-						theme.loadThunderBackdrop();
-					}else if (summaryContains(wcm.getSummary(),"snow")){						
-						theme.loadSnowBackdrop();
-					}else if (summaryContains(wcm.getSummary(),"cloud")) {					
-						theme.loadCloudyBackdrop();
-					}else if (summaryContains(wcm.getSummary(),"fog","mist")){					
-						theme.loadFogBackdrop();
-					}else {//default sunny						
-						theme.loadSunnyBackdrop();
-					}
-				}else if (host == Host.DARKSKY) {
-					logger.log(Level.CONFIG, "Dark Sky Current Weather : " + wcm.getSummary());
-					ThemeHandler theme = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
-					if (summaryContains(wcm.getSummary(), "rain", "drizzle")){						
-						theme.loadRainBackdrop();
-					}else if (summaryContains(wcm.getSummary(),"thunder")){						
-						theme.loadThunderBackdrop();
-					}else if (summaryContains(wcm.getSummary(),"snow")){						
-						theme.loadSnowBackdrop();
-					}else if (summaryContains(wcm.getSummary(),"cloud")) {					
-						theme.loadCloudyBackdrop();
-					}else if (summaryContains(wcm.getSummary(),"fog","mist")){					
-						theme.loadFogBackdrop();
-					}else {//default sunny						
-						theme.loadSunnyBackdrop();
-					}
-				}
 			}else{
 				wgm.addMessage("No Wifi", "Not connected to WIFI", Message.INFO);
 				ct.putSharedObject(Constants.FORECAST_DISPLAY_ERROR, wgm);

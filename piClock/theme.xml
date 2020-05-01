@@ -43,6 +43,8 @@
 				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				
 			
 			</label>
 			<labelIcon name="icons">
@@ -104,6 +106,7 @@
 				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -165,6 +168,7 @@
 				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -226,6 +230,7 @@
 				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -287,6 +292,7 @@
 				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">
@@ -348,6 +354,7 @@
 				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
 			
 			</label>
 			<labelIcon name="icons">

@@ -1,5 +1,6 @@
 package net.piclock.thread;
 
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,6 +61,8 @@ public class TempSensorWorker implements Runnable{
 				logger.log(Level.CONFIG, "SensorTemp pooling finished!!!!!!!!!!");
 
 			}
+		}catch(SocketException se) {
+			logger.log(Level.INFO, "Socket exception Temp Sensor", se);
 		}catch(Exception ex) {
 			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
 			eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));

@@ -19,8 +19,10 @@ import net.piclock.db.sql.Mp3Sql;
 import net.piclock.db.sql.RadioSql;
 import net.piclock.enums.AlarmRepeat;
 import net.piclock.enums.Buzzer;
+import net.piclock.enums.ScreenType;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
+import net.piclock.main.HardwareConfig;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.MessageListener;
@@ -106,6 +108,8 @@ public class Alarm implements Runnable, MessageListener{
 
 		try {
 			Preferences pref = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+			HardwareConfig hw = (HardwareConfig)SwingContext.getInstance().getSharedObject(Constants.HARDWARE);
+			
 			Buzzer buzzer = Buzzer.valueOf(alarm.getAlarmSound());			
 
 			if (pref.isWeatherActivated() ){
@@ -173,8 +177,9 @@ public class Alarm implements Runnable, MessageListener{
 
 				autoAlarmShutOff(true, alarm.getAlarmShutdown()); //start alarm auto shutdown
 
-				if (!handler.isScreenOn()){						
-					handler.turnOnScreen(false, 255);
+				if (!handler.isScreenOn()){	
+					ScreenType type = hw.getScreenType();
+					handler.turnOnScreen(false, type.getLowestBrightness());
 					handler.autoShutDownScreen(45000);
 				}	
 				

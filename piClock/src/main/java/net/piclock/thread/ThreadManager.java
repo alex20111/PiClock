@@ -33,7 +33,7 @@ public class ThreadManager {
 	public int wthErrorCount = 0;
 	
 	private ThreadManager(){		
-		scheduler = Executors.newScheduledThreadPool(10);
+		scheduler = Executors.newScheduledThreadPool(11);
 		
 	}
 	public static ThreadManager getInstance(){
@@ -145,6 +145,10 @@ public class ThreadManager {
 	public void startClock (JLabel clockLabel, JLabel weekDateLable, long delay) {
 		logger.log(Level.CONFIG, "startClock");
 		scheduler.scheduleAtFixedRate(new Clock(clockLabel, weekDateLable), delay, 2000, TimeUnit.MILLISECONDS);
+	}
+	public void startNetworkCheck(long delay) {
+		logger.log(Level.CONFIG, "Network Verification");
+		scheduler.scheduleAtFixedRate(new VerifyNetwork(), delay, 5, TimeUnit.MINUTES);
 	}
 	@SuppressWarnings("unchecked")
 	public void startSensorThread() {

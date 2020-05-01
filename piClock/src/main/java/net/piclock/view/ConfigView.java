@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +63,7 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 
 	private ImageUtils img;
 	private JCheckBox chckbxTurnOffWIFI;
+	private JCheckBox chckbxPassConfig;
 
 	/**
 	 * Create the panel.
@@ -236,6 +238,51 @@ public class ConfigView extends JPanel implements PropertyChangeListener {
 		add(chckbxTurnOffWIFI, "cell 2 5 3 1");
 		
 		theme.registerLabelTextColor(chckbxTurnOffWIFI, LabelEnums.CFG_WIFI_CHKBX);
+		
+		chckbxPassConfig = new JCheckBox("Password protected config");
+		chckbxPassConfig.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxPassConfig.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				 JCheckBox cbLog = (JCheckBox) e.getSource();
+				 
+				 Preferences prefs = (Preferences)ct.getSharedObject(Constants.PREFERENCES);
+				 
+			        if (cbLog.isSelected()) {
+			            System.out.println("Logging is enabled");
+			            KeyBoard key = new KeyBoard(false);
+			            key.setText(prefs.getSettingsPassword());
+			            key.setVisible(true);
+			            String pass= key.getText().trim();
+			            if (pass.length() != 0) {
+			            	prefs.setSettingPassProtected(true);
+			            	prefs.setSettingsPassword(pass);
+			            }else {
+			            	cbLog.setSelected(false);
+			            }
+			            
+			            
+			        } else {
+			            System.out.println("removing password from settings");
+			           
+			            prefs.setSettingPassProtected(false);		            
+			        }
+			        
+		            try {
+						PreferencesHandler.save(prefs);
+						
+						ct.putSharedObject(Constants.PREFERENCES, prefs);
+					} catch (IOException e1) {
+						logger.log(Level.SEVERE, "error saving prefrences", e1);
+					}  
+			}
+		});
+		
+		
+		
+		theme.registerLabelTextColor(chckbxPassConfig, LabelEnums.CFG_PASS_CONFIG);
+		add(chckbxPassConfig, "cell 2 6");
 
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);

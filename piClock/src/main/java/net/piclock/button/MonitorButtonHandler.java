@@ -9,7 +9,7 @@ import net.piclock.arduino.ButtonState;
 import net.piclock.enums.ScreenType;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
-import net.piclock.main.Preferences;
+import net.piclock.main.HardwareConfig;
 import net.piclock.swing.component.SwingContext;
 
 public class MonitorButtonHandler implements ButtonChangeListener {
@@ -29,9 +29,9 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 			if (!piHandler.isScreenOn()  ) {
 				try {
 
-					Preferences pref = (Preferences)SwingContext.getInstance().getSharedObject(Constants.PREFERENCES);
+					HardwareConfig hw = (HardwareConfig)SwingContext.getInstance().getSharedObject(Constants.HARDWARE);
 					
-					ScreenType type = ScreenType.valueOf(pref.getScreenType());
+					ScreenType type = hw.getScreenType();
 					
 					piHandler.turnOnScreen(true, type.getMinBacklight());  
 					piHandler.autoShutDownScreen(20000);

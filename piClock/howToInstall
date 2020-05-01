@@ -1,6 +1,6 @@
 ON PI:
 
-install JAVA 8:(https://www.raspberrypi.org/forums/viewtopic.php?t=248561)
+install JAVA 8:(https://www.raspberrypi.org/forums/viewtopic.php?t=248561)   /usr/lib/jvm
 sudo apt update
 sudo apt install openjdk-8-jdk
 
@@ -71,3 +71,5 @@ in raspberry buster add the following lines in autostart located: /etc/xdg/lxses
 enable splash screen.
 
 //if you need to recompile the native libraries, follow instruction in /src/net/piclock/nativeC
+
+//ad static ip: https://pimylifeup.com/raspberry-pi-static-ip-address/
