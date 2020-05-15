@@ -1,16 +1,16 @@
 package net.piclock.enums;
 
 public enum ScreenType {
-	PI_TOUCH_SCREEN(13,177, 1), HYPERPIXEL40(3,180,15);
+	PI_TOUCH_SCREEN(13,177), HYPERPIXEL40(3,180);
 	
 	private int minBacklight = 0;
-	private int maxBacklight = 0;//value from the LDR when the screen should turn black
-	private int lowestBrightness = 0; //the lowest level of the ldr value for brightness in a room
+	private int maxBacklight = 0;//value from the LDR when the screen should turn 
 	
-	private ScreenType(int min, int max, int low) {
+	
+	private ScreenType(int min, int max) {
 		this.minBacklight = min;
 		this.maxBacklight = max;
-		this.lowestBrightness = low;
+//		this.lowestBrightness = low;
 	}
 	
 	public int getMinBacklight() {
@@ -21,7 +21,7 @@ public enum ScreenType {
 		return this.maxBacklight;
 	}
 	
-	public int getLowestBrightness() {
-		return this.lowestBrightness;
-	}
+//	public int getLowestBrightness() {
+//		return this.lowestBrightness;
+//	}
 }

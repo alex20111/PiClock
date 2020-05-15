@@ -73,3 +73,10 @@ enable splash screen.
 //if you need to recompile the native libraries, follow instruction in /src/net/piclock/nativeC
 
 //ad static ip: https://pimylifeup.com/raspberry-pi-static-ip-address/
+
+
+--- User config ---
+SETUP user config based on the hardware before running. USER_PREF.cfg
+Hardware : What hardware we are using for GPIO or other ..
+LightSensor: enum to define where it is located.
+

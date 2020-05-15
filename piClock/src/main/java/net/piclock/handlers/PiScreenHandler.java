@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import home.misc.Exec;
 import net.piclock.nativeImpl.SI4703;
 
 public class PiScreenHandler {
@@ -17,9 +16,6 @@ public class PiScreenHandler {
 	private SI4703 si4703;
 
 	private boolean screenOn = true;
-	private boolean clockOn = false;
-
-	private Thread clockThread;
 	
 	public PiScreenHandler(){
 
@@ -49,63 +45,6 @@ public class PiScreenHandler {
 	}
 
 
-	public void clockOn() {
-		logger.log(Level.CONFIG, "clockOn() -> " + clockOn);
-
-		if (clockThread == null || !clockThread.isAlive()) {
-			clockThread = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					logger.log(Level.CONFIG, "Starting clock thread");
-					int ret = 99;
-					
-
-						try {
-							Exec exec = new Exec();
-
-							exec.addCommand("sudo");
-							exec.addCommand("./scripts/clock.sh");
-							clockOn = true;
-							ret = exec.run();
-
-						}catch(Exception ex) {
-							logger.log(Level.INFO, "Exception in clockThread", ex);
-							clockOn = false;
-						}
-
-				
-					logger.log(Level.CONFIG, "Clock thread finished. " + ret);
-				}
-			});
-			
-			clockThread.start();
-		}else {
-			clockOn = true;
-		}
-	}
-	public void clockOff() {
-		logger.config("Clock off(). is Clock thread alive: " + (clockThread != null ? clockThread.isAlive() : "False"));
-		
-		
-		if (clockThread != null && clockThread.isAlive()) {
-			
-			try {
-				//1st kill the process
-				Exec exec = new Exec();
-
-				exec.addCommand("sudo");
-				exec.addCommand("./scripts/killClock.sh");
-				clockOn = true;
-				int ret = exec.run();
-
-				clockOn = false;
-				logger.config("END CLOCK OFF. -> Ret: " + ret + " out: " + exec.getOutput());
-			}catch(Exception ex) {
-				logger.log(Level.SEVERE, "Exception clock off", ex);
-			}
-		}
-	}
 	public void radioOn(){
 		int stat = si4703.powerOn();
 		si4703.setVolume(1);
@@ -133,7 +72,4 @@ public class PiScreenHandler {
 
 	}
 
-	public boolean isClockOn() {
-		return clockOn;
-	}
 }

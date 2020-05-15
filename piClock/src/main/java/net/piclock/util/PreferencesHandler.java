@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import net.piclock.enums.ClockType;
 import net.piclock.enums.HardwareType;
 import net.piclock.enums.LightSensor;
 import net.piclock.enums.ScreenType;
@@ -19,6 +20,7 @@ public class PreferencesHandler {
 	private final static String SCREEN_TYPE     = "SCREEN_TYPE";
 	private final static String LIGHT_SENSOR     = "LIGHT_SENSOR";
 	private final static String HWD_TYPE     = "HARDWARE_TYPE";
+	private final static String CLOCK_TYPE  = "CLOCK_TYPE";
 	
 	private final static String WIFI_SSID 		= "WIFI_SSID";
 	private final static String WIFI_PASS 		= "WIFI_PASS";
@@ -57,6 +59,7 @@ public class PreferencesHandler {
 			prop.setProperty(SCREEN_TYPE, String.valueOf(prefs.getScreenType()));
 			prop.setProperty(LIGHT_SENSOR, prefs.getLightSensor());
 			prop.setProperty(HWD_TYPE, prefs.getHardwareType());
+			prop.setProperty(CLOCK_TYPE, prefs.getClockType());
 			
 			prop.setProperty(AUTO_SCREEN_OFF, String.valueOf(prefs.isAutoOffScreen()));
 			prop.setProperty(WIFI_OFF, String.valueOf(prefs.isWifiOff()));
@@ -112,6 +115,7 @@ public class PreferencesHandler {
 			userPrefs.setScreenType(prop.getProperty(SCREEN_TYPE, ScreenType.HYPERPIXEL40.name()));
 			userPrefs.setLightSensor(prop.getProperty(LIGHT_SENSOR, LightSensor.TSL2591_PI.name()));
 			userPrefs.setHardwareType(prop.getProperty(HWD_TYPE, HardwareType.PI.name()));
+			userPrefs.setClockType(prop.getProperty(CLOCK_TYPE, ClockType.TM1637_PI.name()));
 			userPrefs.setAutoOffScreen(Boolean.valueOf(prop.getProperty(AUTO_SCREEN_OFF, "true")));
 			userPrefs.setWifiOff(Boolean.valueOf(prop.getProperty(WIFI_OFF, "true")));
 			userPrefs.setWifi(prop.getProperty(WIFI_SSID, ""));

@@ -1,5 +1,6 @@
 package net.piclock.main;
 
+import net.piclock.enums.ClockType;
 import net.piclock.enums.HardwareType;
 import net.piclock.enums.LightSensor;
 import net.piclock.enums.ScreenType;
@@ -10,6 +11,7 @@ public class Preferences {
 	private String screenType = ScreenType.HYPERPIXEL40.name();
 	private String hardwareType = HardwareType.ARDUINO.name();
 	private String lightSensor  = LightSensor.LDR_ARDUINO.name();
+	private String clockType   = ClockType.TM1637_PI.name();
 	
 	private String wifi = "";
 	private String wifiPass = "";
@@ -163,6 +165,12 @@ public class Preferences {
 	}
 	public void setLightSensor(String lightSensor) {
 		this.lightSensor = lightSensor;
+	}
+	public String getClockType() {
+		return clockType;
+	}
+	public void setClockType(String clockType) {
+		this.clockType = clockType;
 	}
 	@Override
 	public String toString() {

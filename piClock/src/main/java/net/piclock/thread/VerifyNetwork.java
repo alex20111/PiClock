@@ -43,7 +43,7 @@ public class VerifyNetwork implements Runnable {
 				//				
 				//				logger.log(Level.CONFIG, "IP: " +ip);
 
-				logger.log(Level.CONFIG, lookForIp());
+//				logger.log(Level.CONFIG, lookForIp());
 
 				boolean connectingToWifi = ((CheckWifiStatus)SwingContext.getInstance().getSharedObject(Constants.CHECK_INTERNET)).isConnecting();
 				while(!handler.checkIfIpPresent() && retries < 3 && !connectingToWifi) {				

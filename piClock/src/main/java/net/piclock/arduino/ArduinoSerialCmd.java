@@ -7,6 +7,7 @@ import com.pi4j.io.serial.*;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
+import net.piclock.enums.LightSensor;
 import net.piclock.enums.ScreenType;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
@@ -81,7 +82,7 @@ public class ArduinoSerialCmd {
 			//convert for pwn on screen
 			ldrVal = (ldrVal - 255) * -1;
 			//3 is the lowest PWM for the screen.. 
-			if (ldrVal > ScreenType.HYPERPIXEL40.getLowestBrightness()){
+			if (ldrVal > LightSensor.LDR_ARDUINO.getDarkThreshold()){
 				long ldrLong = map(ldrVal, 0, 255, ScreenType.HYPERPIXEL40.getMinBacklight(),ScreenType.HYPERPIXEL40.getMaxBacklight());
 				if (ldrLong == ScreenType.HYPERPIXEL40.getMaxBacklight()){
 					ldrLong = 255l; //max value

@@ -1,5 +1,6 @@
 package net.piclock.main;
 
+import net.piclock.enums.ClockType;
 import net.piclock.enums.HardwareType;
 import net.piclock.enums.LightSensor;
 import net.piclock.enums.ScreenType;
@@ -9,6 +10,7 @@ public class HardwareConfig {
 	
 	private ScreenType screenType = null;
 	private LightSensor lightSensor = null;
+	private ClockType  clockType = null;
 	private HardwareType hardwareType = null;
 	
 	public HardwareConfig (Preferences pref) {
@@ -16,7 +18,7 @@ public class HardwareConfig {
 		screenType = ScreenType.valueOf(pref.getScreenType());
 		lightSensor = LightSensor.valueOf(pref.getLightSensor());
 		hardwareType = HardwareType.valueOf(pref.getHardwareType()); //hardware type contains (Gpis events or Arduino events)
-		
+		clockType  = ClockType.valueOf(pref.getClockType());
 		
 		
 	}
@@ -33,5 +35,14 @@ public class HardwareConfig {
 	
 	public HardwareType getHardwareType() {
 		return this.hardwareType;
+	}
+	
+	public boolean isPIi2cRequired() {
+		return lightSensor == LightSensor.BH1750FVI_PI || clockType == ClockType.HT16K33_PI;
+	}
+
+
+	public ClockType getClockType() {
+		return clockType;
 	}
 }

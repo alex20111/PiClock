@@ -179,7 +179,7 @@ public class Alarm implements Runnable, MessageListener{
 
 				if (!handler.isScreenOn()){	
 					ScreenType type = hw.getScreenType();
-					handler.turnOnScreen(false, type.getLowestBrightness());
+					handler.turnOnScreen(false, type.getMinBacklight());
 					handler.autoShutDownScreen(45000);
 				}	
 				

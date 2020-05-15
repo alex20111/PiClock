@@ -12,8 +12,7 @@ import net.piclock.swing.component.SwingContext;
 public class ErrorHandler {
 
 	private Map<ErrorType, List<ErrorInfo>> errorMap;
-	private int maxErrorPerType = 10; //number of maximum errors before resetting. //TODO
-	
+		
 	public ErrorHandler() {
 		errorMap = new HashMap<>();
 	}

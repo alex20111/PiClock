@@ -423,7 +423,6 @@ public class Mp3View extends JPanel implements MessageListener {
 			btnStop.setEnabled(false);
 			try {
 				playing = false;
-				//				playThread.interrupt();
 				playNext = false;
 
 

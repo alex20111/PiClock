@@ -607,6 +607,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			public void actionPerformed(ActionEvent e) {
 				try{
 					keepAliveIfScreenShutdown();
+					ScreenAutoClose.stop();
+					ScreenAutoClose.start(cardsPanel, 2, TimeUnit.MINUTES);
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.WEATHER_CONFIG_VIEW);
 				}catch (Exception ex){
@@ -648,6 +650,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 				try{
 					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
 					logger.log(Level.CONFIG, "Opening MP3 with volume: " + prefs.getLastVolumeLevel());
+					ScreenAutoClose.stop();
+					ScreenAutoClose.start(cardsPanel, 2, TimeUnit.MINUTES);
 					ct.sendMessage(Constants.VOLUME_SENT_FOR_CONFIG_MP3,new net.piclock.swing.component.Message(prefs.getLastVolumeLevel()));
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.MP3_VIEW);
@@ -668,6 +672,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			public void actionPerformed(ActionEvent e) {
 				try{
 					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
+					ScreenAutoClose.stop();
+					ScreenAutoClose.start(cardsPanel, 2, TimeUnit.MINUTES);
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.WEB_SERVER_VIEW);
 				}catch (Exception ex){

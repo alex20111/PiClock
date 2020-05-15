@@ -26,10 +26,13 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 
 		if(state == ButtonState.HIGH) {
 
+			SwingContext sc = SwingContext.getInstance();
+			
+//			sc.getSharedObject(Constants.DAY_NIGHT_CYCLE)
 			if (!piHandler.isScreenOn()  ) {
 				try {
 
-					HardwareConfig hw = (HardwareConfig)SwingContext.getInstance().getSharedObject(Constants.HARDWARE);
+					HardwareConfig hw = (HardwareConfig)sc.getSharedObject(Constants.HARDWARE);
 					
 					ScreenType type = hw.getScreenType();
 					

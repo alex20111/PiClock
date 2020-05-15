@@ -15,6 +15,9 @@ import java.util.logging.Logger;
 import org.apache.commons.exec.ExecuteException;
 
 import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.i2c.I2CBus;
+import com.pi4j.io.i2c.I2CFactory;
+import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 //import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.SoftPwm;
@@ -32,6 +35,7 @@ import net.piclock.button.MonitorButtonHandler;
 import net.piclock.enums.Buzzer;
 import net.piclock.enums.CheckWifiStatus;
 import net.piclock.main.Constants;
+import net.piclock.main.HardwareConfig;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
@@ -78,10 +82,13 @@ public class PiHandler {
 	//speaker
 	private boolean speakerOn = false;
 	
+	//I2C
+	private I2CBus i2cBus;
+	
 	private PiHandler() {
 
 		try {
-			device = new DeviceHandler();
+			
 
 			Gpio.wiringPiSetup();
 			SoftPwm.softPwmCreate(24, 70, 100);
@@ -92,6 +99,18 @@ public class PiHandler {
 			device.addButtonListener(new AlarmBtnHandler());
 
 			context = SwingContext.getInstance();
+			
+			
+			HardwareConfig hw = (HardwareConfig)context.getSharedObject(Constants.HARDWARE);
+			
+			if (hw.isPIi2cRequired()) {
+				initI2c();
+				device = new DeviceHandler(i2cBus);
+			}else {
+				device = new DeviceHandler();
+			}			
+			
+			
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "Error in PiHandler", ex);
 		} 
@@ -833,6 +852,9 @@ public class PiHandler {
 		}
 	}
 
+	private void initI2c() throws UnsupportedBusNumberException, IOException {
+		this.i2cBus = I2CFactory.getInstance(I2CBus.BUS_1);
+	}
 	public boolean isRadioOn() {
 		return radioOn;
 	}
