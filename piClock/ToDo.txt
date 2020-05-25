@@ -5,7 +5,6 @@ to /etc/rc.local and it did the trick
 --------------TODO-------------
 add splash screen  ok (maybe custom) - select 
 add error for other function (Error types to display on screen)  IN progress (Package net.piclock.server - continue on)
-add daily log file creation.. a log for each day
 THEME ICONS and TEXT customizition
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
 finish alarm html page
@@ -18,24 +17,23 @@ PiOffical touch:
 	Implement timing and GAIN into the TSL2591. The CPP has already the logic for it.
 	SI4703 add seek up/down
 	
-Press the button once at night to turn the screen on (delay 30 sec) press it again to turn it back off.
-
 There was in the arduino serial an instance that I recieved a string with <a1><l123>  meaning button was pressed and ldr was 123.. 
 display next alarm time under the clock if activated
 
 ----- IN PROGRESS -------------
 		
-Test ligh sensor new .
+Test light sensor new  HT.
 --------------TEST------------
 
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
 Test add new web page for backgrounds. In progress
 -Screen return to main screen after 2 min.
 
-when weather error, try it again 3 times before generating an error.. (pause and then try);  
-add network test to reconnect in case of network down.
+Press the button once at night to turn the screen on (delay 30 sec) press it again to turn it back off.
 
 -----------DONE test----------
+when weather error, try it again 3 times before generating an error.. (pause and then try);  
+add network test to reconnect in case of network down.
 Add limited access also to  web page for wifi passwords.
 test new volume option
 TEST new CLASSES with hardware config , deploy new user_pref  .. don't forget to copy the current one.

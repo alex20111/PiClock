@@ -65,6 +65,7 @@ public class LDRStatusWorker implements Runnable{
 
 				if (cycle != lastCycleStatus) {
 					lastCycleStatus = LDRCycle.valueOf(cycle.name());
+					ct.putSharedObject(Constants.LDR_VALUE, cycle);
 				}
 
 
@@ -91,11 +92,13 @@ public class LDRStatusWorker implements Runnable{
 
 				if (cycle != lastCycleStatus) {
 					lastCycleStatus = LDRCycle.valueOf(cycle.name());
+					ct.putSharedObject(Constants.LDR_VALUE, cycle);
 				}
 
 				if (!handler.isScreenOn()) {
 					handler.turnOnScreen(false, lightStatus.getLdrValue());
 					handler.turnOffTM1637Time();
+//					ct.putSharedObject(Constants.SCREEN_STATUS, Constants.TURNED_OFF);
 				}
 
 				if (!handler.isWifiOn() || handler.isWifiAutoShutdownInProgress()) {//does not matter if the option to turn off wifi is ON, when day and wifi dowon, turn it on. Since we only turn off wifi at night

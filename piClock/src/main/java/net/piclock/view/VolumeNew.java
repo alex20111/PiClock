@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -169,16 +171,19 @@ public class VolumeNew extends JDialog {
 
 								m = new  Mp3Sql().loadMp3ById(config.getMp3Id());
 
-								handler.playMp3(true,m.getMp3FileName(), s.getSlider().getValue());
+								List<String> files = new ArrayList<String>();
+								files.add(m.getMp3FileName());
+								
+								handler.playMp3(true,files, s.getSlider().getValue());
 
 								try {
 									Thread.sleep(6000);
 								} catch (InterruptedException e) {
-									handler.playMp3(false, "", -1);
+									handler.playMp3(false, null, -1);
 									Thread.currentThread().interrupt();
 								}
 
-								handler.playMp3(false, "", -1);
+								handler.playMp3(false, null, -1);
 							}else if (config.getRadioId() > 0){
 								RadioSql sql = new RadioSql();
 								RadioEntity r  = sql.loadRadioById(config.getRadioId());

@@ -40,8 +40,9 @@ import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
+import net.piclock.util.Mp3Player;
 import net.piclock.util.Mp3Streaming;
-import net.piclock.util.RadioStreaming;
+//import net.piclock.util.RadioStreaming;
 
 public class PiHandler {
 	
@@ -73,8 +74,8 @@ public class PiHandler {
 	
 	private ButtonChangeListener monitorBtnHandler;
 	
-	private RadioStreaming streaming;
-	private Mp3Streaming mp3Stream;
+//	private RadioStreaming streaming;
+//	private Mp3Streaming mp3Stream;
 	
 	//radio
 	private boolean radioOn = false;
@@ -92,14 +93,8 @@ public class PiHandler {
 
 			Gpio.wiringPiSetup();
 			SoftPwm.softPwmCreate(24, 70, 100);
-
-			//buttons
-			monitorBtnHandler = new MonitorButtonHandler();
-			device.addButtonListener(monitorBtnHandler);
-			device.addButtonListener(new AlarmBtnHandler());
-
-			context = SwingContext.getInstance();
 			
+			context = SwingContext.getInstance();			
 			
 			HardwareConfig hw = (HardwareConfig)context.getSharedObject(Constants.HARDWARE);
 			
@@ -108,7 +103,14 @@ public class PiHandler {
 				device = new DeviceHandler(i2cBus);
 			}else {
 				device = new DeviceHandler();
-			}			
+			}	
+
+			//buttons
+			monitorBtnHandler = new MonitorButtonHandler();
+			device.addButtonListener(monitorBtnHandler);
+			device.addButtonListener(new AlarmBtnHandler());
+
+		
 			
 			
 		} catch (Exception ex) {
@@ -130,6 +132,8 @@ public class PiHandler {
 
 	public void turnOffScreen() throws InterruptedException, ExecuteException, IOException, ListenerNotFoundException{
 		logger.log(Level.INFO,"turnOffScreen()");
+		
+		cancelScreenAutoShutdown();
 
 		setScreenOn(false);
 		setBrightness(0);
@@ -208,7 +212,7 @@ public class PiHandler {
 	 * @throws IOException 
 	 * @throws ExecuteException 
 	 * @throws InterruptedException **/
-	public void turnOnAlarm(Buzzer alarm, String mp3FileName, int radioChannel, int volume) throws   ExecuteException, IOException, InterruptedException{
+	public void turnOnAlarm(Buzzer alarm, List<String> mp3FileName, int radioChannel, int volume) throws   ExecuteException, IOException, InterruptedException{
 		logger.log(Level.CONFIG,"Turning on: " + alarm.getName());		
 		
 		if (alarm == Buzzer.BUZZER){
@@ -227,7 +231,7 @@ public class PiHandler {
 		}else if (buzzerType == Buzzer.RADIO){
 			radioOff(false);
 		}else if (buzzerType == Buzzer.MP3){
-			playMp3(false, "", -1);
+			playMp3(false, null, -1);
 		}
 	}
 	public void displayTM1637Time(String time){
@@ -533,67 +537,22 @@ public class PiHandler {
 	 * @throws InterruptedException 
 	 * @throws IOException 
 	 * @throws IllegalStateException **/
-	public void playMp3(boolean on, String mp3File, int volume) throws InterruptedException, IllegalStateException, IOException{
+	public void playMp3(boolean on, List<String> mp3File, int volume) throws InterruptedException, IllegalStateException, IOException{
 		logger.log(Level.CONFIG, "playMp3() : " + on + " track: " + mp3File);
 		if (on) {
 			toggleMusicSystem(false, true);
-			if (mp3Stream != null) {
-				logger.log(Level.CONFIG, "Already streaming, closing stream");
-				mp3Stream.writeCommand("q");
-				Thread.sleep(100);
-				mp3Stream.stop();
-			}
+
 			adjustVolume(volume);
-			mp3Stream = new Mp3Streaming(mp3File);
-			mp3Stream.play();
+			Mp3Player.getInstance().play(mp3File);
 			
 			handleSpeakers(true);
 		}else {
-			if (mp3Stream != null) {
-				mp3Stream.writeCommand("q");
-				Thread.sleep(100);
-				mp3Stream.stop();
-			}
 			handleSpeakers(false);
-			mp3Stream = null;
+			Mp3Player.getInstance().stopMp3();
 		}
 
 		logger.log(Level.CONFIG, "playMp3() , end method. " );
 			
-	}
-	/**Play the radio on the user selected frequency 
-	 * @throws IOException 
-	 * @throws ExecuteException 
-	 * @throws InterruptedException **/
-	public void playRadio(boolean on, String link, int volume) throws ExecuteException, IOException, InterruptedException{
-		logger.log(Level.CONFIG, "playAlarmRadio() : " + on);
-		
-		if (on) {
-			toggleMusicSystem(true, false);
-			
-			if (streaming != null) {
-				logger.log(Level.CONFIG, "Already streaming, closing stream");
-				streaming.writeCommand("q");
-				Thread.sleep(100);
-				streaming.stop();
-			}
-			
-			adjustVolume(volume);
-			streaming = new RadioStreaming(link);
-			streaming.play();
-			
-			handleSpeakers(true);
-		}else {
-			if (streaming != null) {
-				streaming.writeCommand("q");
-				Thread.sleep(100);
-				streaming.stop();
-			}
-			handleSpeakers(false);
-			streaming = null;
-		}
-
-		logger.log(Level.CONFIG, "playAlarmRadio() , end method. " );
 	}
 	
 	/**
@@ -754,19 +713,19 @@ public class PiHandler {
 				@Override
 				public void run() {
 					try {
-						if (streaming!= null && streaming.isRadioPlaying()) {
-							logger.log(Level.INFO, "Radio is still playing , waiting until turn off or alarm button shutdown pressed");
-							while(streaming!= null && streaming.isRadioPlaying()) {
-								//check if radio is playing.. if playing , do not turn off the wifi.. or put a timer for 3 hours.
-								Thread.sleep(10000);									
-							}
-							Thread.sleep(10000);
-							turnWifiOff();
-						}else {
-							logger.log(Level.INFO, "no radio playing, waiting 3 min");
+//						if (streaming!= null && streaming.isRadioPlaying()) {
+//							logger.log(Level.INFO, "Radio is still playing , waiting until turn off or alarm button shutdown pressed");
+//							while(streaming!= null && streaming.isRadioPlaying()) {
+//								//check if radio is playing.. if playing , do not turn off the wifi.. or put a timer for 3 hours.
+//								Thread.sleep(10000);									
+//							}
+//							Thread.sleep(10000);
+//							turnWifiOff();
+//						}else {
+							logger.log(Level.INFO, "waiting 3 min");
 							Thread.sleep(delay);
 							turnWifiOff();
-						}
+//						}
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
@@ -815,11 +774,13 @@ public class PiHandler {
 
 		//if radio requested, turn off MP3.
 		if (radioRequested) {
-			if (mp3Stream != null) {
+			
+			if (Mp3Player.getInstance().isPlaying()) {
 
-				mp3Stream.writeCommand("q");
-				Thread.sleep(100);
-				mp3Stream.stop();
+//				mp3Stream.writeCommand("q");
+//				Thread.sleep(100);
+//				mp3Stream.stop();
+				Mp3Player.getInstance().stopMp3();
 				context.sendMessage(Constants.MUSIC_TOGGELED, new Message("mp3off"));
 			}
 		}else if (mp3Requested) {
@@ -853,6 +814,7 @@ public class PiHandler {
 	}
 
 	private void initI2c() throws UnsupportedBusNumberException, IOException {
+		logger.log(Level.CONFIG,"Init I2c");
 		this.i2cBus = I2CFactory.getInstance(I2CBus.BUS_1);
 	}
 	public boolean isRadioOn() {

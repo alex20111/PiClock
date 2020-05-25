@@ -34,6 +34,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -106,10 +107,7 @@ public class Mp3View extends JPanel implements MessageListener {
 
 	private JLabel lblMp3MainIcon;
 
-	//Thread
-	private Thread playThread;
-	private boolean playNext = false;
-	private boolean playing = false;
+//	private Mp3Player mp3Player;
 
 	/**
 	 * Create the panel.
@@ -120,8 +118,11 @@ public class Mp3View extends JPanel implements MessageListener {
 	@SuppressWarnings({ "serial", "rawtypes" })
 	public Mp3View(JLabel lblMp3Icon) throws IOException, ClassNotFoundException, SQLException {
 
+//		mp3Player = Mp3Player.getInstance();
+
 		lblMp3MainIcon = lblMp3Icon;
-		handler = PiHandler.getInstance();
+		handler = PiHandler.getInstance();  
+		handler = null;
 
 		sql = new Mp3Sql();
 
@@ -131,7 +132,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		ct.addMessageChangeListener(Constants.VOLUME_SENT_FOR_CONFIG_MP3, this);
 		ct.addMessageChangeListener(Constants.RELOAD_FROM_WEB, this);
 		ct.addMessageChangeListener(Constants.MUSIC_TOGGELED, this);
-		ct.addMessageChangeListener(Constants.MP3_PLAY_NEXT, this);
+		//		ct.addMessageChangeListener(Constants.MP3_PLAY_NEXT, this);
 
 
 		setLayout(new BorderLayout(0, 0));
@@ -345,7 +346,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		});
 
 		setSelected(lblTrack);
-	
+
 
 		btnPanel = new JPanel();
 		add(btnPanel, BorderLayout.SOUTH);
@@ -422,11 +423,8 @@ public class Mp3View extends JPanel implements MessageListener {
 
 			btnStop.setEnabled(false);
 			try {
-				playing = false;
-				playNext = false;
 
-
-				handler.playMp3(false, "", -1);
+				handler.playMp3(false, null, -1);
 				fireVolumeIconChange(false);
 				lblMp3MainIcon.setVisible(false);
 			} catch (IllegalStateException | InterruptedException | IOException e1) {
@@ -437,74 +435,52 @@ public class Mp3View extends JPanel implements MessageListener {
 
 		});
 		btnPlay.addActionListener(l ->{	
-
 			try {
-
 				if (table.getSelectedRow() != -1 ){
 
 					int id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(table.getSelectedRow()), 4);		
 					if (id >= 0){						
-						
-						Mp3Entity mp3 = sql.loadMp3ById(id);
 
+//						
+						List<String> mp3Names = new ArrayList<String>();
+//						mp3Names.add("c:\\users\\ADMIN\\desktop\\Shawn_Mendes_-_Se_orita_ft_Camila_Cabello_.mp3");
+//						mp3Names.add("c:\\users\\ADMIN\\desktop\\06 Cheap Thrills.mp3");
+//						mp3Names.add("c:\\users\\ADMIN\\desktop\\01 - Jumpsuit.mp3");
+						
+						
+						Map<Integer, String> mp3 = sql.loadAllMp3WithIdAndFileName();
+						
+						Set<Integer> key = mp3.keySet();
+						
+						for(Integer keya : key) {
+							if (keya.intValue() == id) {
+								mp3Names.add(0, mp3.get(keya));
+							}else {
+								mp3Names.add(mp3.get(keya));
+							}
+						}
 
 						btnStop.setEnabled(true);
 						fireVolumeIconChange(true);
 						lblMp3MainIcon.setVisible(true);
+						
+//						List<String> mp3List = new ArrayList<String>();
+						
+						
 
-						playThread = new Thread(new Runnable() {
-
-							@Override
-							public void run() {
-								int rowSelected = table.getSelectedRow();
-								
-								playing = true;
-								try {
-									handler.playMp3(true, mp3.getMp3FileName(), selectedVolume);
-									//wwait until finished and then play next
-									while(playing) {
-										if (playNext) {
-											//increment rowSelected by 1
-											rowSelected ++;
-											logger.log(Level.CONFIG, "Row sel: " + rowSelected + "  table rows: " + table.getRowCount());
-											if(rowSelected < table.getRowCount()) {
-												int mp3Id = (int)table.getModel().getValueAt(table.convertRowIndexToModel(rowSelected), 4);
-												Mp3Entity newMp3 = sql.loadMp3ById(mp3Id);
-												handler.playMp3(true, newMp3.getMp3FileName(), selectedVolume);
-												playNext = false;
-											}else {
-												//restart from top
-												rowSelected = 0;												
-											}
-										}
-										Thread.sleep(100);
-									}									
-
-								} catch (IllegalStateException | InterruptedException | IOException | ClassNotFoundException | SQLException e) {
-									Thread.currentThread().interrupt();
-									logger.log(Level.SEVERE, "Error in playThread" , e);
-									playing = false;
-								}
-
-							}
-
-						});
-
-						playThread.start();						
+						handler.playMp3(true, mp3Names, selectedVolume);						
+						
+//						Mp3Player.getInstance().play(mp3Names);
 
 					}
-
-				}	
-
-			}catch (IllegalStateException | ClassNotFoundException | SQLException e){
-				e.printStackTrace();
+				}
+			}catch (IllegalStateException | InterruptedException | IOException | ClassNotFoundException | SQLException e){
 				logger.log(Level.CONFIG, "Error while trying to play mp3", e);
 			}
-
 		});
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JPanel contentPane = (JPanel)ct.getSharedObject(Constants.CARD_PANEL);
+				JPanel contentPane = (JPanel)ct.getSharedObject(Constants.CARD_PANEL); 
 				CardLayout cardLayout = (CardLayout) contentPane.getLayout(); 
 				cardLayout.show(contentPane, Constants.MAIN_VIEW);
 			}
@@ -563,7 +539,8 @@ public class Mp3View extends JPanel implements MessageListener {
 		if (table.getRowCount() == 0 ){
 			addRow(null);
 
-		}		
+		}
+
 	}
 
 	private void addRow(Mp3Entity mp3){
@@ -681,10 +658,11 @@ public class Mp3View extends JPanel implements MessageListener {
 				lblMp3MainIcon.setVisible(false);
 				btnStop.setEnabled(false);
 			}
-		}else if(message.getPropertyName().equals(Constants.MP3_PLAY_NEXT)) {
-			logger.log(Level.CONFIG, "Play next mp3: " + message.getFirstMessage());
-			playNext = true;
 		}
+		//		else if(message.getPropertyName().equals(Constants.MP3_PLAY_NEXT)) {
+		//			logger.log(Level.CONFIG, "Play next mp3: " + message.getFirstMessage());
+		////			playNext = true;
+		//		}
 	}
 
 	private void btnMp3Mode(){
@@ -750,4 +728,17 @@ public class Mp3View extends JPanel implements MessageListener {
 			return rowSel;
 		}
 	}
+
+	public static void main(String args[]) throws ClassNotFoundException, IOException, SQLException {
+
+		JLabel l = new JLabel();
+
+		Mp3View m = new Mp3View(l);
+
+		m.setVisible(true);
+
+	}
+
 }
+
+

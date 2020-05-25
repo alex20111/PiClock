@@ -3,6 +3,7 @@ package net.piclock.thread;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -140,7 +141,7 @@ public class Alarm implements Runnable, MessageListener{
 				}
 			}
 
-			String mp3Filename = "";
+			List<String> mp3Filename = new ArrayList<String>();
 			int radioChannel = -1;
 
 			if (buzzer == Buzzer.RADIO && alarm.getRadioId() > -1 ) {
@@ -159,7 +160,7 @@ public class Alarm implements Runnable, MessageListener{
 			}else if (buzzer == Buzzer.MP3 && alarm.getMp3Id() > -1) {
 				Mp3Entity mp3 = new Mp3Sql().loadMp3ById(alarm.getMp3Id());
 				if (mp3 != null) {
-					mp3Filename = mp3.getMp3FileName();
+					mp3Filename.add(mp3.getMp3FileName());
 				}else {
 					buzzer = Buzzer.BUZZER;
 					buzzerDefaultUsed = true;
@@ -214,8 +215,8 @@ public class Alarm implements Runnable, MessageListener{
 			logger.log(Level.INFO, "Radio stream error in wake up alarm, using default. Message: " + message.getFirstMessage() + "  Date registered: " + message.getDateTime());
 			buzzerDefaultUsed = true;
 			try {
-				handler.turnOnAlarm(Buzzer.BUZZER, "", -1, -1);
-				handler.playRadio(false, "", -1);//force turn off radio
+				handler.turnOnAlarm(Buzzer.BUZZER, null, -1, -1);
+//				handler.playRadio(false, "", -1);//force turn off radio
 			} catch (Exception e) {
 				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
 				eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));
@@ -225,8 +226,8 @@ public class Alarm implements Runnable, MessageListener{
 			logger.log(Level.INFO, "MP3 stream error in wake up alarm, using default. Message: " + message.getFirstMessage() + "  Date registered: " + message.getDateTime());
 			buzzerDefaultUsed = true;
 			try {
-				handler.turnOnAlarm(Buzzer.BUZZER, "", -1, -1);
-				handler.playMp3(false, "", -1);//force turn off radio
+				handler.turnOnAlarm(Buzzer.BUZZER, null, -1, -1);
+				handler.playMp3(false, null, -1);//force turn off radio
 			} catch (Exception e) {
 				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
 				eh.addError(ErrorType.ALARM, new ErrorInfo(new FormatStackTrace(e).getFormattedException()));

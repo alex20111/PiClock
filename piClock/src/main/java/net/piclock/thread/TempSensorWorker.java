@@ -63,10 +63,14 @@ public class TempSensorWorker implements Runnable{
 			}
 		}catch(SocketException se) {
 			logger.log(Level.INFO, "Socket exception Temp Sensor", se);
-		}catch(Exception ex) {
-			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
-			eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
-			logger.log(Level.SEVERE, "error in getting sensor weather", ex);
+		}catch(Throwable ex) {
+			try {
+				ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+				eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(ex).getFormattedException()));
+				logger.log(Level.SEVERE, "error in getting sensor weather", ex);
+			}catch(Throwable tr) {
+				logger.log(Level.SEVERE, "error " ,ex);
+			}
 		}
 	}
 

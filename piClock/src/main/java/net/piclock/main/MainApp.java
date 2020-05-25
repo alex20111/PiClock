@@ -263,9 +263,13 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		lblWebserverIcon.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				try{
-					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.WEB_SERVER_VIEW);
+					logger.config("AAAAAAAAAAAAAAAAAAFFFFFFFFFFFFFTTTTTTTTTTTTTTEEEEEEEEEEEEERRRRRRRRRRRRRR CARD LAYOUT");
+					ScreenAutoClose.stop();
+					ScreenAutoClose.start(cardsPanel, 2, TimeUnit.MINUTES);
+					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
+					
 				}catch (Exception ex){
 					String fmtEx = new FormatStackTrace(ex).getFormattedException();
 					eh.addError(ErrorType.GENERAL, new ErrorInfo(fmtEx));
@@ -516,7 +520,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
 		cardsPanel.add(forecastView, Constants.WEATHER_FORECAST_VIEW);
 		cardsPanel.add(weatherAlertView, Constants.WEATHER_ALERT_VIEW);
-		cardsPanel.add(radioView, Constants.RADIO_STATION_VIEW); //TODO test
+		cardsPanel.add(radioView, Constants.RADIO_STATION_VIEW);
 		cardsPanel.add(webServerView, Constants.WEB_SERVER_VIEW);
 		
 		//settings
@@ -530,7 +534,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 
 		AlarmEntity ae = new AlarmSql().loadActiveAlarm();
 		if (ae != null && ae.isActive()){
-			lblAlarmIcon.setVisible(true);  //TODO - alarm icon based on any active alarm
+			lblAlarmIcon.setVisible(true);  //TODO - alarm icon based on any active alarm. show time
 		}			
 		
 		themes.loadSunnyBackdrop(); //start the theme	
@@ -816,7 +820,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					weatherNaIcon , null);
 			addCurrentTemp("--", "--");
 			lblWeatherAlert.setVisible(false);
-//			tm.stopWeatherThread(); TODO add function to not restart it if too much errors.
+
 		}else  if(evt.getPropertyName().equals(Constants.THEMES_BACKGROUND_IMG_UPDATE)){
 			String image = (String)evt.getNewValue();
 			logger.info("Image background update. Image: " + image);

@@ -7,24 +7,9 @@ import java.util.HashMap;
 
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
-import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
-/**
- * <p>
- * This GPIO provider implements the PCF8574 I2C GPIO expansion board as native
- * Pi4J GPIO pins. More information about the board can be found here: *
- * http://www.ti.com/lit/ds/symlink/pcf8574.pdf
- * </p>
- * 
- * <p>
- * The PCF8574 is connected via I2C connection to the Raspberry Pi and provides
- * 8 GPIO pins that can be used for either digital input or digital output pins.
- * </p>
- * 
- * @author Robert Savage
- * 
- */
+
 public class AdafruitLEDBackpack implements I2CDevice {
 	
 	public static final String DESCRIPTION = "AdafruitLEDBackpack GPIO Provider";
@@ -33,9 +18,6 @@ public class AdafruitLEDBackpack implements I2CDevice {
 
 	CycleThread ct = null;
 	private static boolean translationInitialized = false;
-
-	// TODO abtract out Pi4J
-//	private com.pi4j.io.i2c.I2CBus i2cbus;
 
 	private com.pi4j.io.i2c.I2CDevice device;
 

@@ -1,6 +1,7 @@
 package net.piclock.handlers;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.pi4j.io.gpio.exception.UnsupportedBoardType;
@@ -36,10 +37,21 @@ public class DeviceHandler {
 
 
 	public DeviceHandler() throws UnsupportedBoardType, IOException, InterruptedException {
+		init();
+	}
+
+	public DeviceHandler(I2CBus i2cBus) throws UnsupportedBoardType, IOException, InterruptedException {		
+		this.i2cBus = i2cBus;
+		init();
+
+	}
+	private void init() throws UnsupportedBoardType, IOException, InterruptedException {
+		logger.log(Level.CONFIG, "Init device Handler");
 		context = SwingContext.getInstance();
 
 		hwc = (HardwareConfig)context.getSharedObject(Constants.HARDWARE);
 
+		logger.log(Level.CONFIG, "Hardware !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + hwc);
 
 		if (arduinoHw()) {
 			ard = new ArduinoSerialCmd();			
@@ -67,10 +79,7 @@ public class DeviceHandler {
 		}
 		logger.config("Hardware Info: \n\tHardware: " + hwc.getHardwareType() + "\n\tScreen selected: " + hwc.getScreenType() +".\n\tLight Sensor:  " + hwc.getLightSensor()+".\n\tClock: " + hwc.getClockType());
 
-	}
 
-	public DeviceHandler(I2CBus i2cBus) {
-		this.i2cBus = i2cBus;
 	}
 
 	/**

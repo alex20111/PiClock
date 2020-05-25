@@ -333,6 +333,8 @@ public class Mp3Handler extends HttpBase{
 
 				try{
 					Mp3File mp3 = new Mp3File(f);
+					
+					
 
 					long duration = mp3.getLengthInSeconds();
 
@@ -358,6 +360,8 @@ public class Mp3Handler extends HttpBase{
 						ent.setMp3Name(getNameFromFile(f.getName()));
 						ent.setMp3FileName(f.getName());
 					}
+					
+//					mp3.re
 
 					sql.add(ent);
 				}catch(Exception e){

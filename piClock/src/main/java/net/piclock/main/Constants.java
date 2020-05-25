@@ -81,5 +81,8 @@ public class Constants {
 	
 	//hardware
 	public static final String HARDWARE = "Hardware";
+	
+	//ldr
+	public static final String LDR_VALUE = "ldr_value"; //value from the LDR.. if detected night or day
 		
 }

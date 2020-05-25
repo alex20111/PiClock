@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import home.db.ColumnType;
@@ -250,6 +252,33 @@ public class Mp3Sql {
 		}
 
 		return mp3;
+	}
+	
+	public Map<Integer, String> loadAllMp3WithIdAndFileName() throws SQLException, ClassNotFoundException{
+		
+		Map<Integer, String> mp3s = new LinkedHashMap<Integer, String>();
+		
+		DBConnection con = null;
+//		Mp3Entity mp3 = new Mp3Entity();
+		try {
+			con = getConnection();
+
+			ResultSet rs = con.createSelectQuery("SELECT "+ Mp3Entity.ID+ " , " + Mp3Entity.MP3_FILE_NAME + " FROM " + Mp3Entity.TBL_NM )
+//					.setParameter("pkKeyId", id)
+					.getSelectResultSet();
+
+			if (rs!=null) {
+				while(rs.next()) {
+					mp3s.put(rs.getInt(Mp3Entity.ID), rs.getString(Mp3Entity.MP3_FILE_NAME));
+//					mp3.setMp3FileName();
+//					mp3.setMp3Name(rs.getString(Mp3Entity.MP3_NAME));
+
+				}
+			}
+		}finally {
+			con.close();
+		}
+return mp3s;
 	}
 
 	private DBConnection getConnection() throws ClassNotFoundException, SQLException{

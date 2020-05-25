@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 
 import net.piclock.arduino.ButtonChangeListener;
 import net.piclock.arduino.ButtonState;
+import net.piclock.arduino.ListenerNotFoundException;
+import net.piclock.enums.LDRCycle;
 import net.piclock.enums.ScreenType;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
@@ -28,7 +30,7 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 
 			SwingContext sc = SwingContext.getInstance();
 			
-//			sc.getSharedObject(Constants.DAY_NIGHT_CYCLE)
+			LDRCycle ldr = (LDRCycle)sc.getSharedObject(Constants.LDR_VALUE);
 			if (!piHandler.isScreenOn()  ) {
 				try {
 
@@ -37,8 +39,15 @@ public class MonitorButtonHandler implements ButtonChangeListener {
 					ScreenType type = hw.getScreenType();
 					
 					piHandler.turnOnScreen(true, type.getMinBacklight());  
-					piHandler.autoShutDownScreen(20000);
+					piHandler.autoShutDownScreen(30000);
 				} catch (InterruptedException | IOException e) {
+					logger.log(Level.CONFIG, "in button monitor");
+				}
+			}else if (ldr == LDRCycle.DARK && piHandler.isScreenOn()) {
+				try {
+					logger.log(Level.CONFIG, "Button turning off screen. LDR status: " + ldr);
+					piHandler.turnOffScreen();
+				} catch (InterruptedException | IOException | ListenerNotFoundException e) {
 					logger.log(Level.CONFIG, "in button monitor");
 				}
 			}

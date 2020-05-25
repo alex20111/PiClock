@@ -45,4 +45,11 @@ public class HardwareConfig {
 	public ClockType getClockType() {
 		return clockType;
 	}
+
+
+	@Override
+	public String toString() {
+		return "HardwareConfig [screenType=" + screenType + ", lightSensor=" + lightSensor + ", clockType=" + clockType
+				+ ", hardwareType=" + hardwareType + "]";
+	}
 }
