@@ -1,14 +1,13 @@
 
 
 --------------TODO-------------
-add splash screen  ok (maybe custom) - select 
 add error for other function (Error types to display on screen)  IN progress (Package net.piclock.server - continue on)
 THEME ICONS and TEXT customizition
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
 finish alarm html page
 create script for installation.
 Finish label colors when night/day refresh
-loop mp3 whenplaying.
+
 todo.. add auto update
 
 PiOffical touch:
@@ -27,9 +26,11 @@ Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 
 Test add new web page for backgrounds. In progress
 -Screen return to main screen after 2 min.
 
-Press the button once at night to turn the screen on (delay 30 sec) press it again to turn it back off.
 
 -----------DONE test----------
+loop mp3 whenplaying.
+add splash screen  ok (maybe custom) - select 
+Press the button once at night to turn the screen on (delay 30 sec) press it again to turn it back off.
 when weather error, try it again 3 times before generating an error.. (pause and then try);  
 add network test to reconnect in case of network down.
 Add limited access also to  web page for wifi passwords.

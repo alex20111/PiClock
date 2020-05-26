@@ -40,7 +40,6 @@ import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
-import net.piclock.util.Mp3Player;
 import net.piclock.util.Mp3Streaming;
 //import net.piclock.util.RadioStreaming;
 
@@ -75,7 +74,7 @@ public class PiHandler {
 	private ButtonChangeListener monitorBtnHandler;
 	
 //	private RadioStreaming streaming;
-//	private Mp3Streaming mp3Stream;
+	private Mp3Streaming mp3Stream;
 	
 	//radio
 	private boolean radioOn = false;
@@ -541,14 +540,26 @@ public class PiHandler {
 		logger.log(Level.CONFIG, "playMp3() : " + on + " track: " + mp3File);
 		if (on) {
 			toggleMusicSystem(false, true);
+			if (mp3Stream != null) {
+				logger.log(Level.CONFIG, "Already streaming, closing stream");
+				mp3Stream.writeCommand("q");
+				Thread.sleep(100);
+				mp3Stream.stop();
+			}
 
 			adjustVolume(volume);
-			Mp3Player.getInstance().play(mp3File);
+			mp3Stream = new Mp3Streaming(mp3File);
+			mp3Stream.play();
 			
 			handleSpeakers(true);
 		}else {
+			if (mp3Stream != null) {
+				mp3Stream.writeCommand("q");
+				Thread.sleep(100);
+				mp3Stream.stop();
+			}
 			handleSpeakers(false);
-			Mp3Player.getInstance().stopMp3();
+			mp3Stream = null;
 		}
 
 		logger.log(Level.CONFIG, "playMp3() , end method. " );
@@ -775,12 +786,11 @@ public class PiHandler {
 		//if radio requested, turn off MP3.
 		if (radioRequested) {
 			
-			if (Mp3Player.getInstance().isPlaying()) {
+			if (mp3Stream != null) {
 
-//				mp3Stream.writeCommand("q");
-//				Thread.sleep(100);
-//				mp3Stream.stop();
-				Mp3Player.getInstance().stopMp3();
+				mp3Stream.writeCommand("q");
+				Thread.sleep(100);
+				mp3Stream.stop();
 				context.sendMessage(Constants.MUSIC_TOGGELED, new Message("mp3off"));
 			}
 		}else if (mp3Requested) {
