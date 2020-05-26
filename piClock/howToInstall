@@ -2,13 +2,18 @@ ON PI:
 
 install JAVA 8:(https://www.raspberrypi.org/forums/viewtopic.php?t=248561)   /usr/lib/jvm
 sudo apt update
+sudo apt-get upgrade
 sudo apt install openjdk-8-jdk
 
 pi4j:
 https://pi4j.com/1.2/download.html
 
+git:
+sudo apt install git
+
 wiringPi:
-http://wiringpi.com/download-and-install/
+http://wiringpi.com/download-and-install/     https://github.com/WiringPi/WiringPi (latest version) .. pull with git and ./build
+gpio -v
 
 Install hyperpixel:
 https://github.com/pimoroni/hyperpixel4/tree/libinput
@@ -40,7 +45,7 @@ Create folder PiClock under the pi home folder.
 		/piClock/webapp/css
 		/piClock/webapp/js
 		/piClock/webapp/webpages
-		/pi/piClock/temp
+		/piClock/temp
 		/piClock/mp3
 		/piClock/nativeLib
 		/piClock/python
@@ -55,10 +60,6 @@ https://www.raspberrypi.org/forums/viewtopic.php?t=150038
 //IN RASPI-config (change splash screen image: /usr/share/plymouth/themes/pix/splash.png)
 
 //auto boot
-create script start.sh:
-  #!/bin/bash
-  cd /home/pi/piClock
-  sudo java -jar [name of jar]
 in raspberry buster add the following lines in autostart located: /etc/xdg/lxsession/LXDE-pi
   point-rpi
   @lxterminal
@@ -67,9 +68,7 @@ in raspberry buster add the following lines in autostart located: /etc/xdg/lxses
 //verify if power management on the wifi is ON. If On , turn it off.    
  edit:  sudo nano /etc/rc.local     --> add this line before exit    sudo iwconfig wlan0 power off   
 
-
 enable splash screen.
-
 //if you need to recompile the native libraries, follow instruction in /src/net/piclock/nativeC
 
 //ad static ip: https://pimylifeup.com/raspberry-pi-static-ip-address/
@@ -79,4 +78,13 @@ enable splash screen.
 SETUP user config based on the hardware before running. USER_PREF.cfg
 Hardware : What hardware we are using for GPIO or other ..
 LightSensor: enum to define where it is located.
+clock   : enum	
 
+https://www.raspberrypi.org/forums/viewtopic.php?t=256349   wifi  
+sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+to /etc/rc.local and it did the trick
+
+create script start.sh:
+  #!/bin/bash
+  cd /home/pi/piClock
+  sudo java -jar [name of jar]

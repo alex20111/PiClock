@@ -71,6 +71,9 @@ public class Constants {
 	public static final String B_VISIBLE_FRM_BUZZ_SEL = "selectMakeVisibleFromBuzzerSelect";
 	public static final String VOLUME_SENT_FOR_CONFIG_MP3 = "VOLUME_SENT_FOR_CONFIG_mp3";
 	public static final String VOLUME_SENT_FOR_CONFIG_RADIO = "VOLUME_SENT_FOR_CONFIG_RADIO";
+	public static final String MP3_PLAYER_ERROR = "MP3_PLAYER_ERROR";
+	public static final String MP3_FOLDER ="/home/pi/piClock/mp3/";
+	
 	
 	public static final String VOLUME_DISPLAY = "display_volume_icon";
 	public static final String MP3_INFO = "mp3Info";

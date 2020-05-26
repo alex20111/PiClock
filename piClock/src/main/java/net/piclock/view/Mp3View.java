@@ -49,6 +49,9 @@ import javax.swing.SortOrder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
+import net.piclock.bean.ErrorHandler;
+import net.piclock.bean.ErrorInfo;
+import net.piclock.bean.ErrorType;
 import net.piclock.bean.SortMp3ByName;
 import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.Mp3Entity;
@@ -121,8 +124,7 @@ public class Mp3View extends JPanel implements MessageListener {
 //		mp3Player = Mp3Player.getInstance();
 
 		lblMp3MainIcon = lblMp3Icon;
-		handler = PiHandler.getInstance();  
-		handler = null;
+		handler = PiHandler.getInstance();
 
 		sql = new Mp3Sql();
 
@@ -132,7 +134,7 @@ public class Mp3View extends JPanel implements MessageListener {
 		ct.addMessageChangeListener(Constants.VOLUME_SENT_FOR_CONFIG_MP3, this);
 		ct.addMessageChangeListener(Constants.RELOAD_FROM_WEB, this);
 		ct.addMessageChangeListener(Constants.MUSIC_TOGGELED, this);
-		//		ct.addMessageChangeListener(Constants.MP3_PLAY_NEXT, this);
+				ct.addMessageChangeListener(Constants.MP3_PLAYER_ERROR, this);
 
 
 		setLayout(new BorderLayout(0, 0));
@@ -658,6 +660,18 @@ public class Mp3View extends JPanel implements MessageListener {
 				lblMp3MainIcon.setVisible(false);
 				btnStop.setEnabled(false);
 			}
+		}else if(message.getPropertyName().equals(Constants.MP3_PLAYER_ERROR)) {
+			btnPlay.setEnabled(true);;
+			btnStop.setEnabled(false);
+			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
+			eh.addError(ErrorType.MP3, new ErrorInfo((String)message.getFirstMessage()));
+			try {
+				handler.playMp3(false, null, -1);
+				fireVolumeIconChange(false);
+				lblMp3MainIcon.setVisible(false);
+			} catch (IllegalStateException | InterruptedException | IOException e) {
+			 logger.log(Level.SEVERE, "errorrororr: " + e);
+			}
 		}
 		//		else if(message.getPropertyName().equals(Constants.MP3_PLAY_NEXT)) {
 		//			logger.log(Level.CONFIG, "Play next mp3: " + message.getFirstMessage());
@@ -728,17 +742,4 @@ public class Mp3View extends JPanel implements MessageListener {
 			return rowSel;
 		}
 	}
-
-	public static void main(String args[]) throws ClassNotFoundException, IOException, SQLException {
-
-		JLabel l = new JLabel();
-
-		Mp3View m = new Mp3View(l);
-
-		m.setVisible(true);
-
-	}
-
 }
-
-

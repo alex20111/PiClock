@@ -84,7 +84,12 @@ public class PreferencesHandler {
 			prop.setProperty(SETTINGS_PASS_PROTECTED, String.valueOf(prefs.isSettingPassProtected()));
 			prop.setProperty(SETTINGS_PASS, prefs.getSettingsPassword());
 			// save properties to project root folder
-			prop.store(output, "User preferences for world best clock");
+			StringBuilder sb = new StringBuilder("User preferences for world best clock");
+			sb.append("\nHARDWARE_TYPE=OPTIONS\n\tOPTIONS: ARDUINO, PI ");
+			sb.append("\nSCREEN_TYPE=OPTIONS\n\tOPTIONS: PI_TOUCH_SCREEN, HYPERPIXEL40 ");
+			sb.append("\nLIGHT_SENSOR=OPTIONS\n\tOPTIONS: LDR_ARDUINO, LDR_PI, TSL2591_ARDUINO, TSL2591_PI ");		
+			sb.append("\nCLOCK_TYPE=OPTIONS\n\tOPTIONS: TM1637_ARDUINO, TM1637_PI, HT16K33_ARDUINO, HT16K33_PI ");
+			prop.store(output, sb.toString());
 		
 		} finally {
 			if (output != null) {

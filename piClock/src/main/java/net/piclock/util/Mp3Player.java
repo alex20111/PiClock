@@ -3,7 +3,6 @@ package net.piclock.util;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +21,11 @@ import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
+import net.piclock.main.Constants;
+import net.piclock.swing.component.Message;
+import net.piclock.swing.component.SwingContext;
 
 public class Mp3Player {
 
@@ -67,22 +71,28 @@ public class Mp3Player {
 
 
 				for(String name : fileNames) {
+					String mp3Path = Constants.MP3_FOLDER + name;
 
 					//				while(mp3Iterator.hasNext()) {
 					try {
 						//					String file = mp3Iterator.next();
-						logger.config("Playing: " + name);
+						logger.config("Playing: " + mp3Path);
 
-						FileInputStream in = new FileInputStream(name);
+						FileInputStream in = new FileInputStream(mp3Path);
 						BufferedInputStream bin = new BufferedInputStream(in, 128 * 1024);
 
+			            Player player = new Player(bin);
+			            player.play();
 
-						decoder.play(name, bin);
-//						System.out.println("DONEE");
+						decoder.play(mp3Path, bin);
+						logger.config("Done playing: " + mp3Path);
 
 						bin.close();
 						in.close();
-					}catch(IOException fnf) {
+					}catch(IOException | JavaLayerException fnf) {
+						Message msg = new Message();
+						msg.addStringToMessageList("Mp3 Not found: " + mp3Path);
+						SwingContext.getInstance().sendMessage(Constants.MP3_PLAYER_ERROR, msg);
 						logger.log(Level.CONFIG,"error", fnf);
 						break;
 					}
@@ -107,6 +117,7 @@ public class Mp3Player {
 //	private void playMp3Decode(String filename) {
 //		
 //	}
+	@SuppressWarnings("unused")
 	private void playMp3(String fileName) {
 		System.out.println("Play mp3: " + fileName);
 		
@@ -149,9 +160,13 @@ public class Mp3Player {
 
 
 	public boolean isPlaying() {
+		
+		boolean isPlaying = false;
+		if(songModel != null) {
+		
 		Status status = songModel.getMediaPlayer().getStatus();
-
-		return status == Status.PLAYING;
+		}
+		return isPlaying;
 	}
 
 }

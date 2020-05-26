@@ -44,7 +44,7 @@ public class Mp3Handler extends HttpBase{
 	List<String> errors = new ArrayList<String>();
 	
 	//temp and MP3 folder
-	private String mp3Folder = "/home/pi/piClock/mp3";
+	private String mp3Folder = Constants.MP3_FOLDER ;
 	private String tempDir = "/home/pi/piClock/temp";		
 	
 	private String viewPageName = "mp3Page";
