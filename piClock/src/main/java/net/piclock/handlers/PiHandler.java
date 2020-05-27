@@ -184,7 +184,7 @@ public class PiHandler {
 			
 			Path wpaFile = Paths.get("/etc/wpa_supplicant/wpa_supplicant.conf");
 			
-			String newNetwork = "\n\nnetwork={\n\tssid=\"" + wifiName.trim() +"\"\n\tpsk=\""+pass.trim()+"\"\n\tkey_mgmt=WPA-PSK\n} ";
+			String newNetwork = "\n\nnetwork={\n\tssid=\"" + wifiName.trim() +"\"\n\tpsk=\""+pass.trim()+"\"\n\tkey_mgmt=WPA-PSK\n\tfreq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462 2467 2472\n} ";
 
 			String newContents = new String(Files.readAllBytes(wpaFile));
 

@@ -21,6 +21,10 @@ import org.nanohttpd.protocols.http.response.Response;
 import home.miniHttp.HttpBase;
 import home.miniHttp.HttpHandler;
 import home.miniHttp.StaticPageHandler;
+import net.piclock.enums.BackgroundEnum;
+import net.piclock.main.Constants;
+import net.piclock.swing.component.SwingContext;
+import net.piclock.theme.ThemeHandler;
 
 
 public class BackgroundHandler extends HttpBase implements HttpHandler{
@@ -133,6 +137,11 @@ public class BackgroundHandler extends HttpBase implements HttpHandler{
 	private void saveAndResize() throws IOException, ResponseException{
 		
 		StringBuilder sb = new StringBuilder();
+		
+		boolean fireRefresh = false;
+		
+		BackgroundEnum currEnum = (BackgroundEnum)SwingContext.getInstance().getSharedObject(Constants.CURRENT_BACKGROUND);
+		
 		for(Map.Entry<String, String> fileStr : getFiles().entrySet()){
 			if (fileStr.getValue() != null && fileStr.getValue().length() > 0){
 
@@ -150,28 +159,64 @@ public class BackgroundHandler extends HttpBase implements HttpHandler{
 					//save	
 					if (fileStr.getKey().equals("img1File")){									
 						ImageIO.write(outputImage, formatName, new File(dirPath + SUNNY) );
+						if (currEnum == BackgroundEnum.SUNNY) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img2File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + SUNNY_NIGHT) );
+						if (currEnum == BackgroundEnum.SUNNY) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img3File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + CLOUDY) );
+						if (currEnum == BackgroundEnum.CLOUDY) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img4File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + CLOUDY_NIGHT) );
+						if (currEnum == BackgroundEnum.CLOUDY) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img5File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + RAIN) );
+						if (currEnum == BackgroundEnum.RAIN) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img6File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + RAIN_NIGHT) );
+						if (currEnum == BackgroundEnum.RAIN) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img7File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + FOG) );
+						if (currEnum == BackgroundEnum.FOG) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img8File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + FOG_NIGHT) );
+						if (currEnum == BackgroundEnum.FOG) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img9File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + THUNDER) );
+						if (currEnum == BackgroundEnum.THUNDER) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img10File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + THUNDER_NIGHT) );
+						if (currEnum == BackgroundEnum.THUNDER) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img11File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + SNOW) );
+						if (currEnum == BackgroundEnum.SNOW) {
+							fireRefresh = true;
+						}
 					}else if (fileStr.getKey().equals("img12File")){				
 						ImageIO.write(outputImage, formatName , new File(dirPath + SNOW_NIGHT) );
+						if (currEnum == BackgroundEnum.SNOW) {
+							fireRefresh = true;
+						}
 					}
 				}else{
 					sb.append("File not the right format: " + fileFull + "\n");
@@ -182,7 +227,12 @@ public class BackgroundHandler extends HttpBase implements HttpHandler{
 		if (sb.length() > 0){
 			sb.deleteCharAt(sb.length() - 1);
 			errorMessage = sb.toString();
+		}else if (fireRefresh) {
+			logger.config("Refreshing current background");
+			ThemeHandler th = (ThemeHandler)SwingContext.getInstance().getSharedObject(Constants.THEMES_HANDLER);
+			th.refreshCurrentBackground();
 		}
+			
 	}
 
 	private String encodeImage(File image) throws IOException {

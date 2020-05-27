@@ -188,13 +188,14 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		ct.addPropertyChangeListener(Constants.FETCH_FORECAST, this);
 		ct.addPropertyChangeListener(Constants.FORECAST_DISPLAY_LOAD, this);	
 		ct.addPropertyChangeListener(Constants.FORECAST_DISPLAY_ERROR, this);
-		ct.addPropertyChangeListener(Constants.THEMES_BACKGROUND_IMG_UPDATE, this);
+//		ct.addPropertyChangeListener(Constants.THEMES_BACKGROUND_IMG_UPDATE, this); //TODO
 		ct.addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 		ct.addPropertyChangeListener(Constants.SENSOR_INFO, this);
 		ct.addPropertyChangeListener(Constants.RADIO_VOLUME_ICON_TRIGGER, this);
 		ct.addPropertyChangeListener(Constants.MP3_VOLUME_ICON_TRIGGER, this);
 		
 		ct.addMessageChangeListener(Constants.ERROR_BROADCAST, this);
+		ct.addMessageChangeListener(Constants.THEMES_BACKGROUND_IMG_UPDATE, this);
 				
 		setBackground(Color.BLUE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -821,11 +822,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			addCurrentTemp("--", "--");
 			lblWeatherAlert.setVisible(false);
 
-		}else  if(evt.getPropertyName().equals(Constants.THEMES_BACKGROUND_IMG_UPDATE)){
-			String image = (String)evt.getNewValue();
-			logger.info("Image background update. Image: " + image);
-			changeBackImage(new File(image));
-			
 		}else if(evt.getPropertyName().equals(Constants.CHECK_INTERNET)){
 			try{
 				CheckWifiStatus status = (CheckWifiStatus) evt.getNewValue();
@@ -981,7 +977,13 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			}else {
 				lblWarningIcon.setVisible(false);
 			}
-		}
+		}else  if(message.getPropertyName().equals(Constants.THEMES_BACKGROUND_IMG_UPDATE)){
+			String image = (String)message.getFirstMessage();
+//			String image = (String)evt.getNewValue();
+			logger.info("Image background update. Image: " + image);
+			changeBackImage(new File(image));
+			
+		}//TODO
 		
 	}
 	private void weatherMouseAction() {

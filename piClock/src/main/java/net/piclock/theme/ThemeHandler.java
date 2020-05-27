@@ -23,6 +23,7 @@ import net.piclock.enums.DayNightCycle;
 import net.piclock.enums.IconEnum;
 import net.piclock.enums.LabelEnums;
 import net.piclock.main.Constants;
+import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
 import net.piclock.util.LoadThemesFromXml;
@@ -49,6 +50,14 @@ public class ThemeHandler {
 		//init Themes
 		themesMap = LoadThemesFromXml.loadThemeFromXml();
 	}
+	
+	public void refreshCurrentBackground() {
+		logger.log(Level.CONFIG, "Refreshing current background: " + currBackground.getName());//todo since it's same object ., it won't refresh
+
+		ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(currBackground.fullPathBackImg(currBackground.getCycle())));
+//		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, currBackground.fullPathBackImg(currBackground.getCycle()));
+
+	}
 
 	public void loadTheme(ThemeEnum theme){
 
@@ -71,6 +80,9 @@ public class ThemeHandler {
 		
 		//load only when it's not the same
 		if (currBackground.getName() != BackgroundEnum.RAIN && backGroundIncluded){
+			
+			//save in session
+			ct.putSharedObject(Constants.CURRENT_BACKGROUND, BackgroundEnum.RAIN );
 
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
@@ -81,7 +93,8 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+					ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(bt.fullPathBackImg(cycle)));
+//					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -97,6 +110,10 @@ public class ThemeHandler {
 
 		//load only when it's not the same
 		if (currBackground.getName() != BackgroundEnum.SUNNY || init){
+			
+			//save in session
+			ct.putSharedObject(Constants.CURRENT_BACKGROUND, BackgroundEnum.SUNNY );
+			
 			init = false;
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
@@ -108,7 +125,8 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+//					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+					ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(bt.fullPathBackImg(cycle)));
 					currBackground = bt;				
 
 					refreshTheme();
@@ -124,6 +142,10 @@ public class ThemeHandler {
 		
 		//load only when it's not the same
 		if (currBackground.getName() != BackgroundEnum.THUNDER && backGroundIncluded){
+			
+			//save in session
+			ct.putSharedObject(Constants.CURRENT_BACKGROUND, BackgroundEnum.THUNDER );
+			
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
 			for(BackgroundTheme bt : back){
@@ -133,7 +155,8 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+//					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+					ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(bt.fullPathBackImg(cycle)));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -151,6 +174,10 @@ public class ThemeHandler {
 		
 		//load only when it's not the same
 		if (currBackground.getName() != BackgroundEnum.SNOW && backGroundIncluded){
+			
+			//save in session
+			ct.putSharedObject(Constants.CURRENT_BACKGROUND, BackgroundEnum.SNOW );
+			
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
 			for(BackgroundTheme bt : back){
@@ -160,7 +187,8 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+//					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+					ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(bt.fullPathBackImg(cycle)));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -178,6 +206,10 @@ public class ThemeHandler {
 		
 		//load only when it's not the same
 		if (currBackground.getName() != BackgroundEnum.CLOUDY && backGroundIncluded){
+			
+			//save in session
+			ct.putSharedObject(Constants.CURRENT_BACKGROUND, BackgroundEnum.CLOUDY );
+			
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
 			for(BackgroundTheme bt : back){
@@ -187,7 +219,8 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+//					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+					ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(bt.fullPathBackImg(cycle)));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -205,6 +238,10 @@ public class ThemeHandler {
 		
 		//load only when it's not the same
 		if (currBackground.getName() != BackgroundEnum.FOG && backGroundIncluded){
+			
+			//save in session
+			ct.putSharedObject(Constants.CURRENT_BACKGROUND, BackgroundEnum.FOG );
+			
 			List<BackgroundTheme> back = themesMap.get(currentTheme);		
 
 			for(BackgroundTheme bt : back){
@@ -214,7 +251,8 @@ public class ThemeHandler {
 						cycle = DayNightCycle.DAY;
 					}
 					bt.setCycle(cycle);
-					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+//					ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, bt.fullPathBackImg(cycle));
+					ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(bt.fullPathBackImg(cycle)));
 					currBackground = bt;
 					refreshTheme();
 					break;
@@ -231,7 +269,8 @@ public class ThemeHandler {
 		currBackground.setCycle(DayNightCycle.NIGHT);
 
 		refreshTheme();
-		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE,  currBackground.fullPathBackImg(DayNightCycle.NIGHT));		
+//		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE,  currBackground.fullPathBackImg(DayNightCycle.NIGHT));		
+		ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(currBackground.fullPathBackImg(DayNightCycle.NIGHT)));
 	}
 	
 	public void fireDayCycle(){
@@ -239,7 +278,8 @@ public class ThemeHandler {
 		currBackground.setCycle(DayNightCycle.DAY);
 		
 		refreshTheme();
-		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, currBackground.fullPathBackImg(DayNightCycle.DAY));
+//		ct.putSharedObject(Constants.THEMES_BACKGROUND_IMG_UPDATE, currBackground.fullPathBackImg(DayNightCycle.DAY));
+		ct.sendMessage(Constants.THEMES_BACKGROUND_IMG_UPDATE, new Message(currBackground.fullPathBackImg(DayNightCycle.DAY)));
 		
 	}
 	/** Register a label and it's associated enum from XML**/

@@ -23,11 +23,11 @@ Test light sensor new  HT.
 --------------TEST------------
 
 Test MP3 and alarm with Mp3. Test timeout or when problem playing mp3. test mp3 in alarm if it does not work. Rever tto buzzer
-Test add new web page for backgrounds. In progress
 -Screen return to main screen after 2 min.
 
 
 -----------DONE test----------
+Test add new web page for backgrounds. Working
 loop mp3 whenplaying.
 add splash screen  ok (maybe custom) - select 
 Press the button once at night to turn the screen on (delay 30 sec) press it again to turn it back off.

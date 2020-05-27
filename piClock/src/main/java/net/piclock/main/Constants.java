@@ -16,7 +16,7 @@ public class Constants {
 	public static final String WEB_SERVER_VIEW = "webServerView";
 	public static final String ERROR_VIEW = "errorView";
 	public static final String MP3_VIEW = "mp3_view";
-	
+		
 	
 	public static final String MUSIC_TOGGELED = "Music toggeled";
 	public static final String CARD_PANEL = "card_panel";
@@ -36,6 +36,7 @@ public class Constants {
 	public static final String THEMES_HANDLER = "themesHandler";
 	public static final String THEMES_BACKGROUND_IMG_UPDATE = "themesBackgroundImgChange";
 	public static final String DAY_NIGHT_CYCLE = "dayNightCycle";	
+	public static final String CURRENT_BACKGROUND = "currBack";
 	
 	public static final String CHECK_INTERNET = "CheckingNetConnection";
 	
