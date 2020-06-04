@@ -137,6 +137,9 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	private JLabel lblWarningIcon;
 	
 	private ErrorHandler eh;
+	private JLabel lblShadeDegree;
+	private JLabel lblSunDegree;
+	private JPanel pnlCurrWth;
 	/**
 	 * Launch the application.
 	 */
@@ -333,34 +336,28 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		JPanel weatherPanel = new JPanel();
 		mainPanel.add(weatherPanel, BorderLayout.NORTH);
-		weatherPanel.setLayout(new MigLayout("", "[grow 14][220px,left][][50px][80px][80px][grow 14]", "[70px]"));
+		weatherPanel.setLayout(new MigLayout("", "[210px,left][][grow,center][210px,right][]", "[90px,grow]"));
 		weatherPanel.setOpaque(false);
 		
-		lblCurrentweather = new JLabel("<html><div style='width: 200px;word-wrap: break-word;text-align: center'>Not available</html>");
-		lblCurrentweather.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblCurrentweather.setForeground(Color.WHITE);
-		lblCurrentweather.addMouseListener(new MouseAdapter(){
+		lblTempSun = new JLabel("<html><span style=\"font-family:Tahoma;font-weight: bold;font-size:80px;\">-40</span><span style=\"font-family:Tahoma;font-weight: bold;font-size:20px;\">.4</span></html>");
+		
+		lblTempSun.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		themes.registerIconColor(lblTempSun, IconEnum.TEMP_SUN);
+		themes.registerLabelTextColor(lblTempSun, LabelEnums.TEMP_SUN);
+		weatherPanel.add(lblTempSun, "cell 0 0,alignx right,aligny center");
+		lblTempSun.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				
 				weatherMouseAction();
 			}
 		});
 		
-		themes.registerLabelTextColor(lblCurrentweather, LabelEnums.CURRENT_WEATHER);
-		weatherPanel.add(lblCurrentweather, "cell 0 0 2 1,alignx right");
+//		logger.config("WIDTHHHHHHHHHHHHHHHHH: " + lblTempSun.getWidth());
 		
-		lblWeatherIcon = new JLabel("--:--",weatherNaIcon,  SwingConstants.CENTER);
-		lblWeatherIcon.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblWeatherIcon.setVerticalTextPosition(JLabel.BOTTOM);
-		lblWeatherIcon.setHorizontalTextPosition(JLabel.CENTER);
-		themes.registerLabelTextColor(lblWeatherIcon, LabelEnums.WTH_LST_UPD_TIME);
-		
-		lblWeatherIcon.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent e) {
-				
-				weatherMouseAction();
-			}
-		});
+		lblSunDegree = new JLabel("°C");
+		lblSunDegree.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblSunDegree.setFont(new Font("Tahoma", Font.BOLD, 25));
+		weatherPanel.add(lblSunDegree, "cell 1 0,aligny center");
 		
 		weatherPanel.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
@@ -368,8 +365,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 				weatherMouseAction();
 			}
 		});
-		
-		weatherPanel.add(lblWeatherIcon, "cell 2 0,growx,aligny center");		
 		
 		JPanel alertIconsPanel = new JPanel();
 		alertIconsPanel.setPreferredSize(new Dimension(61, 10));
@@ -466,26 +461,50 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		clock();
 		
-		lblTempSun = new JLabel("--c");
+		pnlCurrWth = new JPanel();
+		pnlCurrWth.setOpaque(false);
+		weatherPanel.add(pnlCurrWth, "cell 2 0,grow");
+		pnlCurrWth.setLayout(new MigLayout("", "[grow,center]", "[][]"));
 		
-		lblTempSun.setFont(new Font("Tahoma", Font.BOLD, 20));
-		themes.registerIconColor(lblTempSun, IconEnum.TEMP_SUN);
-		themes.registerLabelTextColor(lblTempSun, LabelEnums.TEMP_SUN);
-		weatherPanel.add(lblTempSun, "cell 4 0,alignx right,aligny center");
-		
-		lblTempShade = new JLabel("--c");
-		lblTempShade.setFont(new Font("Tahoma", Font.BOLD, 20));
-		themes.registerIconColor(lblTempShade, IconEnum.TEMP_SHADE);
-		themes.registerLabelTextColor(lblTempShade, LabelEnums.TEMP_SHADE);
-		weatherPanel.add(lblTempShade, "cell 5 0,alignx right");
-		
-		lblTempShade.addMouseListener(new MouseAdapter(){
+		lblCurrentweather = new JLabel("<html><div style='width: 200px;word-wrap: break-word;text-align: center'>Not available</html>");
+		pnlCurrWth.add(lblCurrentweather, "cell 0 0,alignx center");
+		lblCurrentweather.setFont(new Font("Tahoma", Font.BOLD, 30));
+		lblCurrentweather.setForeground(Color.WHITE);
+		lblCurrentweather.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				
 				weatherMouseAction();
 			}
 		});
-		lblTempSun.addMouseListener(new MouseAdapter(){
+		
+		themes.registerLabelTextColor(lblCurrentweather, LabelEnums.CURRENT_WEATHER);
+		
+		lblWeatherIcon = new JLabel("--:--",weatherNaIcon,  SwingConstants.CENTER);
+		pnlCurrWth.add(lblWeatherIcon, "cell 0 1,growx");
+		lblWeatherIcon.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblWeatherIcon.setVerticalTextPosition(JLabel.BOTTOM);
+		lblWeatherIcon.setHorizontalTextPosition(JLabel.CENTER);
+		themes.registerLabelTextColor(lblWeatherIcon, LabelEnums.WTH_LST_UPD_TIME);
+		
+		lblWeatherIcon.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				
+				weatherMouseAction();
+			}
+		});
+		
+		lblTempShade = new JLabel("<html><span style=\"font-family:Tahoma;font-weight: bold;font-size:80px;\">40</span><span style=\"font-family:Tahoma;font-weight: bold;font-size:20px;\">.4</span></html>");
+		lblTempShade.setFont(new Font("Tahoma", Font.BOLD, 90));
+		themes.registerIconColor(lblTempShade, IconEnum.TEMP_SHADE);
+		themes.registerLabelTextColor(lblTempShade, LabelEnums.TEMP_SHADE);
+		weatherPanel.add(lblTempShade, "cell 3 0,alignx right,aligny center");
+		
+		lblShadeDegree = new JLabel("°C");
+		lblShadeDegree.setFont(new Font("Tahoma", Font.BOLD, 25));
+		lblShadeDegree.setVerticalAlignment(SwingConstants.TOP);
+		weatherPanel.add(lblShadeDegree, "cell 4 0,aligny center");
+		
+		lblTempShade.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				
 				weatherMouseAction();
@@ -730,10 +749,10 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			WeatherBean wb = (WeatherBean)evt.getNewValue();	
 			
 			Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
-			Temperature shade = wb.getTempSun().orElse(new Temperature(new Float(-999)));
+			Temperature shade = wb.getTempShade().orElse(new Temperature(new Float(-999)));
 			
-			addCurrentTemp(Constants.numberFormat.format(sun.getTempC()),
-					Constants.numberFormat.format(shade.getTempC()));
+		
+			addCurrentTemp(cnvFloatToTmp(sun.getTempC()),cnvFloatToTmp(shade.getTempC()));
 			
 		}
 		else if (evt.getPropertyName().equals(Constants.FORECAST_RESULT)){
@@ -766,17 +785,14 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 					WeatherBean wb = (WeatherBean)ct.getSharedObject(Constants.SENSOR_INFO);
 					if (wb != null) { 
 						Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
-						Temperature shade = wb.getTempSun().orElse(new Temperature(new Float(-999)));
+						Temperature shade = wb.getTempShade().orElse(new Temperature(new Float(-999)));
 						
-						addCurrentTemp(Constants.numberFormat.format(sun.getTempC()),
-								Constants.numberFormat.format(shade.getTempC()));
-						
-						
+						addCurrentTemp(cnvFloatToTmp(sun.getTempC()),cnvFloatToTmp(shade.getTempC()));						
 					}
 				}else{			
 												
 					addCurrentWeather(wcm.getSummary().trim(),icon , dt);
-					addCurrentTemp(String.valueOf(wcm.getCurrTemp()), "--");
+					addCurrentTemp(cnvFloatToTmp(wcm.getCurrTemp()), "--");
 				}				
 
 				if (wgm.getWeatherAlert() != null){ 
@@ -912,8 +928,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	}
 	private void addCurrentTemp(String tempSun, String tempShade) {
 		
-		lblTempSun.setText(tempSun+"c");
-		lblTempShade.setText(tempShade+"c");
+		lblTempSun.setText(tempSun);
+		lblTempShade.setText(tempShade);
 	}
 	private void displayCurrentForecastLoading(){
 		lblCurrentweather.setText("<html><div style='width: 80px;word-wrap: break-word;text-align: center'> LOADING...</html>");
@@ -979,11 +995,10 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			}
 		}else  if(message.getPropertyName().equals(Constants.THEMES_BACKGROUND_IMG_UPDATE)){
 			String image = (String)message.getFirstMessage();
-//			String image = (String)evt.getNewValue();
 			logger.info("Image background update. Image: " + image);
 			changeBackImage(new File(image));
 			
-		}//TODO
+		}
 		
 	}
 	private void weatherMouseAction() {
@@ -1006,4 +1021,21 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		}
 
 	}
+	private static String cnvFloatToTmp(float floatNbr) {
+
+		String nbr = Constants.numberFormat.format(floatNbr);
+		
+		String tempString = "";
+//                            
+		if (nbr.contains(".")) {
+			tempString ="<html><span style=\"font-family:Tahoma;font-weight: bold;font-size:80px;\">" + nbr.substring(0, nbr.indexOf(".")) + "</span><span style=\"font-family:Tahoma;font-weight: bold;font-size:60px;\">" + nbr.substring(nbr.indexOf("."), nbr.length()) + "</span></html>";
+
+		}
+		else {
+			tempString = "<html><span style=\"font-family:Tahoma;font-weight: bold;font-size:80px;\">" + nbr + "</span>"  +
+						"<span style=\"font-family:Tahoma;font-weight: bold;font-size:60px;\">.0</span></html>";
+		}
+		return tempString;
+	}
+	
 }

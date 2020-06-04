@@ -18,7 +18,7 @@ public class LightSensorHandler {
 	private static final Logger logger = Logger.getLogger( LightSensorHandler.class.getName() );
 
 
-	
+
 	private TSL2591 tsl2591;
 	private BH1750FVI bh1750;
 	private ScreenType screenType;
@@ -42,49 +42,59 @@ public class LightSensorHandler {
 	public int getVisibleLight() {
 
 		int level = 0;
-		int luxHighestValue = 200;
 		float luxFloat = 0.0f;
-
+		int lux = 0;
 
 		if (lightSensor == LightSensor.TSL2591_PI) {
+			//re-adjust value to 1 lux if luxFloat is 0.60 or greater.
 			luxFloat =  getTsl2591VisibleLight();
+			if (luxFloat >= 0.50 && luxFloat <= 1.00) {
+				lux = 1;
+			}else {
+				lux = (int) luxFloat;
+			}
 		}else if (lightSensor == LightSensor.BH1750FVI_PI) {
 			luxFloat = getBH1750Lux();
+			lux = (int) luxFloat;
 		}
 
-
-		int lux = (int) luxFloat;
-
-		if (lux > lightSensor.getLuxMaxValue()){//TODO  re-assessed max value once a week
+		
+		if (lux > lightSensor.getLuxMaxValue()){
 			lux = screenType.getMaxBacklight();
 		}
 
 		//lux of 3 is light in the room
 		//15 to 177 is the backlight control values. 15 being the lowest and 177 highest brightness.
-		if (lux >  lightSensor.getDarkThreshold()){
+		if (lux >=  lightSensor.getDarkThreshold()){
 			//the LDR will return 
-			long resultLux = map(lux, 0, luxHighestValue, screenType.getMinBacklight(), screenType.getMaxBacklight()) ;
+			long resultLux = map(lux, 0, lightSensor.getLuxMaxValue(), screenType.getMinBacklight(), screenType.getMaxBacklight()) ;
 
-			if (resultLux == screenType.getMaxBacklight()){
+			//some re-adjustement to compensate for screen brightness
+			resultLux += screenType.getBrightnessAdj();
+
+
+			if (resultLux >= screenType.getMaxBacklight()){
 				resultLux = 255;
 			}
 
 			level = (int) resultLux;
 		}
 
-		logger.config("LUX Float value: " + luxFloat + " LUX int: " + lux + " level: " + level + " Highest Lux: " + luxHighestValue);
+		logger.config("LUX Float value: " + luxFloat + " LUX int: " + lux + " level (with adj): " + level + " Highest Lux: " + lightSensor.getLuxMaxValue());
 
 		return level;
 
 	}
-	
+
 	/**
 	 * get lux an map it from 5 to 255
 	 * @return
 	 * @throws ExecuteException
 	 * @throws IOException
 	 */
-	private float getTsl2591VisibleLight()  {		
+	private float getTsl2591VisibleLight()  {	
+		//special for the tsl2591.. from 0.50 it must be On 
+		
 		return tsl2591.getLux();
 	}
 
@@ -99,6 +109,19 @@ public class LightSensorHandler {
 
 		return value;
 	}
+	/**
+	 * value: the number to map.
+		fromLow: the lower bound of the value’s current range.
+		fromHigh: the upper bound of the value’s current range.
+		toLow: the lower bound of the value’s target range.
+		toHigh: the upper bound of the value’s target range.
+	 * @param x
+	 * @param in_min
+	 * @param in_max
+	 * @param out_min
+	 * @param out_max
+	 * @return
+	 */
 	private long map(long x, long in_min, long in_max, long out_min, long out_max) {
 		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}

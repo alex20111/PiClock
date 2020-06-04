@@ -4,8 +4,9 @@ public enum LightSensor {
 	
 	LDR_ARDUINO(15,255), LDR_PI(15, 255), TSL2591_ARDUINO(1, 200), TSL2591_PI(1, 200), BH1750FVI_PI(13, 255), BH1750FVI_ARDUINO(13, 255);
 
-	private int darkTreshold = 0;
-	private int luxMaxValue = 0; //the max value a sensor will do to determin the light level
+	private int darkTreshold = 0; //value used to turn screen on..
+	private int luxMaxValue = 0; //the max value a sensor will gather for the room overall light during the day..
+								//it's basically it's max value that it will get with the amount of light in the room
 	
 	private  LightSensor(int darknessTreshold, int luxMaxValue) {
 		this.darkTreshold = darknessTreshold;
