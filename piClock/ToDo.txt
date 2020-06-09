@@ -4,7 +4,7 @@
 add error for other function (Error types to display on screen)  IN progress (Package net.piclock.server - continue on)
 THEME ICONS and TEXT customizition
 - Add status screen for next updates, cpu heat, wifi status.. etc!!
-finish alarm html page
+
 create script for installation.
 Finish label colors when night/day refresh
 
@@ -16,6 +16,7 @@ PiOffical touch:
 	
 There was in the arduino serial an instance that I recieved a string with <a1><l123>  meaning button was pressed and ldr was 123.. 
 display next alarm time under the clock if activated
+finish alarm html page
 
 ----- IN PROGRESS -------------
 		

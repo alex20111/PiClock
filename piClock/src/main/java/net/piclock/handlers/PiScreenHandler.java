@@ -63,6 +63,7 @@ public class PiScreenHandler {
 	}
 
 	private void writeToScreenFile(int level, String filePath) throws IOException{
+		logger.log(Level.CONFIG, "Brightness level: " + level + " File accessed: " +filePath);
 		RandomAccessFile f;
 
 		f = new RandomAccessFile(new File(filePath), "rw");

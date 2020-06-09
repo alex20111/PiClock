@@ -51,8 +51,6 @@ public class DeviceHandler {
 
 		hwc = (HardwareConfig)context.getSharedObject(Constants.HARDWARE);
 
-		logger.log(Level.CONFIG, "Hardware !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + hwc);
-
 		if (arduinoHw()) {
 			ard = new ArduinoSerialCmd();			
 		}else if (piHw()) {
@@ -151,6 +149,8 @@ public class DeviceHandler {
 			ard.turnOnRadio();
 		}else if(piHw()) {
 			piScreen.radioOn();
+			
+//			piHwHandler = new PiHardwareHandler();
 		}
 	}
 
@@ -175,11 +175,17 @@ public class DeviceHandler {
 	public void turnSpeakerOn() throws IllegalStateException, IOException {
 		if (arduinoHw()) {
 			ard.turnSpeakerOn();
+		}else if (piHw()) {
+			piHwHandler.speakerOn();
+			
 		}
 	}
 	public void turnSpeakerOff() throws IllegalStateException, IOException {
 		if (arduinoHw()) {
 			ard.turnSpeakerOff();
+		}else if (piHw()) {
+			piHwHandler.speakerOff();
+			
 		}
 	}
 

@@ -1,7 +1,7 @@
 package net.piclock.enums;
 
 public enum ScreenType {
-	PI_TOUCH_SCREEN(13,177, 20), HYPERPIXEL40(3,180, 0);
+	PI_TOUCH_SCREEN(13,177, 13), HYPERPIXEL40(3,180, 0);
 	
 	private int minBacklight = 0;
 	private int maxBacklight = 0;//value from the LDR when the screen should turn 

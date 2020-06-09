@@ -135,6 +135,6 @@ JNIEXPORT jfloat JNICALL Java_net_piclock_nativeImpl_SI4703_seek
  */
 JNIEXPORT void JNICALL Java_net_piclock_nativeImpl_SI4703_init
   (JNIEnv* env, jobject obj, jint reset, jint sdio){
-    radio.begin(18,0);
+    radio.begin(1,30);
   }
 

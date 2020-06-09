@@ -98,7 +98,8 @@ Si4703_Breakout::~Si4703_Breakout() {
 // SDIO pulled high. Therefore, after a normal power up the Si4703 will be in an
 // unknown state. RST must be controlled
 Status Si4703_Breakout::powerOn() {
-  wiringPiSetupGpio();  // Setup gpio access in BCM mode.
+  //wiringPiSetupGpio();  // Setup gpio access in BCM mode.
+ // wiringPiSetup();
 
   pinMode(resetPin_, OUTPUT);  // gpio bit-banging to get 2-wire (I2C) mode.
   pinMode(sdioPin_, OUTPUT);   // SDIO is connected to A4 for I2C.

@@ -82,12 +82,12 @@ public class MiniWebServer  {
 
 			server = new WebServer(80,rootDir);
 			server.addHandler("/", new MainPage());
-			server.addHandler("/radio", rp);
+//			server.addHandler("/radio", rp);
 			if (canAccessSettings) {
 				server.addHandler("/wifi", wifi);
 			}
 			server.addHandler("/mp3", mp3);
-			server.addHandler("/alarmView", ah);
+//			server.addHandler("/alarmView", ah);
 			server.addHandler("/background", bh);
 			server.addFileFolder("css");
 			server.addFileFolder("js"); 

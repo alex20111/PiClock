@@ -809,11 +809,12 @@ public class PiHandler {
 	 * @throws IOException
 	 */
 	private void handleSpeakers(boolean turnOn) throws IllegalStateException, IOException {
-		
+		logger.log(Level.CONFIG, " handleSpeakers. Turn on? " + turnOn + " Speaker already on? " + speakerOn);
 		if (turnOn) {
 			
 			if (!speakerOn) {
 				device.turnSpeakerOn();
+				
 				speakerOn = true;
 			}			
 			
