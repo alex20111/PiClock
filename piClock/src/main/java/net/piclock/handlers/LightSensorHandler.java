@@ -24,7 +24,7 @@ public class LightSensorHandler {
 	private ScreenType screenType;
 	private LightSensor lightSensor;
 
-	public LightSensorHandler(LightSensor sensor, ScreenType screenType, I2CBus i2cBus) {
+	public LightSensorHandler(LightSensor sensor, ScreenType screenType, I2CBus i2cBus) throws IOException {
 		if (sensor == LightSensor.TSL2591_PI) {
 			//init the LUX sensor
 			tsl2591 = new TSL2591();
@@ -32,6 +32,7 @@ public class LightSensorHandler {
 
 		}else if (sensor == LightSensor.BH1750FVI_PI) {
 			bh1750 = new BH1750FVI(i2cBus, BH1750FVI.I2C_ADDRESS_23);
+			bh1750.setMode(BH1750FVI.OPECODE_CONTINUOUSLY_H_RESOLUTION_MODE);
 		}
 
 		lightSensor = sensor;
@@ -55,18 +56,26 @@ public class LightSensorHandler {
 			}
 		}else if (lightSensor == LightSensor.BH1750FVI_PI) {
 			luxFloat = getBH1750Lux();
+			
+			if (luxFloat >= 0.80 && luxFloat <= 1.00) {
+				lux = 1;
+			}else {
+				lux = (int) luxFloat;
+			}
+			
 			lux = (int) luxFloat;
 		}
 
 		
 		if (lux > lightSensor.getLuxMaxValue()){
-			lux = screenType.getMaxBacklight();
+//			lux = screenType.getMaxBacklight();
+			lux = lightSensor.getLuxMaxValue();//set the max value for the sensor since we don't want the map to pass wrong value.. 
 		}
 
 		//lux of 3 is light in the room
 		//15 to 177 is the backlight control values. 15 being the lowest and 177 highest brightness.
 		if (lux >=  lightSensor.getDarkThreshold()){
-			//the LDR will return 
+			//the LDR will return  ex: LUX = 55, lux min , max to new min , max.
 			long resultLux = map(lux, 0, lightSensor.getLuxMaxValue(), screenType.getMinBacklight(), screenType.getMaxBacklight()) ;
 
 			//some re-adjustement to compensate for screen brightness

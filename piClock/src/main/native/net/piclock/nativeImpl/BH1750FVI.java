@@ -22,16 +22,16 @@ public class BH1750FVI {
 	public static final byte I2C_ADDRESS_23 = 0x23;
 	public static final byte I2C_ADDRESS_5C = 0x5c;
 
+	public static final byte OPECODE_CONTINUOUSLY_H_RESOLUTION_MODE		= 0x10;
+	public static final byte OPECODE_CONTINUOUSLY_H_RESOLUTION_MODE2	= 0x11;
+	public static final byte OPECODE_CONTINUOUSLY_L_RESOLUTION_MODE		= 0x13;
+	public static final byte OPECODE_ONE_TIME_H_RESOLUTION_MODE			= 0x20;
+	public static final byte OPECODE_ONE_TIME_H_RESOLUTION_MODE2		= 0x21;
+	public static final byte OPECODE_ONE_TIME_L_RESOLUTION_MODE			= 0x23;
+
 	private static final byte OPECODE_POWER_DOWN							= 0x00;
 	private static final byte OPECODE_POWER_ON								= 0x01;
 	private static final byte OPECODE_RESET									= 0x07;
-	private static final byte OPECODE_CONTINUOUSLY_H_RESOLUTION_MODE		= 0x10;
-	private static final byte OPECODE_CONTINUOUSLY_H_RESOLUTION_MODE2	= 0x11;
-	private static final byte OPECODE_CONTINUOUSLY_L_RESOLUTION_MODE		= 0x13;
-	private static final byte OPECODE_ONE_TIME_H_RESOLUTION_MODE			= 0x20;
-	private static final byte OPECODE_ONE_TIME_H_RESOLUTION_MODE2		= 0x21;
-	private static final byte OPECODE_ONE_TIME_L_RESOLUTION_MODE			= 0x23;
-
 	private static final int H_RESOLUTION_MODE_MEASUREMENT_TIME_MILLIS	= 120;
 	private static final int H_RESOLUTION_MODE2_MEASUREMENT_TIME_MILLIS	= 120;
 	private static final int L_RESOLUTION_MODE_MEASUREMENT_TIME_MILLIS	= 16;
@@ -44,13 +44,15 @@ public class BH1750FVI {
 	private final String i2cName;
 	private final String logPrefix;
 
+	private byte mode;
+
 	private final AtomicInteger useCount = new AtomicInteger(0);
 
 
 	public BH1750FVI(I2CBus i2cBus, byte i2cAddress) {
-		
+
 		this.i2cBus = i2cBus;
-		
+
 		if (i2cAddress == I2C_ADDRESS_23 || i2cAddress == I2C_ADDRESS_5C) {
 			this.i2cAddress = i2cAddress;
 		} else {
@@ -62,7 +64,7 @@ public class BH1750FVI {
 		logPrefix = "[" + i2cName + "] ";
 
 		try {
-//			this.i2cBus = I2CFactory.getInstance(i2cBusNumber);
+			//			this.i2cBus = I2CFactory.getInstance(i2cBusNumber);
 			this.i2cDevice = i2cBus.getDevice(i2cAddress);
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
@@ -92,6 +94,17 @@ public class BH1750FVI {
 		}
 	}
 
+	public void setMode(byte mode) throws IOException {
+		this.mode = mode;
+		write(mode);
+
+		try {
+			Thread.sleep(H_RESOLUTION_MODE_MEASUREMENT_TIME_MILLIS);
+		} catch (InterruptedException e) {
+		}
+
+	}
+
 	public int getI2cBusNumber() {
 		return i2cBus.getBusNumber();
 	}
@@ -108,27 +121,27 @@ public class BH1750FVI {
 		return logPrefix;
 	}
 
-	private void dump(byte data, String tag) {
-		if (logger.isLoggable(Level.CONFIG)) {
-			StringBuffer sb = new StringBuffer();
-			sb.append(String.format("%02x", data));
-			logger.config(logPrefix + " Tag: " + tag + " String: " +  sb.toString());
-		}
-	}
-
-	private void dump(byte[] data, String tag) {
-		if (logger.isLoggable(Level.CONFIG)) {
-			StringBuffer sb = new StringBuffer();
-			for (byte data1 : data) {
-				sb.append(String.format("%02x ", data1));
-			}
-//			logger.trace(logPrefix + "{}{}", tag, sb.toString().trim());
-		}
-	}
+	//	private void dump(byte data, String tag) {
+	//		if (logger.isLoggable(Level.CONFIG)) {
+	//			StringBuffer sb = new StringBuffer();
+	//			sb.append(String.format("%02x", data));
+	//			logger.config(logPrefix + " Tag: " + tag + " String: " +  sb.toString());
+	//		}
+	//	}
+	//
+	//	private void dump(byte[] data, String tag) {
+	//		if (logger.isLoggable(Level.CONFIG)) {
+	//			StringBuffer sb = new StringBuffer();
+	//			for (byte data1 : data) {
+	//				sb.append(String.format("%02x ", data1));
+	//			}
+	////			logger.trace(logPrefix + "{}{}", tag, sb.toString().trim());
+	//		}
+	//	}
 
 	private void write(byte out) throws IOException {
 		try {
-//			dump(out, "BH1750FVI sensor command: write: ");
+			//			dump(out, "BH1750FVI sensor command: write: ");
 			i2cDevice.write(out);
 		} catch (IOException e) {
 			String message = logPrefix + "failed to write.";
@@ -141,7 +154,7 @@ public class BH1750FVI {
 		try {
 			byte[] in = new byte[length];
 			i2cDevice.read(in, 0, length);
-//			dump(in, "BH1750FVI sensor command: read:  ");
+			//			dump(in, "BH1750FVI sensor command: read:  ");
 			return in;
 		} catch (IOException e) {
 			String message = logPrefix + "failed to read.";
@@ -151,41 +164,54 @@ public class BH1750FVI {
 	}
 
 	public float getOptical() throws IOException {
-		write(OPECODE_ONE_TIME_H_RESOLUTION_MODE);
+		write(mode);
 
-		try {
-			Thread.sleep(H_RESOLUTION_MODE_MEASUREMENT_TIME_MILLIS);
-		} catch (InterruptedException e) {
+		switch(mode) {
+		case OPECODE_ONE_TIME_H_RESOLUTION_MODE:
+		case OPECODE_ONE_TIME_H_RESOLUTION_MODE2:
+			try {
+				Thread.sleep(H_RESOLUTION_MODE_MEASUREMENT_TIME_MILLIS);
+			} catch (InterruptedException e) {
+			}
+			break;
+		case OPECODE_ONE_TIME_L_RESOLUTION_MODE:
+			try {
+				Thread.sleep(L_RESOLUTION_MODE_MEASUREMENT_TIME_MILLIS);
+			} catch (InterruptedException e) {
+			}
+			break;
+		default:
+			break;
 		}
-
+		
 		byte[] data = read(SENSOR_DATA_LENGTH);
 
 		return (float)((((int)(data[0] & 0xff) << 8) + (int)(data[1] & 0xff)) / 1.2);
 	}
 
-//	/******************************************************************************************************************
-//	 * Sample main
-//	 ******************************************************************************************************************/
-//	public static void main(String[] args) throws IOException {
-//		BH1750FVI bh1750fvi = null;
-//		try {
-//			bh1750fvi = new BH1750FVI(I2CBus.BUS_1, BH1750FVI.I2C_ADDRESS_23);
-//			bh1750fvi.open();
-//
-//			while (true) {
-//				float value = bh1750fvi.getOptical();
-//				logger.info("optical:" + value);
-//
-//				Thread.sleep(10000);
-//			}
-//		} catch (InterruptedException e) {
-//			logger.log(Level.INFO, "caught - {}", e.toString());
-//		} catch (IOException e) {
-//			logger.log(Level.INFO, "caught - {}", e.toString());
-//		} finally {
-//			if (bh1750fvi != null) {
-//				bh1750fvi.close();
-//			}
-//		}
-//	}
+	//	/******************************************************************************************************************
+	//	 * Sample main
+	//	 ******************************************************************************************************************/
+	//	public static void main(String[] args) throws IOException {
+	//		BH1750FVI bh1750fvi = null;
+	//		try {
+	//			bh1750fvi = new BH1750FVI(I2CBus.BUS_1, BH1750FVI.I2C_ADDRESS_23);
+	//			bh1750fvi.open();
+	//
+	//			while (true) {
+	//				float value = bh1750fvi.getOptical();
+	//				logger.info("optical:" + value);
+	//
+	//				Thread.sleep(10000);
+	//			}
+	//		} catch (InterruptedException e) {
+	//			logger.log(Level.INFO, "caught - {}", e.toString());
+	//		} catch (IOException e) {
+	//			logger.log(Level.INFO, "caught - {}", e.toString());
+	//		} finally {
+	//			if (bh1750fvi != null) {
+	//				bh1750fvi.close();
+	//			}
+	//		}
+	//	}
 }

@@ -243,22 +243,30 @@ public class Alarm implements Runnable, MessageListener{
 		alarmTriggered = false;
 	}
 
-	private  void autoAlarmShutOff( boolean startThread, int shutdownTime) {
+	private  void autoAlarmShutOff( boolean startThread,  final int shutdownTime) {
 		logger.log(Level.CONFIG, "autoAlarmShutOff. Start: " + startThread );
 
 		if (alarmAutoOff != null && alarmAutoOff.isAlive()) {
 			alarmAutoOff.interrupt();
 			logger.log(Level.CONFIG, "autoAlarmShutOff not null and interrupted");
 		}
+		
 
 		if (startThread) {
 			alarmAutoOff = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
-					logger.log(Level.CONFIG, "autoAlarmShutOff: Auto Off start in run. Shutdown time: " + shutdownTime);
+									
+					int shutDwn = shutdownTime;
+					if (shutdownTime <= 0) {
+						shutDwn = 60;
+					}
+					
+					logger.log(Level.CONFIG, "autoAlarmShutOff: Auto Off start in run. Shutdown time: " + shutdownTime + " shutDwn: " + shutDwn);
+					
 					try {
-						Thread.sleep(shutdownTime * 60000);
+						Thread.sleep(shutDwn * 60000);
 						logger.log(Level.INFO, "autoAlarmShutOff: Turning off alarm automatically.");
 						Message msg = new Message("off -From autoshutdown");
 						ct.sendMessage(Constants.TURN_OFF_ALARM, msg);; //always use the message to turn off the alarm so all registered parties will know about it.
