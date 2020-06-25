@@ -104,6 +104,8 @@ public class WebServerView extends JPanel {
 		JButton btnBack = new JButton("<");
 		btnBack.addActionListener(l -> {back();});
 		bodyPanel.add(btnBack, "cell 0 7");
+		
+		start(lblWebserverIcon);
 	}
 	private void back(){
 

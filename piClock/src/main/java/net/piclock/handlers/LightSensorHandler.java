@@ -63,7 +63,7 @@ public class LightSensorHandler {
 				lux = (int) luxFloat;
 			}
 			
-			lux = (int) luxFloat;
+//			lux = (int) luxFloat;
 		}
 
 		
