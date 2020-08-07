@@ -75,7 +75,6 @@ import net.piclock.view.WeatherForecastView;
 import net.piclock.view.WebServerView;
 import net.piclock.weather.DarkSkyUtil;
 import net.piclock.weather.Temperature;
-import net.piclock.weather.WeatherBean;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherCurrentModel;
 import net.weather.bean.WeatherGenericModel;
@@ -269,7 +268,6 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 				try{
 					CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
 					cardLayout.show(cardsPanel, Constants.WEB_SERVER_VIEW);
-					logger.config("AAAAAAAAAAAAAAAAAAFFFFFFFFFFFFFTTTTTTTTTTTTTTEEEEEEEEEEEEERRRRRRRRRRRRRR CARD LAYOUT");
 					ScreenAutoClose.stop();
 					ScreenAutoClose.start(cardsPanel, 2, TimeUnit.MINUTES);
 					keepAliveIfScreenShutdown();//keep the screen alive if the screen is temporary turned on.
@@ -746,13 +744,13 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	public synchronized void propertyChange(PropertyChangeEvent evt) {
 		logger.info("--propertyChange--: " + evt.getPropertyName());
 		if (evt.getPropertyName().equals(Constants.SENSOR_INFO)) {
-			WeatherBean wb = (WeatherBean)evt.getNewValue();	
+			Temperature temp = (Temperature)evt.getNewValue();	
 			
-			Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
-			Temperature shade = wb.getTempShade().orElse(new Temperature(new Float(-999)));
+//			Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
+//			Temperature shade = wb.getTempShade().orElse(new Temperature(new Float(-999)));
 			
 		
-			addCurrentTemp(cnvFloatToTmp(sun.getTempC()),cnvFloatToTmp(shade.getTempC()));
+			addCurrentTemp(temp.getTempSun(),temp.getTempShade());
 			
 		}
 		else if (evt.getPropertyName().equals(Constants.FORECAST_RESULT)){
@@ -782,12 +780,12 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 				if (sensorActive){		
 
 					addCurrentWeather(wcm.getSummary().trim(),icon,dt );
-					WeatherBean wb = (WeatherBean)ct.getSharedObject(Constants.SENSOR_INFO);
-					if (wb != null) { 
-						Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
-						Temperature shade = wb.getTempShade().orElse(new Temperature(new Float(-999)));
+					Temperature temp = (Temperature)ct.getSharedObject(Constants.SENSOR_INFO);
+					if (temp != null) { 
+//						Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
+//						Temperature shade = wb.getTempShade().orElse(new Temperature(new Float(-999)));
 						
-						addCurrentTemp(cnvFloatToTmp(sun.getTempC()),cnvFloatToTmp(shade.getTempC()));						
+						addCurrentTemp(temp.getTempSun(),temp.getTempShade());						
 					}
 				}else{			
 												

@@ -8,6 +8,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -20,9 +22,12 @@ import net.piclock.main.Constants;
 import net.piclock.server.MiniWebServer;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.thread.ScreenAutoClose;
 
 public class WebServerView extends JPanel {
 
+	private static final Logger logger = Logger.getLogger( WebServerView.class.getName() );
+	
 	private static final long serialVersionUID = 1L;
 	private JButton btnStart;
 	private JButton btnStop;
@@ -109,10 +114,18 @@ public class WebServerView extends JPanel {
 	}
 	private void back(){
 
+		try {
+			ScreenAutoClose.stop();
+		} catch (InterruptedException e) {
+			logger.log(Level.SEVERE, "Error " , e);
+		}
+		
 		SwingContext context = SwingContext.getInstance();
 		JPanel cards = (JPanel)context.getSharedObject(Constants.CARD_PANEL);
 		CardLayout cl = (CardLayout)(cards.getLayout());
         cl.show(cards, Constants.MAIN_VIEW );
+        
+        
 	}
 	private void start(JLabel lblWebserverIcon){
 		try{

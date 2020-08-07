@@ -27,6 +27,7 @@ public class ScreenAutoClose implements Runnable {
 			timeUnit.sleep(delay);
 			CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
 			cardLayout.show(cardPanel, Constants.MAIN_VIEW);
+		
 		} catch (InterruptedException e) {
 		}
 	}

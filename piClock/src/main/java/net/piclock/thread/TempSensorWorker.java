@@ -15,7 +15,6 @@ import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
 import net.piclock.weather.Temperature;
-import net.piclock.weather.WeatherBean;
 
 //get the outside temperature sensors informations
 public class TempSensorWorker implements Runnable{
@@ -31,32 +30,46 @@ public class TempSensorWorker implements Runnable{
 		try {
 			if (handler.isWifiConnected()){
 
-				WeatherBean wb = new WeatherBean();
-
-				//recorder AA, Shade
-				Connect c = new Connect("http://192.168.1.110:8081/web/service.action?cmd=get&type=temp&jsonObject={\"recorderName\":\"AA\"}&max=true");
-				String resultAA = c.connectToUrlUsingGET().getResultAsStr();
-
+//				WeatherBean wb = new WeatherBean();
+//
+//				//recorder AA, Shade
+//				Connect c = new Connect("http://192.168.1.110:8081/web/service.action?cmd=get&type=temp&jsonObject={\"recorderName\":\"AA\"}&max=true");
+//				String resultAA = c.connectToUrlUsingGET().getResultAsStr();
+//
+//				Gson gson = new Gson();
+//				Temperature tempAA = gson.fromJson(resultAA, Temperature.class );
+//
+//				if (tempAA != null && tempAA.getTempC() != null){
+//					wb.setTempShade(tempAA);
+//				}
+//
+//				//recorder BB
+//				String urlBB = "http://192.168.1.110:8081/web/service.action?cmd=get&type=temp&jsonObject={\"recorderName\":\"BB\"}&max=true";
+//
+//				c = new Connect(urlBB);
+//				String resultBB = c.connectToUrlUsingGET().getResultAsStr();
+//
+//				Temperature tempBB = gson.fromJson(resultBB, Temperature.class );
+//
+//				if (tempBB != null && tempBB.getTempC() != null){
+//					wb.setTempSun(tempBB);
+//				}
+				
+				Connect c = new Connect("http://192.168.1.110:8080/api/temperature/currTemp");
+				String result = c.connectToUrlUsingGET().getResultAsStr();
+				
+//				System.out.println("result: " + resultAA);
 				Gson gson = new Gson();
-				Temperature tempAA = gson.fromJson(resultAA, Temperature.class );
-
-				if (tempAA != null && tempAA.getTempC() != null){
-					wb.setTempShade(tempAA);
+				Temperature tempResult = gson.fromJson(result, Temperature.class );
+				
+//				System.out.println("temp aa: " + tempAA);
+				
+				if (tempResult == null) {
+					tempResult = new Temperature();
 				}
+				
 
-				//recorder BB
-				String urlBB = "http://192.168.1.110:8081/web/service.action?cmd=get&type=temp&jsonObject={\"recorderName\":\"BB\"}&max=true";
-
-				c = new Connect(urlBB);
-				String resultBB = c.connectToUrlUsingGET().getResultAsStr();
-
-				Temperature tempBB = gson.fromJson(resultBB, Temperature.class );
-
-				if (tempBB != null && tempBB.getTempC() != null){
-					wb.setTempSun(tempBB);
-				}
-
-				ct.putSharedObject(Constants.SENSOR_INFO, wb);
+				ct.putSharedObject(Constants.SENSOR_INFO, tempResult);
 
 				logger.log(Level.CONFIG, "SensorTemp pooling finished!!!!!!!!!!");
 

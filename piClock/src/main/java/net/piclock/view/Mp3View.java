@@ -64,6 +64,7 @@ import net.piclock.swing.component.PopupSlider;
 import net.piclock.swing.component.RoundedBorder;
 import net.piclock.swing.component.Scroll;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.thread.ScreenAutoClose;
 import net.piclock.util.VolumeIndicator;
 import net.piclock.util.WordUtils;
 
@@ -444,11 +445,7 @@ public class Mp3View extends JPanel implements MessageListener {
 					if (id >= 0){						
 
 //						
-						List<String> mp3Names = new ArrayList<String>();
-//						mp3Names.add("c:\\users\\ADMIN\\desktop\\Shawn_Mendes_-_Se_orita_ft_Camila_Cabello_.mp3");
-//						mp3Names.add("c:\\users\\ADMIN\\desktop\\06 Cheap Thrills.mp3");
-//						mp3Names.add("c:\\users\\ADMIN\\desktop\\01 - Jumpsuit.mp3");
-						
+						List<String> mp3Names = new ArrayList<String>();						
 						
 						Map<Integer, String> mp3 = sql.loadAllMp3WithIdAndFileName();
 						
@@ -466,14 +463,10 @@ public class Mp3View extends JPanel implements MessageListener {
 						fireVolumeIconChange(true);
 						lblMp3MainIcon.setVisible(true);
 						
-//						List<String> mp3List = new ArrayList<String>();
+						handler.playMp3(true, mp3Names, selectedVolume);	
 						
+						Thread.sleep(2000);
 						
-
-						handler.playMp3(true, mp3Names, selectedVolume);						
-						
-//						Mp3Player.getInstance().play(mp3Names);
-
 					}
 				}
 			}catch (IllegalStateException | InterruptedException | IOException | ClassNotFoundException | SQLException e){
@@ -482,6 +475,12 @@ public class Mp3View extends JPanel implements MessageListener {
 		});
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					ScreenAutoClose.stop();
+				} catch (InterruptedException e1) {
+					logger.log(Level.SEVERE, "Error", e1);
+				}
+				
 				JPanel contentPane = (JPanel)ct.getSharedObject(Constants.CARD_PANEL); 
 				CardLayout cardLayout = (CardLayout) contentPane.getLayout(); 
 				cardLayout.show(contentPane, Constants.MAIN_VIEW);

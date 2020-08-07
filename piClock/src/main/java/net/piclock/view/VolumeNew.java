@@ -155,6 +155,7 @@ public class VolumeNew extends JDialog {
 			sampleVolBtn.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			sampleVolBtn.addActionListener(l ->{
 
+				sampleVolBtn.setEnabled(false);
 				//sample for 5 seconds
 				if (sampleVolThrd != null && sampleVolThrd.isAlive()){
 					sampleVolThrd.interrupt();
@@ -201,6 +202,7 @@ public class VolumeNew extends JDialog {
 						} catch (Exception ex){
 							logger.log(Level.SEVERE, "Error in sampling music", ex);
 						}
+						sampleVolBtn.setEnabled(true);
 					}
 				});
 				sampleVolThrd.start();

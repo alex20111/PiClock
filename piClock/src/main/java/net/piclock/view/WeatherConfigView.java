@@ -43,6 +43,7 @@ import net.piclock.main.Constants;
 import net.piclock.main.Preferences;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.theme.ThemeHandler;
+import net.piclock.thread.ScreenAutoClose;
 import net.piclock.util.FormatStackTrace;
 import net.piclock.util.ImageUtils;
 import net.piclock.util.PreferencesHandler;
@@ -223,7 +224,8 @@ public class WeatherConfigView extends JPanel {
 					if (canExit){
 
 						PreferencesHandler.save(prefs);
-
+						
+						ScreenAutoClose.stop();
 						JPanel cardsPanel = (JPanel)ct.getSharedObject(Constants.CARD_PANEL);				
 
 						CardLayout cardLayout = (CardLayout) cardsPanel.getLayout();
