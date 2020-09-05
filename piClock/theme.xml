@@ -61,7 +61,9 @@
 				<IconTheme name="VOLUME_ICON"	    iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
 				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
-				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
 			</labelIcon>
 		</background>
 	<background name="RAIN" image="rain-orig-480.jpg" imageFolder="img" imageNight="rain-night.jpg">
@@ -124,6 +126,8 @@
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
 				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
 				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
+								<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
 			</labelIcon>
 		</background>
 		<background name="CLOUDY" image="clouds.jpg" imageFolder="img" imageNight="cloudy-night.jpg">
@@ -186,6 +190,8 @@
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
 				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
 				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
 			</labelIcon>
 		</background>
 		<background name="FOG" image="fog.jpg" imageFolder="img" imageNight="fog-night.jpg">
@@ -248,6 +254,8 @@
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
 				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
 				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
 			</labelIcon>
 		</background>
 		<background name="THUNDER" image="thunder.jpg" imageFolder="img" imageNight="thunder-night.jpg">
@@ -310,6 +318,8 @@
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
 				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
 				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
 			</labelIcon>
 		</background>
 		<background name="SNOW" image="snowing.jpg" imageFolder="img" imageNight="snowy-night.png">
@@ -372,6 +382,400 @@
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
 				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
 				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
+			</labelIcon>
+		</background>
+	</theme>	
+	
+	
+	
+	
+	
+	<theme name="HALLOWEEN_THEME" >
+		<background name="SUNNY" image="halloween-day-clear.jpg" imageNight="halloween-clear-night.jpg" imageFolder="img">
+			<label name="labels">
+				<labelTheme name="CLOCK" 			colorDay="#000000" colorNight="#ffffff"></labelTheme>
+				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SUN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SHADE" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="DAY_OF_WEEK" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WTH_LST_UPD_TIME"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TITLE" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR_TXT"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_TITILE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ACTIVATE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_PROVIDER" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_CITY" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_REFRESH" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_MIN" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TITLE" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TEXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_WED" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>				
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				
+			
+			</label>
+			<labelIcon name="icons">
+				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
+				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
+				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
+				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
+				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
+				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-48-black.png" 		iconNight="wifi-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet-48.png" 		iconNight="wifi_on_no_inet-48.png"></IconTheme>	
+				<IconTheme name="WEB_SERVER"	    iconDay="web-server-48.png" 			iconNight="web-server-48.png"></IconTheme>
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>		
+			</labelIcon>
+		</background>
+	<background name="RAIN" image="halloween-rain-day.jpg" imageFolder="img" imageNight="Halloween-rain-night.jpg">
+			<label name="labels">
+				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SUN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SHADE" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="DAY_OF_WEEK" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WTH_LST_UPD_TIME"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR_TXT"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_TITILE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ACTIVATE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_PROVIDER" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_CITY" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_REFRESH" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_MIN" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TITLE" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TEXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_WED" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+			
+			</label>
+			<labelIcon name="icons">
+				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
+				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
+				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
+				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
+				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
+				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-48-black.png" 		iconNight="wifi-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet-48.png" 		iconNight="wifi_on_no_inet-48.png"></IconTheme>	
+				<IconTheme name="WEB_SERVER"	    iconDay="web-server-48.png" 			iconNight="web-server-48.png"></IconTheme>
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
+			</labelIcon>
+		</background>
+		<background name="CLOUDY" image="Halloween-cloudy-day.jpg" imageFolder="img" imageNight="Halloween-cloudy-night.jpg">
+			<label name="labels">
+				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SUN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SHADE" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="DAY_OF_WEEK" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WTH_LST_UPD_TIME"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR_TXT"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_TITILE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ACTIVATE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_PROVIDER" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_CITY" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_REFRESH" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_MIN" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TITLE" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TEXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_WED" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+			
+			</label>
+			<labelIcon name="icons">
+				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
+				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
+				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
+				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
+				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
+				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-48-black.png" 		iconNight="wifi-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet-48.png" 		iconNight="wifi_on_no_inet-48.png"></IconTheme>	
+				<IconTheme name="WEB_SERVER"	    iconDay="web-server-48.png" 			iconNight="web-server-48.png"></IconTheme>
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
+			</labelIcon>
+		</background>
+		<background name="FOG" image="halloween-day-fog.jpg" imageFolder="img" imageNight="Halloween-fog-night.jpg">
+			<label name="labels">
+				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SUN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SHADE" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="DAY_OF_WEEK" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WTH_LST_UPD_TIME"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR_TXT"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_TITILE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ACTIVATE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_PROVIDER" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_CITY" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_REFRESH" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_MIN" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TITLE" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TEXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_WED" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+			
+			</label>
+			<labelIcon name="icons">
+				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
+				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
+				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
+				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
+				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
+				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-48-black.png" 		iconNight="wifi-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet-48.png" 		iconNight="wifi_on_no_inet-48.png"></IconTheme>	
+				<IconTheme name="WEB_SERVER"	    iconDay="web-server-48.png" 			iconNight="web-server-48.png"></IconTheme>
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
+			</labelIcon>
+		</background>
+		<background name="THUNDER" image="halloween-day-thunder.jpg" imageFolder="img" imageNight="halloween-night-thunder.jpg">
+			<label name="labels">
+				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SUN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SHADE" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="DAY_OF_WEEK" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WTH_LST_UPD_TIME"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR_TXT"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_TITILE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ACTIVATE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_PROVIDER" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_CITY" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_REFRESH" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_MIN" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TITLE" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TEXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_WED" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+			
+			</label>
+			<labelIcon name="icons">
+				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
+				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
+				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
+				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
+				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
+				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-48-black.png" 		iconNight="wifi-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet-48.png" 		iconNight="wifi_on_no_inet-48.png"></IconTheme>	
+				<IconTheme name="WEB_SERVER"	    iconDay="web-server-48.png" 			iconNight="web-server-48.png"></IconTheme>
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
+			</labelIcon>
+		</background>
+		<background name="SNOW" image="halloween-snow-day.jpg" imageFolder="img" imageNight="halloween-snow-night.jpg">
+			<label name="labels">
+				<labelTheme name="CLOCK" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CURRENT_WEATHER" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SUN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="TEMP_SHADE" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="DAY_OF_WEEK" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WTH_LST_UPD_TIME"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_HOUR_TXT"	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MIN_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_TITILE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ACTIVATE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_PROVIDER" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_CITY" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_REFRESH" 		colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_MIN" 			colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TITLE" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WC_ALERT_TEXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_TITLE" 		colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_NAME" 	colorDay="WHITE" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_PASS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_WIFI_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_SCREEN_CHKBX" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SUNDAY" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_MON" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TU" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_WED" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_TH" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_FRI" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="ALARM_SAT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WEATHER_FORECAST_VIEW" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_NOW_PLAYING" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_STATIONS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="RADIO_SLEEP" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_TITLE" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_STATUS" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="WSERVER_ADDRESS_TXT" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+				<labelTheme name="CFG_PASS_CONFIG" 	colorDay="BLACK" colorNight="WHITE"></labelTheme>
+			
+			</label>
+			<labelIcon name="icons">
+				<IconTheme name="ALARM_ICON" 		iconDay="alarm-clock-48-black.png" 	iconNight="alarm-clock-white-48.png"></IconTheme>
+				<IconTheme name="BUTTON_COG" 		iconDay="cog-black-32.png" 			iconNight="cog-white-32.png"></IconTheme>	
+				<IconTheme name="RADIO_ICON" 		iconDay="radio-black-48.png" 		iconNight="radio-white-48.png"></IconTheme>	
+				<IconTheme name="MP3_ICON" 			iconDay="mp3-black-48.png" 			iconNight="mp3-black-48.png"></IconTheme>	
+				<IconTheme name="TEMP_SHADE" 		iconDay="shades24.png" 				iconNight="shades24.png"></IconTheme>	
+				<IconTheme name="TEMP_SUN" 			iconDay="sunny24.png" 				iconNight="sunny24.png"></IconTheme>
+				<IconTheme name="WIFI_OFF_ICON" 	iconDay="wifi-off-48-black.png" 	iconNight="wifi-off-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_ICON" 		iconDay="wifi-48-black.png" 		iconNight="wifi-white-48.png"></IconTheme>
+				<IconTheme name="WIFI_ON_NO_INET"	iconDay="wifi_on_no_inet-48.png" 		iconNight="wifi_on_no_inet-48.png"></IconTheme>	
+				<IconTheme name="WEB_SERVER"	    iconDay="web-server-48.png" 			iconNight="web-server-48.png"></IconTheme>
+				<IconTheme name="VOLUME_ICON"	    iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
+				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
+				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
 			</labelIcon>
 		</background>
 	</theme>	

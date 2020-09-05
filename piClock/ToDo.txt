@@ -19,6 +19,7 @@ display next alarm time under the clock if activated
 finish alarm html page
 
 --add garage door indicator on scree,n...
+--add christmas themes or even halloween themes.. 
 
 add auto shutdown for mp3 player..
 ----- IN PROGRESS -------------

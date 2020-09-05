@@ -17,7 +17,7 @@ import net.piclock.main.Preferences;
 import net.piclock.swing.component.Message;
 import net.piclock.swing.component.SwingContext;
 
- 
+
 //add code to main code.. 
 public class ThreadManager {
 
@@ -27,14 +27,14 @@ public class ThreadManager {
 	private ScheduledFuture<?> alarmThread ;
 	private ScheduledFuture<WeatherWorker> weatherThread;
 	private ScheduledFuture<TempSensorWorker> sensorThread;
-	
+
 	private static ThreadManager threadManager;
-	
+
 	public int wthErrorCount = 0;
-	
+
 	private ThreadManager(){		
 		scheduler = Executors.newScheduledThreadPool(11);
-		
+
 	}
 	public static ThreadManager getInstance(){
 		if (threadManager == null){
@@ -49,36 +49,36 @@ public class ThreadManager {
 
 	public void startAlarm(){
 		//calculate initial delay
-		
-//		LocalDateTime currentDate = LocalDateTime.now();
-//		LocalDateTime alarmTime = LocalDateTime.now();
-//		
-//		int hours = Integer.parseInt(alarm.getHour());
-//		int minutes = Integer.parseInt(alarm.getMinutes());
-//		
-//		if ( hours > alarmTime.getHour()  ||
-//				hours == alarmTime.getHour() && minutes > alarmTime.getMinute()){
-//			//time after current time
-//			alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0);
-//		}else{
-//			//time before current time, set date for next day.
-//			alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0).plusDays(1);
-//		}
-//
-//		//remove 1 min to allow system to perform something before triggering the alarm		
-//		long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime) - 60000;
-//		
-//		logger.log(Level.CONFIG, "Alarm Delay starting: " + initDelay + " " + new Date(new Date().getTime() + initDelay));
+
+		//		LocalDateTime currentDate = LocalDateTime.now();
+		//		LocalDateTime alarmTime = LocalDateTime.now();
+		//		
+		//		int hours = Integer.parseInt(alarm.getHour());
+		//		int minutes = Integer.parseInt(alarm.getMinutes());
+		//		
+		//		if ( hours > alarmTime.getHour()  ||
+		//				hours == alarmTime.getHour() && minutes > alarmTime.getMinute()){
+		//			//time after current time
+		//			alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0);
+		//		}else{
+		//			//time before current time, set date for next day.
+		//			alarmTime = LocalDate.now().atTime(hours, minutes, 0, 0).plusDays(1);
+		//		}
+		//
+		//		//remove 1 min to allow system to perform something before triggering the alarm		
+		//		long initDelay = ChronoUnit.MILLIS.between(currentDate, alarmTime) - 60000;
+		//		
+		//		logger.log(Level.CONFIG, "Alarm Delay starting: " + initDelay + " " + new Date(new Date().getTime() + initDelay));
 		try {
-		AlarmMonitorThread amt = new AlarmMonitorThread();
-		LocalDateTime now = LocalDateTime.now();
-		int millis = now.get(ChronoField.MILLI_OF_SECOND);
-		
-		long delay = (1000-millis);
-		
-		logger.log(Level.CONFIG, "startAlarm. Delay: " + delay);
-		
-		alarmThread = scheduler.scheduleAtFixedRate(amt, delay, 1000, TimeUnit.MILLISECONDS);
+			AlarmMonitorThread amt = new AlarmMonitorThread();
+			LocalDateTime now = LocalDateTime.now();
+			int millis = now.get(ChronoField.MILLI_OF_SECOND);
+
+			long delay = (1000-millis);
+
+			logger.log(Level.CONFIG, "startAlarm. Delay: " + delay);
+
+			alarmThread = scheduler.scheduleAtFixedRate(amt, delay, 1000, TimeUnit.MILLISECONDS);
 		}catch (Exception ex) {
 			logger.log(Level.SEVERE, "Error starting alarm thread. ", ex);
 		}
@@ -106,21 +106,21 @@ public class ThreadManager {
 	@SuppressWarnings("unchecked")
 	public void startWeatherThread(int initDelay, Preferences pref) {
 		logger.config("startWeatherThread. Pool size: " );
-		
-//		//verify if too much errors from the weather worker
-//		ErrorHandler eh =(ErrorHandler) SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
-//		
-//		boolean start = true;  //TODO
-//		
-//		if (eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER) != null && eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER).getErrorCount() > 30 ) {
-//			start = false;
-//			logger.log(Level.WARNING, "Too much error for the weather action, do not restart weather thread");
-//		}
-		
-//		if (start) {
+
+		//		//verify if too much errors from the weather worker
+		//		ErrorHandler eh =(ErrorHandler) SwingContext.getInstance().getSharedObject(Constants.ERROR_HANDLER);
+		//		
+		//		boolean start = true;  //TODO
+		//		
+		//		if (eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER) != null && eh.getErrorMap().get(net.piclock.bean.ErrorType.WEATHER).getErrorCount() > 30 ) {
+		//			start = false;
+		//			logger.log(Level.WARNING, "Too much error for the weather action, do not restart weather thread");
+		//		}
+
+		//		if (start) {
 		weatherThread = (ScheduledFuture<WeatherWorker>) scheduler.scheduleAtFixedRate(new WeatherWorker(), initDelay, pref.getWeatherRefresh(), TimeUnit.MINUTES);
-//		}
-		
+		//		}
+
 	}
 	public void stopWeatherThread() {
 		logger.log(Level.CONFIG, "Stop Weather thread");
@@ -141,7 +141,7 @@ public class ThreadManager {
 		logger.log(Level.CONFIG, "startLdr");
 		scheduler.scheduleWithFixedDelay(new LDRStatusWorker(), 1, 5, TimeUnit.SECONDS);
 	}
-	
+
 	public void startClock (JLabel clockLabel, JLabel weekDateLable, long delay) {
 		logger.log(Level.CONFIG, "startClock");
 		scheduler.scheduleAtFixedRate(new Clock(clockLabel, weekDateLable), delay, 2000, TimeUnit.MILLISECONDS);
@@ -150,6 +150,16 @@ public class ThreadManager {
 		logger.log(Level.CONFIG, "Network Verification");
 		scheduler.scheduleAtFixedRate(new VerifyNetwork(), delay, 5, TimeUnit.MINUTES);
 	}
+	public void startGarageDoorThread(JLabel lblGaragedoor) {
+		logger.log(Level.CONFIG, "GarageThread inn manager");
+		try {
+			scheduler.schedule(new GarageDoorThread(lblGaragedoor), 0, TimeUnit.MILLISECONDS);
+		}catch(Exception ex) {
+			logger.log(Level.SEVERE, "Error in threadManage" ,ex );
+		}
+	}
+
+
 	@SuppressWarnings("unchecked")
 	public void startSensorThread() {
 		logger.log(Level.CONFIG, "startSensorThread");
@@ -158,11 +168,11 @@ public class ThreadManager {
 	public void stopSensorThread() {
 		logger.config("stopSensorThread");
 		if (sensorThread != null){
-			
+
 			if (!sensorThread.isDone()){
-			
+
 				sensorThread.cancel(true); //cancel worker if running
-				
+
 				logger.config("sensorThread Thread done: " +  sensorThread.isDone());
 				//wait until cancelled
 				while(!sensorThread.isDone()){
@@ -173,6 +183,6 @@ public class ThreadManager {
 			}
 		}	
 		logger.config("sensorThread Thread finished");
-		
+
 	}
 }

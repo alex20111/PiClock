@@ -55,7 +55,7 @@ public class TempSensorWorker implements Runnable{
 //					wb.setTempSun(tempBB);
 //				}
 				
-				Connect c = new Connect("http://192.168.1.110:8080/api/temperature/currTemp");
+				Connect c = new Connect("http://192.168.1.110:8081/web/temperature/currTemp");
 				String result = c.connectToUrlUsingGET().getResultAsStr();
 				
 //				System.out.println("result: " + resultAA);

@@ -139,6 +139,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	private JLabel lblShadeDegree;
 	private JLabel lblSunDegree;
 	private JPanel pnlCurrWth;
+	private JLabel lblGaragedoor;
 	/**
 	 * Launch the application.
 	 */
@@ -248,18 +249,18 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		
 		JPanel timePanel = new JPanel();
 		mainPanel.add(timePanel, BorderLayout.CENTER);
-		timePanel.setLayout(new MigLayout("", "[][grow 68][][grow 70,right]", "[][grow 40][center][][grow 50][]"));
+		timePanel.setLayout(new MigLayout("", "[][grow 68][][grow 70,right]", "[grow][center][][grow 50][]"));
 		timePanel.setOpaque(false);
 		
 		clockLabel = new JLabel("00:00");
 		clockLabel.setFont(new Font("Courier New", Font.BOLD, 140));
 		themes.registerLabelTextColor(clockLabel, LabelEnums.CLOCK);
-		timePanel.add(clockLabel, "cell 0 2 4 1,alignx center,aligny center");
+		timePanel.add(clockLabel, "cell 0 1 4 1,alignx center,aligny center");
 		
 		weekDateLable = new JLabel("Fri, dec 21");
 		themes.registerLabelTextColor(weekDateLable, LabelEnums.DAY_OF_WEEK);
 		weekDateLable.setFont(new Font("Tahoma", Font.BOLD, 40));
-		timePanel.add(weekDateLable, "cell 0 3 4 1,alignx center,aligny top");
+		timePanel.add(weekDateLable, "cell 0 2 4 1,alignx center,aligny top");
 		lblWebserverIcon = new JLabel();
 		lblWebserverIcon.setVisible(false);
 		lblWebserverIcon.setBorder(new EmptyBorder(10,10,0,0));
@@ -286,11 +287,11 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		flowLayout.setHgap(15);
 		btnPanel.setOpaque(false);
 		flowLayout.setAlignment(FlowLayout.RIGHT);
-		timePanel.add(btnPanel, "cell 3 5,grow");
+		timePanel.add(btnPanel, "cell 3 4,grow");
 		
 		JPanel leftIcons = new JPanel();
 		leftIcons.setOpaque(false);
-		timePanel.add(leftIcons, "cell 0 5 2 1,alignx left,growy");
+		timePanel.add(leftIcons, "cell 0 4 2 1,alignx left,growy");
 		
 		leftIcons.add(lblWebserverIcon);  
 		
@@ -462,7 +463,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		pnlCurrWth = new JPanel();
 		pnlCurrWth.setOpaque(false);
 		weatherPanel.add(pnlCurrWth, "cell 2 0,grow");
-		pnlCurrWth.setLayout(new MigLayout("", "[grow,center]", "[][]"));
+		pnlCurrWth.setLayout(new MigLayout("", "[grow,center]", "[grow][grow]"));
 		
 		lblCurrentweather = new JLabel("<html><div style='width: 200px;word-wrap: break-word;text-align: center'>Not available</html>");
 		pnlCurrWth.add(lblCurrentweather, "cell 0 0,alignx center");
@@ -496,7 +497,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		themes.registerIconColor(lblTempShade, IconEnum.TEMP_SHADE);
 		themes.registerLabelTextColor(lblTempShade, LabelEnums.TEMP_SHADE);
 		weatherPanel.add(lblTempShade, "cell 3 0,alignx right,aligny center");
-		
+
 		lblShadeDegree = new JLabel("°C");
 		lblShadeDegree.setFont(new Font("Tahoma", Font.BOLD, 25));
 		lblShadeDegree.setVerticalAlignment(SwingConstants.TOP);
@@ -533,6 +534,10 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			}
 		});
 		leftIcons.add(lblWarningIcon);
+		
+		lblGaragedoor = new JLabel("");
+		themes.registerIconColor(lblGaragedoor, IconEnum.GARAGE_CLOSED);
+		leftIcons.add(lblGaragedoor);
 		
 		cardsPanel.add(av, Constants.ALARM_VIEW);
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	
@@ -578,7 +583,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 	        handler.shutdown(); 
 	      } 
 	    }); 
-					
+		tm.startGarageDoorThread(lblGaragedoor);		
 	}
 	/**change the background image **/
 	public void changeBackImage(File backImage){
@@ -750,7 +755,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 //			Temperature shade = wb.getTempShade().orElse(new Temperature(new Float(-999)));
 			
 		
-			addCurrentTemp(temp.getTempSun(),temp.getTempShade());
+			addCurrentTemp(cnvToTemp(temp.getTempSun()),cnvToTemp(temp.getTempShade()));
 			
 		}
 		else if (evt.getPropertyName().equals(Constants.FORECAST_RESULT)){
@@ -785,12 +790,12 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 //						Temperature sun = wb.getTempSun().orElse(new Temperature(new Float(-999)));
 //						Temperature shade = wb.getTempShade().orElse(new Temperature(new Float(-999)));
 						
-						addCurrentTemp(temp.getTempSun(),temp.getTempShade());						
+						addCurrentTemp(cnvToTemp(temp.getTempSun()),cnvToTemp(temp.getTempShade()));						
 					}
 				}else{			
 												
 					addCurrentWeather(wcm.getSummary().trim(),icon , dt);
-					addCurrentTemp(cnvFloatToTmp(wcm.getCurrTemp()), "--");
+					addCurrentTemp(cnvToTemp(Constants.numberFormat.format(wcm.getCurrTemp())), "--");
 				}				
 
 				if (wgm.getWeatherAlert() != null){ 
@@ -1019,9 +1024,9 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		}
 
 	}
-	private static String cnvFloatToTmp(float floatNbr) {
+	private static String cnvToTemp(String nbr) {
 
-		String nbr = Constants.numberFormat.format(floatNbr);
+//		String nbr = Constants.numberFormat.format(floatNbr);
 		
 		String tempString = "";
 //                            

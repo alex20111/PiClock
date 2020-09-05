@@ -365,6 +365,10 @@ public class ThemeHandler {
 		this.registeredIcon = registeredIcon;
 	}
 	
+	public ThemeEnum getCurrentTheme() {
+		return this.currentTheme;
+	}
+	
 	//when loading a background, verify if it is included in the themes, if not , default to the sunny theme.
 	private boolean isBackgroundIncludedInTheme(BackgroundEnum backEnum) {
 		

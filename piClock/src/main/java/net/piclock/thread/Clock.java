@@ -1,5 +1,6 @@
 package net.piclock.thread;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -21,11 +22,12 @@ import net.piclock.enums.DayNightCycle;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
+import net.piclock.theme.ThemeEnum;
 import net.piclock.theme.ThemeHandler;
 import net.piclock.util.FormatStackTrace;
 
 public class Clock implements Runnable {
-	
+
 	private static final Logger logger = Logger.getLogger( Clock.class.getName() );
 
 	private boolean timeChanged = false;
@@ -34,7 +36,7 @@ public class Clock implements Runnable {
 
 	private JLabel clockLabel;
 	private JLabel weekDateLable;
-	
+
 	private DateTimeFormatter longDt = DateTimeFormatter.ofPattern("EEE, MMM d");
 	private DateTimeFormatter shortDt = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -42,19 +44,20 @@ public class Clock implements Runnable {
 	private SwingContext ct = SwingContext.getInstance();
 
 	private LocalDateTime prevDate = null;
-	
+
 	private ZoneId zid = null;
 	private SunriseSunsetCalculator calc;
 	private LocalDateTime sunrise;
 	private LocalDateTime sunset;	
-	
+
 	private int minutesDiff = 20;
+
 
 	public Clock(JLabel clockLabel, JLabel weekDateLable){	
 
 		this.clockLabel = clockLabel;
 		this.weekDateLable = weekDateLable;
-		
+
 		zid = ZoneId.systemDefault();
 		Location loc = new Location("45.41117","-75.69812");
 		calc = new SunriseSunsetCalculator(loc, TimeZone.getDefault());
@@ -64,22 +67,22 @@ public class Clock implements Runnable {
 
 	}
 
-	
+
 	@Override
 	public void run() {
 		try{
 			LocalDateTime dt = LocalDateTime.now();
 
 			String time = "";
-			
+
 			if (dt.isAfter(sunrise) && dt.isBefore(sunset) && !currCycle.isDay()){ 
 				logger.config("Day triggered. Sunrise: " + sunrise);
 				currCycle = DayNightCycle.DAY;			
 				ct.putSharedObject(Constants.DAY_NIGHT_CYCLE, currCycle);				
 				ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
 				themes.fireDayCycle();
-				
-				
+
+
 			}else if (  (dt.isAfter(sunset) || dt.isBefore(sunrise) ) && !currCycle.isNight()  ){
 				logger.config("Night triggered. Sunset: " + sunset);
 				currCycle = DayNightCycle.NIGHT;
@@ -116,7 +119,11 @@ public class Clock implements Runnable {
 
 			if (timeChanged){ //reset time changed
 				timeChanged = false;
-			}	
+			}				
+
+			//switch theme depending on date
+			switchTheme(dt);
+
 		}catch(Throwable r){
 			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
 			eh.addError(ErrorType.GENERAL, new ErrorInfo(new FormatStackTrace(r).getFormattedException()));
@@ -124,7 +131,40 @@ public class Clock implements Runnable {
 		}
 	}
 
+	private void switchTheme(LocalDateTime dt) {
 
+		ThemeHandler themes = (ThemeHandler)ct.getSharedObject(Constants.THEMES_HANDLER);
+
+		//find if a theme's date is valid for the current date.
+		LocalDate now = dt.toLocalDate();
+		ThemeEnum detectedTheme = null;
+		for(ThemeEnum te : ThemeEnum.values()) {		
+
+			if ( te.getThemeStart() != null && te.getThemeEnd() != null) {
+				LocalDate start = LocalDate.of(now.getYear(), te.getThemeStart().getMonthValue(), te.getThemeStart().getDayOfMonth());
+				LocalDate end = LocalDate.of(now.getYear(), te.getThemeEnd().getMonth(), te.getThemeEnd().getDayOfMonth());
+
+				if(	( start.isBefore(now) && end.isAfter(now) ) ||
+						start.isEqual(now) ||  end.isEqual(now)  	) {
+					detectedTheme = te;
+					break;
+				}
+			}
+
+		}
+
+		if (detectedTheme != null && themes.getCurrentTheme() != detectedTheme) {
+			logger.log(Level.CONFIG, "New theme detechted for the current date. Theme: " + detectedTheme);
+			themes.loadTheme(detectedTheme);
+
+		}else if (themes.getCurrentTheme() != ThemeEnum.defaultTheme && detectedTheme == null){
+			//default theme
+			logger.log(Level.CONFIG, "No theme found for the date, using default Theme");
+			themes.loadTheme(ThemeEnum.defaultTheme);
+		}
+
+
+	}
 	private LocalDateTime convert(Calendar cal){
 		return cal.getTime().toInstant().atZone(zid).toLocalDateTime();
 	}
