@@ -1,5 +1,7 @@
 package net.piclock.thread;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
@@ -11,6 +13,8 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 
 import home.websocket.WebSocketClientEndPoint;
+import home.websocket.WebSocketException;
+import net.piclock.enums.CheckWifiStatus;
 import net.piclock.enums.IconEnum;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
@@ -20,12 +24,13 @@ import net.piclock.theme.ThemeHandler;
 /*
  * Class that monitor web socket to update the garage door icon
  */
-public class GarageDoorThread implements Runnable{
+public class GarageDoorThread implements Runnable, PropertyChangeListener{
 
 	private static final Logger logger = Logger.getLogger( GarageDoorThread.class.getName() );
 
 	private String host = "def";
 	private JLabel lblGaragedoor;
+	private  WebSocketClientEndPoint clientEndPoint;
 
 	public GarageDoorThread(JLabel lblGaragedoor) throws URISyntaxException, UnknownHostException {
 
@@ -34,6 +39,9 @@ public class GarageDoorThread implements Runnable{
 		logger.log(Level.CONFIG, "---------> Host name: " + host);
 
 		this.lblGaragedoor = lblGaragedoor;
+
+		//		SwingContext.getInstance().getect(Constants.CHECK_INTERNET, CheckWifiStatus.END_WIFI_OFF);
+		SwingContext.getInstance().addPropertyChangeListener(Constants.CHECK_INTERNET, this);
 	}
 
 	@Override
@@ -41,8 +49,8 @@ public class GarageDoorThread implements Runnable{
 		try {
 			logger.log(Level.CONFIG, "---------> Starting garage door: " + host);
 			//register user
-			final WebSocketClientEndPoint clientEndPoint  = new WebSocketClientEndPoint(new URI("ws://192.168.1.110:8081/events/"), 7200000);
-			clientEndPoint.sendMessage("{'operation': 1, 'userName':'"+host+"' }");
+			clientEndPoint = new WebSocketClientEndPoint(new URI("ws://192.168.1.110:8081/events/"), 64800000);  //18 hours
+
 			PiHandler handler = PiHandler.getInstance();
 
 			// add listener
@@ -51,18 +59,32 @@ public class GarageDoorThread implements Runnable{
 					logger.log(Level.CONFIG, message);
 					if (message.contains("garage")) {
 						String trimmedMessage = message.trim();
-						String value = trimmedMessage.substring(trimmedMessage.indexOf(":"), trimmedMessage.length() - 1).trim();
+						String value = trimmedMessage.substring(trimmedMessage.indexOf(":") + 1, trimmedMessage.length() - 1).trim();
 						logger.log(Level.CONFIG, "GARAGE DOOOR STATUS: " + value);
-						//					System.out.println("Mess: " + value);
 
 						try {
+							int garageValue = Integer.parseInt(value);
+
+							//check is we need to set the label visible.
+							if (garageValue != -1 && !lblGaragedoor.isVisible()) {
+								logger.log(Level.CONFIG, "Setting visible garage door icon" );
+								lblGaragedoor.setVisible(true);
+							}
+
 							ThemeHandler tm = (ThemeHandler)SwingContext.getInstance().getSharedObject(Constants.THEMES_HANDLER);
-							if ("1".equalsIgnoreCase(value)) {
+							if (garageValue == 1) {
+								logger.log(Level.CONFIG, "GARAGE open");
 								lblGaragedoor.setIcon(tm.getIcon(IconEnum.GARAGE_OPEN));
 								tm.registerIconColor(lblGaragedoor, IconEnum.GARAGE_OPEN);
-							}else {
+
+							}else if (garageValue == 0) {
+								logger.log(Level.CONFIG, "GARAGE Closed");
 								lblGaragedoor.setIcon(tm.getIcon(IconEnum.GARAGE_CLOSED));
 								tm.registerIconColor(lblGaragedoor, IconEnum.GARAGE_CLOSED);
+							}else if (garageValue == -1) {
+								//hide icon
+								logger.log(Level.CONFIG, "Hiding garage door icon" );
+								lblGaragedoor.setVisible(false);
 							}
 
 						}catch(IOException e) {
@@ -72,23 +94,62 @@ public class GarageDoorThread implements Runnable{
 				}
 			});
 
+//			connectToWs();
 
 			while (!Thread.currentThread().isInterrupted()) {
 				try {
-					if (handler.isWifiConnected()) {
+					boolean wifiOn = handler.isWifiConnected();
+					logger.log(Level.CONFIG, "Sending heart Beat. Wifi on?  " +  wifiOn);
+					if (wifiOn && clientEndPoint.isConnectionAlive()) {
 						//send heartBeep
-						clientEndPoint.sendMessage("{'operation': 20 }");
+						clientEndPoint.sendMessage("{'operation': 20 }"); //TODO getting null pointer exception... in Utilities, verify if not null beofre sending..  Other //TODO .. when wifi turning off.. kill thread.. restart when wifi is on.. also get default value from websocket.
 					}
-					Thread.sleep(3600000); //3600000
+					Thread.sleep(3600000); //3600000  == 1 hour
 				} catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
-				}
+				} 
 			}
 
 
 		}catch(Exception ex) {
 			logger.log(Level.SEVERE, "Error in WS", ex);
 		}
+
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		logger.log(Level.CONFIG, "Event : " + evt.getPropertyName() + " Value: " + evt.getNewValue());
+		if (Constants.CHECK_INTERNET.equals(evt.getPropertyName())){
+			//check if wifi is turning off? 
+
+			CheckWifiStatus status = (CheckWifiStatus) evt.getNewValue();
+
+			try {
+				if (status.isOff()) {
+					clientEndPoint.closeConnection();
+				}else if (status.isConnected()){
+					connectToWs();
+				}
+			}catch (Exception e) {
+				logger.log(Level.SEVERE, "Error in websocket: " , e);
+			}
+
+		}
+
+	}
+
+	private void connectToWs() throws WebSocketException {
+		//connect
+		clientEndPoint.connect();
+
+		//identify to web socket
+		clientEndPoint.sendMessage("{'operation': 1, 'userName':'"+host+"' }");
+
+		//get last garage status
+		clientEndPoint.sendMessage("{'operation': 3 }");
+		
+		logger.log(Level.CONFIG, "Connection ended");
 
 	}
 }

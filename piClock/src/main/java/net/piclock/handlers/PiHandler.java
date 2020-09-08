@@ -648,6 +648,8 @@ public class PiHandler {
 						
 		if (wifiOn){
 
+			context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_WIFI_OFF);
+			
 			Exec e = new Exec();
 			e.addCommand("sudo").addCommand("ifconfig").addCommand("wlan0").addCommand("down");
 			e.timeout(10000);
@@ -659,13 +661,12 @@ public class PiHandler {
 				setWifiConnected(false);
 				wifiInternetConnected = false;
 
-				context.putSharedObject(Constants.CHECK_INTERNET, CheckWifiStatus.END_WIFI_OFF);
-
 				logger.log(Level.INFO, "Exit code : " + ext + " OUtput: " + e.getOutput());
 			} catch (IOException e1) {
 				ErrorHandler eh = (ErrorHandler)context.getSharedObject(Constants.ERROR_HANDLER);
   				eh.addError(ErrorType.PI, new ErrorInfo(new FormatStackTrace(e1).getFormattedException()));
 				logger.log(Level.SEVERE, "wifiOff() : Error shutting wifi : " , e1);
+				
 			}
 		}		
 	}

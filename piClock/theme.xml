@@ -126,7 +126,7 @@
 				<IconTheme name="VOLUME_MUTED"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>	
 				<IconTheme name="VOLUME_ICON_RADIO"	 iconDay="volume-black-32.png" 		iconNight="volume-white-32.png"></IconTheme>		
 				<IconTheme name="VOLUME_MUTED_RADIO"	    iconDay="volume-mute-black-32.png" 		iconNight="volume-mute-white-32.png"></IconTheme>
-								<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
+				<IconTheme name="GARAGE_OPEN"	    iconDay="car-48-open.png" 		iconNight="car-48-open.png"></IconTheme>
 				<IconTheme name="GARAGE_CLOSED"	    iconDay="garage-48-closed.png" 		iconNight="garage-48-closed-white.png"></IconTheme>
 			</labelIcon>
 		</background>

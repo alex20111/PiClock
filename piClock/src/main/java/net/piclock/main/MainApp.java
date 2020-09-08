@@ -372,6 +372,11 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		alertIconsPanel.setOpaque(false);
 		alertIconsPanel.setLayout(new BoxLayout(alertIconsPanel, BoxLayout.Y_AXIS));
 		
+		lblGaragedoor = new JLabel("");
+		lblGaragedoor.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
+		themes.registerIconColor(lblGaragedoor, IconEnum.GARAGE_CLOSED);
+		alertIconsPanel.add(lblGaragedoor);	
+		
 		lblWiFiIcon = new JLabel();
 		lblWiFiIcon.setBorder(new EmptyBorder(10,10,0,0));//top,left,bottom,right
 		lblWiFiIcon.setVisible(false);
@@ -535,9 +540,8 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 		});
 		leftIcons.add(lblWarningIcon);
 		
-		lblGaragedoor = new JLabel("");
-		themes.registerIconColor(lblGaragedoor, IconEnum.GARAGE_CLOSED);
-		leftIcons.add(lblGaragedoor);
+		
+//		leftIcons.add(lblGaragedoor);
 		
 		cardsPanel.add(av, Constants.ALARM_VIEW);
 		cardsPanel.add(weatherConfig, Constants.WEATHER_CONFIG_VIEW);	

@@ -6,7 +6,7 @@ public enum ThemeEnum {
 
 	defaultTheme (null, null),
 	winterTheme (null, null), 
-	HALLOWEEN_THEME("0000-08-22", "0000-08-22"), 
+	HALLOWEEN_THEME("0000-10-31", "0000-10-31"), 
 	CHRISTMAS_THEME("0000-12-14", "0000-12-31");
 	
 	
