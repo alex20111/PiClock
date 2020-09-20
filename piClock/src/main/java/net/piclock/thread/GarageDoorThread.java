@@ -31,6 +31,7 @@ public class GarageDoorThread implements Runnable, PropertyChangeListener{
 	private String host = "def";
 	private JLabel lblGaragedoor;
 	private  WebSocketClientEndPoint clientEndPoint;
+	private boolean iconVisible = false;
 
 	public GarageDoorThread(JLabel lblGaragedoor) throws URISyntaxException, UnknownHostException {
 
@@ -60,15 +61,16 @@ public class GarageDoorThread implements Runnable, PropertyChangeListener{
 					if (message.contains("garage")) {
 						String trimmedMessage = message.trim();
 						String value = trimmedMessage.substring(trimmedMessage.indexOf(":") + 1, trimmedMessage.length() - 1).trim();
-						logger.log(Level.CONFIG, "GARAGE DOOOR STATUS: " + value);
+						logger.log(Level.CONFIG, "GARAGE DOOOR STATUS: " + value + "  Icon visible: " + iconVisible);
 
 						try {
 							int garageValue = Integer.parseInt(value);
 
 							//check is we need to set the label visible.
-							if (garageValue != -1 && !lblGaragedoor.isVisible()) {
+							if (garageValue != -1) {
 								logger.log(Level.CONFIG, "Setting visible garage door icon" );
 								lblGaragedoor.setVisible(true);
+								iconVisible = true;
 							}
 
 							ThemeHandler tm = (ThemeHandler)SwingContext.getInstance().getSharedObject(Constants.THEMES_HANDLER);
@@ -85,6 +87,7 @@ public class GarageDoorThread implements Runnable, PropertyChangeListener{
 								//hide icon
 								logger.log(Level.CONFIG, "Hiding garage door icon" );
 								lblGaragedoor.setVisible(false);
+								iconVisible = false;
 							}
 
 						}catch(IOException e) {

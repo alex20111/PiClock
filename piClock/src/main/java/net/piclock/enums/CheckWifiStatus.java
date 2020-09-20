@@ -13,7 +13,7 @@ public enum CheckWifiStatus {
 		return this != CheckWifiStatus.SUCCESS && this != CheckWifiStatus.END_NO_INET;
 	}
 	public boolean isOff() {
-		return this != CheckWifiStatus.SUCCESS;
+		return this != CheckWifiStatus.SUCCESS && this != CheckWifiStatus.STARTING;
 	}
 	public boolean isConnecting() {
 		return this == STARTING;
