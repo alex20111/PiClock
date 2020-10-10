@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 
+import home.common.data.Service;
 import home.websocket.WebSocketClientEndPoint;
 import home.websocket.WebSocketException;
 import net.piclock.enums.CheckWifiStatus;
@@ -74,12 +75,12 @@ public class GarageDoorThread implements Runnable, PropertyChangeListener{
 							}
 
 							ThemeHandler tm = (ThemeHandler)SwingContext.getInstance().getSharedObject(Constants.THEMES_HANDLER);
-							if (garageValue == 1) {
+							if (garageValue == 0) {
 								logger.log(Level.CONFIG, "GARAGE open");
 								lblGaragedoor.setIcon(tm.getIcon(IconEnum.GARAGE_OPEN));
 								tm.registerIconColor(lblGaragedoor, IconEnum.GARAGE_OPEN);
 
-							}else if (garageValue == 0) {
+							}else if (garageValue == 1) {
 								logger.log(Level.CONFIG, "GARAGE Closed");
 								lblGaragedoor.setIcon(tm.getIcon(IconEnum.GARAGE_CLOSED));
 								tm.registerIconColor(lblGaragedoor, IconEnum.GARAGE_CLOSED);
@@ -105,7 +106,11 @@ public class GarageDoorThread implements Runnable, PropertyChangeListener{
 					logger.log(Level.CONFIG, "Sending heart Beat. Wifi on?  " +  wifiOn);
 					if (wifiOn && clientEndPoint.isConnectionAlive()) {
 						//send heartBeep
-						clientEndPoint.sendMessage("{'operation': 20 }"); //TODO getting null pointer exception... in Utilities, verify if not null beofre sending..  Other //TODO .. when wifi turning off.. kill thread.. restart when wifi is on.. also get default value from websocket.
+						clientEndPoint.sendMessage("{'operation': 20 }"); //TODO getting null pointer exception... in Utilities, verify if not null beofre sending..  Other // re connect if disconnected by server
+					}else if (wifiOn && ! clientEndPoint.isConnectionAlive()) {
+						//reconnect
+						logger.log(Level.CONFIG, "Reconnecting to websocket endpoint. ");
+						connectToWs();
 					}
 					Thread.sleep(3600000); //3600000  == 1 hour
 				} catch (InterruptedException ex) {
@@ -147,7 +152,7 @@ public class GarageDoorThread implements Runnable, PropertyChangeListener{
 		clientEndPoint.connect();
 
 		//identify to web socket
-		clientEndPoint.sendMessage("{'operation': 1, 'userName':'"+host+"' }");
+		clientEndPoint.sendMessage("{'operation': 1, 'userName':'"+host+"', 'service':'" + Service.GARAGE_NOTIFICATION + "' }");
 
 		//get last garage status
 		clientEndPoint.sendMessage("{'operation': 3 }");

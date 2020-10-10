@@ -32,6 +32,7 @@ import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
 import net.piclock.bean.VolumeConfig;
 import net.piclock.db.entity.AlarmEntity;
+import net.piclock.db.entity.Mp3Entity;
 import net.piclock.db.entity.RadioEntity;
 import net.piclock.db.sql.Mp3Sql;
 import net.piclock.db.sql.RadioSql;
@@ -361,7 +362,12 @@ public class BuzzerOptionDialog extends JDialog implements MessageListener {
 				btnRadio.doClick();
 			}
 			if (buzzer == Buzzer.MP3){
-				lblMp3TrkName.setText(new Mp3Sql().loadMp3ById(alarmEnt.getMp3Id()).getMp3Name());
+				logger.log(Level.CONFIG, "Was getting error here. Alarm id: " + (alarmEnt != null ? alarmEnt.getMp3Id() : "got nULL") );
+				
+				Mp3Entity mp = new Mp3Sql().loadMp3ById(alarmEnt.getMp3Id());
+				logger.log(Level.CONFIG,"Mp3 name:  " + (mp != null ? mp.getMp3Name() : " no MP3"));
+				
+				lblMp3TrkName.setText(mp.getMp3Name());
 				btnMp3.doClick();
 			}
 

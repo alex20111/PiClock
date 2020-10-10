@@ -7,8 +7,8 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import home.misc.Exec;
 import net.piclock.enums.CheckWifiStatus;
+import net.piclock.enums.DayNightCycle;
 import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
@@ -18,51 +18,37 @@ public class VerifyNetwork implements Runnable {
 	private static final Logger logger = Logger.getLogger( VerifyNetwork.class.getName() );
 
 	private PiHandler handler;
+	private SwingContext ct = SwingContext.getInstance();
+	
+	
 
 	@Override
 	public void run() {
-		logger.log(Level.INFO,"!!!!!!Checking IP!!!!");
+		CheckWifiStatus status = (CheckWifiStatus)ct.getSharedObject(Constants.CHECK_INTERNET);
+		
+		logger.log(Level.INFO,"!!!!!!Checking IP!!!! - Internet status:  " + status);
 
 		try {
 
 			handler = PiHandler.getInstance();
+			
+			DayNightCycle cycle = (DayNightCycle)ct.getSharedObject(Constants.DAY_NIGHT_CYCLE);
 
 			if (handler.isWifiOn()) {
 
 
 				int retries = 0;
 
-//				Exec exec = new Exec();
-
-				//				exec.addCommand("sudo").addCommand("/home/pi/piClock/scripts/getIp.sh").timeout(1000);
-				//				exec.run();
-
-				//				exec.addCommand("sudo").addCommand("/home/pi/piClock/scripts/getIp.sh").timeout(1000);
-				//				exec.run();
-				//				String ip = exec.getOutput();
-				//				
-				//				logger.log(Level.CONFIG, "IP: " +ip);
-
-//				logger.log(Level.CONFIG, lookForIp());
-
-				boolean connectingToWifi = ((CheckWifiStatus)SwingContext.getInstance().getSharedObject(Constants.CHECK_INTERNET)).isConnecting();
+				boolean connectingToWifi = status.isConnecting();
 				while(!handler.checkIfIpPresent() && retries < 3 && !connectingToWifi) {				
 					retries ++;
-					//					Exec exec = new Exec();
-					//
-					//					exec.addCommand("sudo").addCommand("/home/pi/piClock/scripts/getIp.sh").timeout(1000);
-					//					exec.run();
-					//					String ip = exec.getOutput();
+
 
 					logger.log(Level.INFO, "Wifi is on but not connected. Trying to connect again !!. Current ip: " + handler.getIpAddress());
-
-
 
 					handler.rebootWifi();
 
 					Thread.sleep(20000);
-
-
 
 				}	
 
@@ -70,6 +56,9 @@ public class VerifyNetwork implements Runnable {
 					logger.log(Level.INFO, "Wifi number of reconnect excedeed. retry in next loop");
 				}
 
+			}else if (!handler.isWifiOn() && cycle.isDay() && !status.isConnecting()){
+				logger.log(Level.CONFIG, "Wifi is not ON and it's the day..WIFI must be on");
+				handler.rebootWifi();
 			}
 
 		} catch (Exception e) {

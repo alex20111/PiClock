@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 
+import home.common.data.Temperature;
 import home.inet.Connect;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
@@ -14,7 +15,6 @@ import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
 import net.piclock.util.FormatStackTrace;
-import net.piclock.weather.Temperature;
 
 //get the outside temperature sensors informations
 public class TempSensorWorker implements Runnable{
@@ -30,30 +30,6 @@ public class TempSensorWorker implements Runnable{
 		try {
 			if (handler.isWifiConnected()){
 
-//				WeatherBean wb = new WeatherBean();
-//
-//				//recorder AA, Shade
-//				Connect c = new Connect("http://192.168.1.110:8081/web/service.action?cmd=get&type=temp&jsonObject={\"recorderName\":\"AA\"}&max=true");
-//				String resultAA = c.connectToUrlUsingGET().getResultAsStr();
-//
-//				Gson gson = new Gson();
-//				Temperature tempAA = gson.fromJson(resultAA, Temperature.class );
-//
-//				if (tempAA != null && tempAA.getTempC() != null){
-//					wb.setTempShade(tempAA);
-//				}
-//
-//				//recorder BB
-//				String urlBB = "http://192.168.1.110:8081/web/service.action?cmd=get&type=temp&jsonObject={\"recorderName\":\"BB\"}&max=true";
-//
-//				c = new Connect(urlBB);
-//				String resultBB = c.connectToUrlUsingGET().getResultAsStr();
-//
-//				Temperature tempBB = gson.fromJson(resultBB, Temperature.class );
-//
-//				if (tempBB != null && tempBB.getTempC() != null){
-//					wb.setTempSun(tempBB);
-//				}
 				
 				Connect c = new Connect("http://192.168.1.110:8081/web/temperature/currTemp");
 				String result = c.connectToUrlUsingGET().getResultAsStr();
@@ -66,8 +42,7 @@ public class TempSensorWorker implements Runnable{
 				
 				if (tempResult == null) {
 					tempResult = new Temperature();
-				}
-				
+				}				
 
 				ct.putSharedObject(Constants.SENSOR_INFO, tempResult);
 

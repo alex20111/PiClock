@@ -40,6 +40,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import home.common.data.Temperature;
 import net.miginfocom.swing.MigLayout;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorHandler;
@@ -74,7 +75,6 @@ import net.piclock.view.WeatherConfigView;
 import net.piclock.view.WeatherForecastView;
 import net.piclock.view.WebServerView;
 import net.piclock.weather.DarkSkyUtil;
-import net.piclock.weather.Temperature;
 import net.weather.bean.Message;
 import net.weather.bean.WeatherCurrentModel;
 import net.weather.bean.WeatherGenericModel;
@@ -774,7 +774,14 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 				
 				ImageIcon icon = null;
 				if (host == Host.envCanada) {
-					icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + wcm.getIconName(), 48, 48);	
+					logger.log(Level.CONFIG," this is where errors occurs: Icon name: " + (wcm != null ? wcm.getIconName() : " VALUE NULL"));
+					String iconName = "00.gif";
+					
+					if (wcm != null) {
+						iconName = wcm.getIconName();
+					}
+					
+					icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + iconName, 48, 48);	
 				}else {
 					icon = ImageUtils.getInstance().getImage("weather" + File.separatorChar + DarkSkyUtil.getIconFileName(wcm.getIconName()), 48, 48);	
 				}			
@@ -840,7 +847,7 @@ public class MainApp extends JFrame implements PropertyChangeListener, MessageLi
 			
 			Message m = msg.getAllMessages().get( msg.getAllMessages().size() - 1);
 			
-			addCurrentWeather(m.getTitle() + " " + new SimpleDateFormat(" EEE HH:mm:ss").format(m.getRecDate()),
+			addCurrentWeather(m.getTitle() ,
 					weatherNaIcon , null);
 			addCurrentTemp("--", "--");
 			lblWeatherAlert.setVisible(false);

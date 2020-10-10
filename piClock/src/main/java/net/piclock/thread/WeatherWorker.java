@@ -149,7 +149,7 @@ public class WeatherWorker implements Runnable {
 			ErrorHandler eh = (ErrorHandler)ct.getSharedObject(Constants.ERROR_HANDLER);
 			eh.addError(ErrorType.WEATHER, new ErrorInfo(new FormatStackTrace(tr).getFormattedException()));
 			logger.log(Level.SEVERE, "Error in WeatherWorker", tr);
-			wgm.addMessage("Severe Error", "In trowable is a severe error", Message.ERROR);
+			wgm.addMessage("Error", "In trowable is a severe error", Message.ERROR);
 			ct.putSharedObject(Constants.FORECAST_DISPLAY_ERROR, wgm);
 		}		
 	}

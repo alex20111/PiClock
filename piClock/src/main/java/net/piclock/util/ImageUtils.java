@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import net.piclock.bean.ErrorHandler;
 import net.piclock.bean.ErrorInfo;
 import net.piclock.bean.ErrorType;
+import net.piclock.handlers.PiHandler;
 import net.piclock.main.Constants;
 import net.piclock.swing.component.SwingContext;
 
@@ -29,6 +30,15 @@ public class ImageUtils {
 	private ImageIcon warningIcon;
 	
 	public static ImageUtils getInstance(){
+		if (imageUtils == null) {
+			synchronized (ImageUtils.class) {
+				if(imageUtils == null) {
+					logger.log(Level.INFO, "PiHandler initialized");
+					imageUtils = new ImageUtils();
+				}
+			}
+		}	
+		
 		return imageUtils;
 	}
 	
